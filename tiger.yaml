@@ -1,0 +1,138 @@
+additionalYamls:
+  - # For baseKey "workplace" use a yaml, that is specific for a workplace
+    filename: localConfigDefault.yaml
+    baseKey: workplace
+  - # Holds testsuite specific data, which are not already covered in the tiger.yaml
+    filename: target/generated-not-in-jar/infrastructure.yaml
+    baseKey: infrastructure
+  - filename: testdata.yaml
+    baseKey: testdata
+
+ports:
+  tigerProxy: "${free.port.0}"
+  epaFdV: "${free.port.1}"
+  epaPs: "${free.port.2}"
+  ncpehSim: "${free.port.3}"
+
+tigerProxy:
+  skipTrafficEndpointsSubscription: true
+  proxyPort: ${tiger.ports.tigerProxy}
+  adminPort: 33030
+  proxyLogLevel: WARN
+#  forwardToProxy:
+#    hostname: 192.168.110.10
+#    port: 3128
+#    type: http
+#  trafficEndpoints:
+#    - http://localhost:${tiger.ports.tigerProxy}
+  proxyRoutes:
+#    - from: http://ncpeh
+#      to: http://localhost:8082/rest
+
+servers:
+#  tigerRemoteProxy:
+#    type: tigerProxy
+#
+#    tigerProxyCfg:
+#      adminPort:
+#      proxyPort:
+#      proxiedServerProtocol: http
+#      proxyRoutes:
+#        - from:
+#          to:
+#
+  epaFdvJar:
+    type: externalJar
+    active: "!{not ${tiger.servers.epaFdVUrl.active}}"
+    hostname: ${infrastructure.epafdv.hostname}
+    startupTimeoutSec: 60
+    source:
+      - local:${workplace.epafdv.jarPath}/epa-fdv-${infrastructure.epafdv.version}.jar
+    healthcheckUrl: http://localhost:${tiger.ports.epaFdV}
+    externalJarOptions:
+      options:
+        - -Dfile.encoding=UTF-8
+      arguments:
+        - --server.port=${tiger.ports.epaFdV}
+        - --server.ssl.enabled=false
+        - --spring.profiles.active=instance2local,noevents
+        - --config.path=${workplace.epafdv.configDir}
+        - --logging.level.org.apache.cxf.services=INFO
+
+  epaFdVUrl:
+    type: externalUrl
+    active: ${workplace.epafdv.isStarted}
+    hostname: ${infrastructure.epafdv.hostname}
+    healthcheckUrl: NONE
+    startupTimeoutSec: 1
+    source:
+      - http://localhost:9107
+
+  epaPsJar:
+    type: externalJar
+    active: "!{not ${tiger.servers.epaPsUrl.active}}"
+    hostname: ${infrastructure.epaps.hostname}
+    startupTimeoutSec: 60
+    source:
+      - local:${workplace.epaps.jarPath}/epa-ps-sim-app-${infrastructure.epaps.version}.jar
+    healthcheckUrl: http://localhost:${tiger.ports.epaPs}
+    externalJarOptions:
+      options:
+        - -Djdk.internal.httpclient.disableHostnameVerification
+        - -Dfile.encoding=UTF-8
+      arguments:
+        - --spring.profiles.active=gematik
+        #- --spring.config.additional-location=${workplace.epaps.resourcesPath}/
+        - --server.port=${tiger.ports.epaPs}
+        #- --config.path=${workplace.epaps.configDir}
+        - --logging.level.org.apache.cxf.services=INFO
+
+  epaPsUrl:
+    type: externalUrl
+    active: ${workplace.epaps.isStarted}
+    hostname: ${infrastructure.epaps.hostname}
+    startupTimeoutSec: 1
+    source:
+      - http://localhost:9016
+
+  ncpehSimMockJar:
+    type: externalJar
+    active: "!{not ${tiger.servers.ncpehSimUrl.active} and not ${workplace.ncpeh.inDocker}}"
+    hostname: ${infrastructure.ncpehSim.hostname}
+    startupTimeoutSec: 60
+    source:
+      - local:${workplace.ncpeh.jarPath}/ncpeh-simulation-mock-${infrastructure.ncpehSim.version}.jar
+    healthcheckUrl: http://localhost:${tiger.ports.ncpehSim}
+    externalJarOptions:
+      options:
+        - -Dfile.encoding=UTF-8
+      arguments:
+        - --server.port=${tiger.ports.ncpehSim}
+        - --cxf.path=${infrastructure.ncpehSim.basePath}
+        - --logging.level.org.apache.cxf.services=INFO
+
+  ncpehSimUrl:
+    type: externalUrl
+    active: ${workplace.ncpeh.isStarted}
+    hostname: ${infrastructure.ncpehSim.hostname}
+    startupTimeoutSec: 1
+    source:
+      - http://localhost:8082/
+    healthcheckUrl: http://localhost:8082
+
+# the docker integration is untested and will be realized with story NCP-48
+  ncpehSimDocker:
+    type: docker
+    active: "!{not ${tiger.servers.ncpehSimUrl.active} and ${workplace.ncpeh.inDocker}}"
+    hostname: ${infrastructure.ncpehSim.hostname}
+    source:
+      - eu.gcr.io/gematik-all-infra-prod/eurovision/openncp-gui
+    version: 0.3.3-33
+
+
+
+lib:
+  rbelPathDebugging: false
+  rbelAnsiColors: true
+  activateWorkflowUi: true
+  addCurlCommandsForRaCallsToReport: true

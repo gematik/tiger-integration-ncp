@@ -1,0 +1,8 @@
+# This file serves as an example for the configuration of a host specific tiger.yaml.
+# See the Tiger test environment manager chapter of the Tiger User Manual
+#   for details on the different tiger configuration files:
+#   https://gematik.github.io/app-Tiger/Tiger-User-Manual.html#_tiger_test_environment_manager_2
+additionalYamls:
+  # Set your own workplace specific config file here. See localConfigDefault.yaml for a working example.
+  - filename: <myWorkplaceSpecificConfigFile>.yaml
+    baseKey: workplace

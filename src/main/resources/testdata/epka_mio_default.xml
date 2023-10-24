@@ -1,0 +1,910 @@
+<Bundle xmlns="http://hl7.org/fhir">
+  <id value="ec5bf24f-e823-45d6-97c6-14e35ded0ec0" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFDxDPE_Bundle|1.0.0" />
+  </meta>
+  <identifier>
+	<type>
+		<coding>
+			<code value="NFD"/>
+		</coding>
+	</type>
+    <system value="urn:ietf:rfc:3986" />
+    <value value="urn:uuid:ec5bf24f-e823-45d6-97c6-14e35ded0ec0" />
+  </identifier>
+  <type value="document" />
+  <timestamp value="2021-08-09T12:30:02Z" />
+  <entry>  
+<fullUrl value="urn:uuid:8e17ccc0-9d1a-11eb-a8b3-0242ac130003" />
+<resource>
+	<Composition xmlns="http://hl7.org/fhir">
+	  <id value="8e17ccc0-9d1a-11eb-a8b3-0242ac130003" />
+	  <meta>
+		<versionId value="1.0.0" />
+		<profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Composition_NFD|1.0.0" />
+	  </meta>
+	  <status value="final" />
+	  <type>
+		<coding>
+		  <system value="http://snomed.info/sct" />
+		  <version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+		  <code value="5491000179105" />
+		  <display value="Medical record summary (record artifact)" />
+		</coding>
+	  </type>
+	  <subject>
+		<reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+	  </subject>
+	  <date value="2009-12-10" />
+	  <author>
+		<reference value="urn:uuid:d0117f4a-685c-4659-aa94-14e3514bc86b" />
+	  </author>
+	  <title value="Notfalldatensatz" />
+	  <!-- Versicherter Einwilligung -->
+	  <section>
+	  <title value="NFD_Versicherter_Einwilligung"/>
+		<code>
+		  <coding>
+			<system value="http://loinc.org" />
+			<version value="2.71" />
+			<code value="57016-8" />
+			<display value="Patient Consent" />
+		  </coding>
+		</code>
+		<entry>
+		  <reference value="urn:uuid:1443cb86-df52-11eb-ba80-0242ac130004" />
+		</entry>
+	  </section>
+	  <!-- Allergien und Unverträglichektien -->
+	  <section>
+		<title value="Allergie/Unverträglichkeit" />
+		<code>
+		  <coding>
+			<system value="http://snomed.info/sct" />
+			<version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+			<code value="722446000" />
+			<display value="Allergy record (record artifact)" />
+		  </coding>
+		</code>
+		<entry>
+		  <reference value="urn:uuid:c3fd0113-9833-4333-bfd2-fff813222b64" />
+		</entry>
+	  </section>
+	  <!-- Medikationsübersicht -->
+	  <section>
+		<title value="Medikationseinträge" />
+		<code>
+		  <coding>
+			<system value="http://snomed.info/sct" />
+			<version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+			<code value="736378000" />
+			<display value="Medication management plan (record artifact)" />
+		  </coding>
+		</code>
+		<entry>
+		  <reference value="urn:uuid:d6b888f6-9d07-11eb-a8b3-0242ac130003" />
+		</entry>
+		<entry>
+		  <reference value="urn:uuid:292d932c-f62e-11eb-9a03-0242ac130003" />
+		</entry>
+	  </section>
+	  <!-- Diagnose -->
+	  <section>
+		<title value="Diagnose" />
+		<code>
+		  <coding>
+			<system value="http://loinc.org" />
+			<version value="2.71" />
+			<code value="29548-5" />
+			<display value="Diagnosis Narrative" />
+		  </coding>
+		</code>
+		<entry>
+		  <reference value="urn:uuid:9ddb500a-2f32-480b-a435-683c27ef444e" />
+		</entry>
+		<entry>
+		  <reference value="urn:uuid:0269e4f2-f633-11eb-9a03-0242ac130003" />
+		</entry>
+		<entry>
+		  <reference value="urn:uuid:13bf04ee-f633-11eb-9a03-0242ac130003" />
+		</entry>
+		<entry>
+		  <reference value="urn:uuid:28558acc-f633-11eb-9a03-0242ac130003" />
+		</entry>
+	  </section>
+	  <!-- kommunikationsstörung -->
+	  <section>
+		<title value="Kommunikationsstörung" />
+		<code>
+		  <coding>
+			<system value="http://snomed.info/sct" />
+			<version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+			<code value="386053000:363702006=278919001" />
+			<display value="Evaluation procedure (procedure) : Has focus (attribute) = Communication disorder (disorder)" />
+		  </coding>
+		</code>
+		<entry>
+		  <reference value="urn:uuid:534af71e-f9c4-11eb-9a03-0242ac130003" />
+		</entry>
+	  </section>
+	  <!-- Medizinprodukte Implantate -->
+	  <section>
+		<title value="Implantat" />
+		<code>
+		  <coding>
+			<system value="http://snomed.info/sct" />
+			<version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+			<code value="40388003" />
+			<display value="Implant, device (physical object)" />
+		  </coding>
+		</code>
+		<entry>
+		  <reference value="urn:uuid:7d261218-8678-11eb-8dcd-0242ac130003" />
+		</entry>
+	  </section>
+	  
+	  <!-- Freiwillige Zusatzinformationen -->
+	  <section>
+		<title value="Freiwillige Zusatzinformationen" />
+		<code>
+		  <coding>
+			<system value="http://snomed.info/sct" />
+			<version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+			<code value="866145009" />
+			<display value="General patient record note (record artifact)" />
+		  </coding>
+		</code>
+		<entry>
+		  <reference value="urn:uuid:bd1e4596-df3a-11eb-ba80-0242ac130004" />
+		</entry>
+	  </section>
+	  <!-- Sonstiger Hinweis -->
+	  <section>
+		<title value="Sonstiger Hinweis" />
+		<code>
+		  <coding>
+			<system value="http://snomed.info/sct" />
+			<version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+			<code value="866144008" />
+			<display value="Encounter note (record artifact)" />
+		  </coding>
+		</code>
+		<entry>
+		  <reference value="urn:uuid:a4aba0aa-9138-4621-a77c-8ec5b16e2282" />
+		</entry>
+	  </section>
+	  <!-- Prozedur -->
+	  <section>
+		<title value="Prozedur" />
+		<code>
+		  <coding>
+			<system value="http://snomed.info/sct" />
+			<version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+			<code value="1003640003" />
+			<display value="History of past procedure section (record artifact)" />
+		  </coding>
+		</code>
+		<entry>
+		  <reference value="urn:uuid:464ee2ce-24f3-4319-934b-b0b994bf9aad" />
+		</entry>
+	  </section>
+	 
+	</Composition>
+	</resource>
+	</entry>
+	<entry>
+<fullUrl value="urn:uuid:c3fd0113-9833-4333-bfd2-fff813222b64" />
+<resource>
+<AllergyIntolerance xmlns="http://hl7.org/fhir">
+  <id value="c3fd0113-9833-4333-bfd2-fff813222b64" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Allergy_Intolerance|1.0.0" />
+  </meta>
+  <clinicalStatus>
+    <coding>
+      <system value="http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical" />
+      <version value="4.0.1" />
+      <code value="active" />
+      <display value="Active" />
+    </coding>
+  </clinicalStatus>
+  <patient>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </patient>
+  <recorder>
+    <reference value="urn:uuid:ebefcfca-7168-40e5-8918-7af38c7f10c9" />
+  </recorder>
+  <reaction>
+    <substance>
+      
+      <text value="Unacid" />
+    </substance>
+    <manifestation>
+     
+      <text value="schweres Arzneimittelexanthem" />
+    </manifestation>
+  </reaction>
+</AllergyIntolerance>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:9ddb500a-2f32-480b-a435-683c27ef444e" />
+<resource>
+<Condition xmlns="http://hl7.org/fhir">
+  <id value="9ddb500a-2f32-480b-a435-683c27ef444e" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Condition|1.0.0" />
+  </meta>
+  <category>
+      <coding>
+            <system value="http://snomed.info/sct" />
+            <version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+            <code value="439401001" />
+			<display value="Diagnosis (observable entity)">
+			<extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+				<extension url="content">
+					<valueString value="Diagnose" />
+				</extension>
+			</extension>
+			</display>
+        </coding>
+  </category>
+  <code>
+      <coding>
+            <system value="http://fhir.de/CodeSystem/dimdi/icd-10-gm" />
+            <version value="2020" />
+            <code value="I10.11 G" />
+			<display value="Maligne essentielle Hypertonie" />
+        </coding>
+		<text value="Maligne essentielle Hypertonie" />
+  </code>
+  <subject>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </subject>
+  <onsetDateTime value="2010-09-09" />
+</Condition>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:0269e4f2-f633-11eb-9a03-0242ac130003" />
+<resource>
+<Condition xmlns="http://hl7.org/fhir">
+  <id value="0269e4f2-f633-11eb-9a03-0242ac130003" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Condition|1.0.0" />
+  </meta>
+  <category>
+      <coding>
+            <system value="http://snomed.info/sct" />
+            <version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+            <code value="439401001" />
+			<display value="Diagnosis (observable entity)">
+			<extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+				<extension url="content">
+					<valueString value="Diagnose" />
+				</extension>
+			</extension>
+			</display>
+        </coding>
+  </category>
+  <code>
+    <coding>
+		<system value="http://fhir.de/CodeSystem/dimdi/icd-10-gm" />
+		<version value="2020" />
+		<code value="I60.3 Z R" />
+		<display value="Subarachnoidalblutung, von der A. communicans posterior ausgehend" />
+        </coding>
+	<text value="Subarachnoidalblutung, von der A. communicans posterior ausgehend" />
+  </code>
+  <subject>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </subject>
+   <onsetDateTime value="1999-11-09" />
+</Condition>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:13bf04ee-f633-11eb-9a03-0242ac130003" />
+<resource>
+<Condition xmlns="http://hl7.org/fhir">
+  <id value="13bf04ee-f633-11eb-9a03-0242ac130003" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Condition|1.0.0" />
+  </meta>
+  <category>
+      <coding>
+            <system value="http://snomed.info/sct" />
+            <version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+            <code value="439401001" />
+			<display value="Diagnosis (observable entity)">
+			<extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+				<extension url="content">
+					<valueString value="Diagnose" />
+				</extension>
+			</extension>
+			</display>
+        </coding>
+  </category>
+  <code>
+   <text value="Z.n. Polytrauma nach Verkehrsunfall mit Unterschenkel-Trümmerfraktur, Rippen-serienfraktur, Lungenkontusion, Epiduralhämatom" />
+  </code>
+  <subject>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </subject>
+     <onsetDateTime value="1979-03-11" />
+</Condition>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:28558acc-f633-11eb-9a03-0242ac130003" />
+<resource>
+<Condition xmlns="http://hl7.org/fhir">
+  <id value="28558acc-f633-11eb-9a03-0242ac130003" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Condition|1.0.0" />
+  </meta>
+  <category>
+      <coding>
+            <system value="http://snomed.info/sct" />
+            <version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+            <code value="439401001" />
+			<display value="Diagnosis (observable entity)">
+			<extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+				<extension url="content">
+					<valueString value="Diagnose" />
+				</extension>
+			</extension>
+			</display>
+        </coding>
+  </category>
+  <code>
+    <coding>
+            <system value="http://fhir.de/CodeSystem/dimdi/icd-10-gm" />
+            <version value="2020" />
+            <code value="I48.1 G" />
+			<display value="Vorhofflimmern" />
+        </coding>
+		<text value="Vorhofflimmern" />
+  </code>
+  <subject>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </subject>
+  <onsetDateTime value="2007" />
+</Condition>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:534af71e-f9c4-11eb-9a03-0242ac130003" />
+<resource>
+<Condition xmlns="http://hl7.org/fhir">
+  <id value="534af71e-f9c4-11eb-9a03-0242ac130003" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Condition_Communication_Disorder|1.0.0" />
+  </meta>
+  <code>
+    <coding>
+      <system value="http://snomed.info/sct" />
+      <version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+      <code value="278919001" />
+      <display value="Communication disorder (disorder)">
+        <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+          <extension url="content">
+            <valueString value="Kommunikationsstörung" />
+          </extension>
+        </extension>
+      </display>
+    </coding>
+  </code>
+  <subject>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </subject>
+  <evidence>
+    <code>
+      <text value="Ausgeprägte Presbyakusis; Hörgerat vorhanden" />
+    </code>
+  </evidence>
+</Condition>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:1443cb86-df52-11eb-ba80-0242ac130004" />
+<resource>
+<Consent xmlns="http://hl7.org/fhir">
+  <id value="1443cb86-df52-11eb-ba80-0242ac130004" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFDxDPE_Consent_Active_Advance_Directive|1.0.0" />
+  </meta>
+  <status value="active" />
+  <scope>
+    <coding>
+      <system value="http://terminology.hl7.org/CodeSystem/consentscope" />
+      <version value="4.0.1" />
+      <code value="patient-privacy" />
+      <display value="Privacy Consent"></display>
+    </coding>
+  </scope>
+  <category>
+    <coding>
+      <system value="http://loinc.org" />
+      <version value="2.71" />
+      <code value="59284-0" />
+      <display value="Consent Document"></display>
+    </coding>
+  </category>
+  <patient>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </patient>
+  <dateTime value="2020-03-10" />
+  <sourceReference>
+    <display value="Rennweg 35, 56626 Andernach, D">
+		<extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_MIO_NFDxDPE_Consent_Description_File_Location">
+		  <valueAddress>
+		
+				<line value="Rennweg 35">
+			  <extension url="http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName">
+				<valueString value="Rennweg" />
+			  </extension>
+			 
+			  
+			  <extension url="http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber">
+				<valueString value="35" />
+			  </extension>
+			  
+			</line>
+			<city value="Andernach" />
+			<postalCode value="56626" />
+			<country value="D" />
+		  </valueAddress>
+		</extension>
+	</display>
+  </sourceReference>
+  <policyRule>
+    <coding>
+      <system value="http://loinc.org" />
+      <version value="2.71" />
+      <code value="57016-8" />
+      <display value="Patient Consent">
+        <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+          <extension url="content">
+            <valueString value="Einwilligung" />
+          </extension>
+        </extension>
+      </display>
+    </coding>
+  </policyRule>
+  <provision>
+    <actor>
+      <role>
+        <coding>
+          <system value="http://terminology.hl7.org/CodeSystem/v3-RoleClass" />
+          <version value="2018-08-12" />
+          <code value="AGNT" />
+          <display value="agent" />
+        </coding>
+      </role>
+      <reference>
+        <display value="Peter Müller" />
+      </reference>
+    </actor>
+  </provision>
+</Consent>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:7d261218-8678-11eb-8dcd-0242ac130003" />
+<resource>
+<Device xmlns="http://hl7.org/fhir">
+  <id value="7d261218-8678-11eb-8dcd-0242ac130003" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Device_Implant|1.0.0" />
+  </meta>
+  <deviceName>
+    <name value="Tyo Medtronic Strata Adjustable Pressure Valve" />
+    <type value="model-name" />
+  </deviceName>
+  <type>
+    <text value="VP-Shunt" />
+  </type>
+  <patient>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </patient>
+</Device>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:82179290-867a-11eb-8dcd-0242ac130003" />
+<resource>
+<DeviceUseStatement xmlns="http://hl7.org/fhir">
+  <id value="82179290-867a-11eb-8dcd-0242ac130003" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Device_Use_Statement_Implant|1.0.0" />
+  </meta>
+  <status value="active" />
+  <subject>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </subject>
+  <timingPeriod>
+    <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_MIO_NFD_Date_Implantation">
+      <valueString value="2020-02-05" />
+    </extension>
+    <start value="2020-02-05" />
+  </timingPeriod>
+  <device>
+    <reference value="urn:uuid:7d261218-8678-11eb-8dcd-0242ac130003" />
+  </device>
+</DeviceUseStatement>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:d6b888f6-9d07-11eb-a8b3-0242ac130003" />
+<resource>
+<MedicationStatement xmlns="http://hl7.org/fhir">
+  <id value="d6b888f6-9d07-11eb-a8b3-0242ac130003" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Medication_Statement_Administration_Instruction|1.0.0" />
+  </meta>
+  <status value="active" />
+  <medicationReference>
+    <reference value="urn:uuid:846a5feb-840f-4232-8750-6f4cd40f3174" />
+  </medicationReference>
+  <subject>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </subject>
+  <dosage>
+    <text value="1*tgl p.o." />
+  </dosage>
+</MedicationStatement>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:292d932c-f62e-11eb-9a03-0242ac130003" />
+<resource>
+<MedicationStatement xmlns="http://hl7.org/fhir">
+  <id value="292d932c-f62e-11eb-9a03-0242ac130003" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Medication_Statement_Administration_Instruction|1.0.0" />
+  </meta>
+  <status value="active" />
+  <medicationReference>
+    <reference value="urn:uuid:c8854236-f62d-11eb-9a03-0242ac130003" />
+  </medicationReference>
+  <subject>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </subject>
+  <dosage>
+    <text value="nach INR Zielbereich INR 2,5-3" />
+  </dosage>
+</MedicationStatement>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:846a5feb-840f-4232-8750-6f4cd40f3174" />
+<resource>
+<Medication xmlns="http://hl7.org/fhir">
+  <id value="846a5feb-840f-4232-8750-6f4cd40f3174" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Medication|1.0.0" />
+  </meta>
+  <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_MIO_NFD_Medication_Name">
+    <valueString value="Delix" />
+  </extension>
+  <code>
+    <coding>
+      <system value="http://fhir.de/CodeSystem/ifa/pzn" />
+      <version value="0.2" />
+      <code value="01097987" />
+      <display value="DELIX 5 mg Tabletten" />
+    </coding>
+  </code>
+ 
+</Medication>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:c8854236-f62d-11eb-9a03-0242ac130003" />
+<resource>
+<Medication xmlns="http://hl7.org/fhir">
+  <id value="c8854236-f62d-11eb-9a03-0242ac130003" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Medication|1.0.0" />
+  </meta>
+  <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_MIO_NFD_Medication_Name">
+    <valueString value="Marcumar" />
+  </extension>
+  <code>
+    <coding>
+      <system value="http://fhir.de/CodeSystem/ifa/pzn" />
+      <version value="0.2" />
+      <code value="10269542" />
+      <display value="Phenprocoumon acis 3 mg Tabletten" />
+    </coding>
+  </code>
+  
+</Medication>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:a4aba0aa-9138-4621-a77c-8ec5b16e2282" />
+<resource>
+<Observation xmlns="http://hl7.org/fhir">
+  <id value="a4aba0aa-9138-4621-a77c-8ec5b16e2282" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Observation_Note|1.0.0" />
+  </meta>
+  <status value="final" />
+  <code>
+    <coding>
+      <system value="http://loinc.org" />
+      <version value="2.71" />
+      <code value="34878-9" />
+      <display value="Emergency medicine Note">
+        <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+          <extension url="content">
+            <valueString value="Hinweis" />
+          </extension>
+        </extension>
+      </display>
+    </coding>
+  </code>
+  <subject>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </subject>
+  <performer>
+    <reference value="urn:uuid:ebefcfca-7168-40e5-8918-7af38c7f10c9" />
+  </performer>
+  <valueString value="nähere Informationen zum Shunt im persönlichen Ordner (blau, im Schreibtisch d. Pat." />
+</Observation>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+<resource>
+<Patient xmlns="http://hl7.org/fhir">
+  <id value="e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Patient_NFD|1.0.0" />
+  </meta>
+  <identifier>
+    <!--GKV -->
+    <use value="official" />
+    <type>
+      <coding>
+        <system value="http://fhir.de/CodeSystem/identifier-type-de-basis" />
+        <code value="GKV" />
+		<display value="Gesetzliche Krankenversicherung" />
+      </coding>
+    </type>
+    <system value="http://fhir.de/NamingSystem/gkv/kvid-10" />
+    <value value="P234567890" />
+  </identifier>
+  <name>
+    <use value="official" />
+    <text value="Prof. Dr. Franz Schneckenröder" />
+    <family value="Schneckenröder">
+      
+      <extension url="http://hl7.org/fhir/StructureDefinition/humanname-own-name">
+        <valueString value="Schneckenröder" />
+      </extension>
+     
+    </family>
+    <given value="Ludger" />
+	<prefix value="Prof. Dr.">
+		<extension url="http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier">
+        <valueCode value="AC" />
+      </extension>
+	</prefix>
+  </name>
+  <telecom>
+    <system value="phone">
+      <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+        <extension url="content">
+          <valueString value="Telefonnummer" />
+        </extension>
+      </extension>
+    </system>
+    <value value="012345678901" />
+  </telecom>
+  <gender value="male" />
+  <birthDate value="1941-11-11" />
+  <contact>
+	<relationship>
+		<coding>
+			<system value="http://terminology.hl7.org/CodeSystem/v2-0131" />
+			<version value="2.9" />
+			<code value="C" />
+			<display value="Emergency Contact" >
+				<extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+					<extension url="content">
+						<valueString value="Ansprechpartner in Notfällen" />
+					</extension>
+				</extension>
+			</display>
+		</coding>
+		<text value="Notfallkontakt" />
+	</relationship>
+	<name>
+		<family value="Meyer" />
+		<given value="Marta" />
+	</name>
+	<telecom>
+    <system value="phone">
+      <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+        <extension url="content">
+          <valueString value="Telefonnummer" />
+        </extension>
+      </extension>
+    </system>
+    <value value="09876543210" />
+  </telecom>
+  </contact>
+</Patient>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:d0117f4a-685c-4659-aa94-14e3514bc86b" />
+<resource>
+<Practitioner xmlns="http://hl7.org/fhir">
+  <id value="d0117f4a-685c-4659-aa94-14e3514bc86b" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Practitioner|1.0.0" />
+  </meta>
+  <name>
+    <use value="official" />
+    <text value="Dr. T. Hausarzt" />
+    <family value="Hausarzt">
+      
+      <extension url="http://hl7.org/fhir/StructureDefinition/humanname-own-name">
+        <valueString value="Hausarzt" />
+      </extension>
+     
+    </family>
+    <given value="T." />
+    <prefix value="Dr.">
+      <extension url="http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier">
+        <valueCode value="AC" />
+      </extension>
+    </prefix>
+  </name>
+  <telecom>
+    <system value="phone">
+      <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+        <extension url="content">
+          <valueString value="Telefonnummer" />
+        </extension>
+      </extension>
+    </system>
+    <value value="0123456789" />
+  </telecom>
+  
+</Practitioner>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:b99a6afc-aedb-4c1a-9433-589eb967c680" />
+<resource>
+<Practitioner xmlns="http://hl7.org/fhir">
+  <id value="b99a6afc-aedb-4c1a-9433-589eb967c680" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Practitioner_Physician|1.0.0" />
+  </meta>
+  <name>
+    <use value="official" />
+    <text value="Dr. T. Hausarzt" />
+    <family value="Hausarzt">
+      
+      <extension url="http://hl7.org/fhir/StructureDefinition/humanname-own-name">
+        <valueString value="Hausarzt" />
+      </extension>
+     
+    </family>
+    <given value="T." />
+    <prefix value="Dr.">
+      <extension url="http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier">
+        <valueCode value="AC" />
+      </extension>
+    </prefix>
+  </name>
+   <address>
+		<type value="both" />
+		<city value="Berlin" />
+	</address>
+</Practitioner>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:464ee2ce-24f3-4319-934b-b0b994bf9aad" />
+<resource>
+<Procedure xmlns="http://hl7.org/fhir">
+  <id value="464ee2ce-24f3-4319-934b-b0b994bf9aad" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Procedure|1.0.0" />
+  </meta>
+  <status value="completed">
+	<extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+		<extension url="content">
+			<valueString value="Zustand nach" />
+		</extension>
+	</extension>
+  </status>
+  <code>
+    <text value="Shuntimplantation" />
+  </code>
+  <subject>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </subject>
+  <performedDateTime value="2000-02-02" />
+</Procedure>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:bd1e4596-df3a-11eb-ba80-0242ac130004" />
+<resource>
+<Observation xmlns="http://hl7.org/fhir">
+  <id value="bd1e4596-df3a-11eb-ba80-0242ac130004" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Observation_Voluntary_Additional_Information|1.0.0" />
+  </meta>
+  <status value="final" />
+  <code>
+    <coding>
+      <system value="http://loinc.org" />
+      <version value="2.71" />
+      <code value="77599-9"/>
+      <display value="Additional documentation">
+        <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+          <extension url="content">
+            <valueString value="Freiwillige Zusatzinformationen" />
+          </extension>
+        </extension>
+      </display>
+    </coding>
+  </code>
+  <subject>
+    <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73" />
+  </subject>
+	<effectiveDateTime value="2009-12-10" />
+  <valueString value="Blutgruppe AB Rh neg." />
+</Observation>
+</resource>
+</entry>
+
+   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <entry>
+<fullUrl value="urn:uuid:ebefcfca-7168-40e5-8918-7af38c7f10c9" />
+<resource>
+  
+  <PractitionerRole xmlns="http://hl7.org/fhir">
+  <id value="ebefcfca-7168-40e5-8918-7af38c7f10c9" />
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Practitioner_Role_With_Organization|1.0.0" />
+  </meta>
+  <practitioner>
+    <reference value="urn:uuid:b99a6afc-aedb-4c1a-9433-589eb967c680" />
+  </practitioner>
+  <code>
+    <coding>
+      <system value="http://snomed.info/sct" />
+      <version value="http://snomed.info/sct/900000000000207008/version/20210731" />
+      <code value="158965000" />
+      <display value="Medical practitioner (occupation)">
+        <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+          <extension url="content">
+            <valueString value="Arzt" />
+          </extension>
+        </extension>
+      </display>
+    </coding>
+  </code>
+</PractitionerRole>
+</resource>
+</entry>
+</Bundle>

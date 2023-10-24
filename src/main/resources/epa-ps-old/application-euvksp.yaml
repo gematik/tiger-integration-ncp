@@ -1,0 +1,41 @@
+config:
+  path: ./config
+fm:
+  real: true
+  address: ksp.ltuzd.telematik-test
+  port: 443
+  protocol: https
+  basePath: kon16
+  basicAuthentication:
+    enabled: false
+    username: user1
+    password: SnV?:bTT+mUK
+  proxy:
+    enabled: false
+    address: 192.168.230.85
+    port: 3128
+gateway:
+  address: localhost
+  port: 9101
+logging:
+  level:
+    de.gematik.titus.epa: INFO
+    org.apache.cxf.services: INFO
+# The server port is set in the tiger.yaml, because we need to know it there as well
+server:
+  port: 9116
+  ssl:
+    enabled: false
+management:
+  server:
+    port: 8116
+aktor:
+  client:
+    ssl:
+      enabled: true
+  sd: true
+  testData:
+    mandantId: EUV_Leistungserbringer_01
+    worplaceId: EUV_Arbeitsplatz_01
+    clientSystemId: EUV_EPA-PS_01
+    user: user0002
