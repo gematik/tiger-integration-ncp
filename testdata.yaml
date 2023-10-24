@@ -1,0 +1,113 @@
+epka:
+  templates:
+    default: classpath:testdata/epka_mio_default.xml
+patients:
+  - name:
+      titles: Freifrau
+      givenNames: Andrea
+      lastNames: von Unbedeutend
+    kvnr: X102944013
+    birthDate: "1973-11-13"
+  - name:
+      titles: Graf
+      givenNames: Günther Julian Franz
+      lastNames: BruserTEST-ONLY
+    kvnr: X110462177
+    birthDate: "1949-04-17"
+  - name:
+      titles: Prof. Dr.
+      givenNames: Felicitas Anna Julia
+      lastNames: ÐoriaTEST-ONLY
+    kvnr: X110405394
+    birthDate: "1967-06-30"
+  - name:
+      titles: Dr.
+      givenNames: Elisabeth Leonie-Marie
+      lastNames: DômbrowskiTEST-ONLY
+    kvnr: X110425143
+    birthDate: "1989-11-21"
+  - name:
+      givenNames: Aphrodite Freifrau
+      lastNames: Stauffenbëërg-KleinschmidtTEST-ONLY
+    kvnr: X110400595
+    birthDate: "1943-01-05"
+  - name:
+      titles: Prof. Dr.
+      givenNames: Dörthe Tanja S. L.
+      lastNames: Gräfin ØrstedTEST-ONLY
+    kvnr: X110487636
+    birthDate: "1943-01-05"
+  - name:
+      givenNames: Heide Franziska Heike D.-M.
+      lastNames: Freifrau WärkelsheimTEST-ONLY
+    kvnr: X110426931
+    birthDate: "1963-10-14"
+  - name:
+      givenNames: Petra
+      lastNames: Rot
+    kvnr: X114428538
+    birthDate: "1935-06-22"
+  - # Aktenkonto mit Status Dismissed erforderlich
+    # Muss im Rahmen eines Connectathons vorbereitet und konfiguriert
+    name:
+      givenNames: Franziska
+      lastNames: Musterfrau
+    kvnr: X000000000
+    birthDate: "1992-08-04"
+  - # Aktenkonto mit Status Registered erforderlich
+    # Der Wert birthDate spielt hier keine Rolle
+    name:
+      titles: Freiherr
+      givenNames: Franz
+      lastNames: von Nirgendwo
+    kvnr: X000000000
+    birthDate: "1955-01-01"
+practitioners:
+  eu:
+    - name: van der Meer
+      country: Netherlands
+      profileName: default
+    - name: Dr. Baumgartner
+      country: Austria
+      profileName: default
+    - name: Prof. Chevalier
+      country: France
+      profileName: default
+recordsystems:
+  ibm:
+    - X110405394
+  rise:
+    - X110462177
+    - X110426931
+  xtension:
+    - X110400595
+    - X110425143
+konnektor:
+  Koco:
+    - https://ksp.ltuzd.telematik-test/kon18/
+  Rise:
+    - https://ksp.ltuzd.telematik-test/kon16/
+  Secunet:
+    - https://ksp.ltuzd.telematik-test/kon17/
+
+profiles:
+  default:
+    trcProfileName: trcDefault
+    idaProfileName: idaDefault
+config:
+  names:
+    titles:
+      - "Dr."
+      - "Prof."
+      - "Graf"
+      - "Gräfin"
+      - "Freifrau"
+      - "Freiherr"
+    prefixes:
+      - "von"
+      - "zu"
+      - "Freifrau"
+      - "Freiherr"
+      - "Graf"
+      - "Gräfin"
+  doNotFail: false

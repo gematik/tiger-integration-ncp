@@ -1,0 +1,13 @@
+epafdv:
+  jarPath: target/externalJars
+  configDir: /bin/epa-modul/config
+  isStarted: true
+epaps:
+  jarPath: target/externalJars
+  resourcesPath: /dev/tiger-integration-ncp/src/main/resources/epa-ps
+  configDir: /bin/epa-modul/config
+  isStarted: false
+ncpeh:
+  jarPath: target/externalJars
+  isStarted: false
+  inDocker: false

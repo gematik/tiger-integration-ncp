@@ -1,0 +1,10 @@
+/target/
+/.idea/
+**/logs
+*.iml
+**/*.jar
+
+*.jenkinsfile
+README_INTERNAL.md
+
+
