@@ -22,7 +22,7 @@
         <version.mockito>5.4.0</version.mockito>
         <tiger.version>2.1.6</tiger.version>
         <epa-fdv.version>2.8.11</epa-fdv.version>
-        <epa-ps.version>1.2.0</epa-ps.version>
+        <epa-ps.version>1.2.1</epa-ps.version>
         <lib-ihe-xds.version>1.0.3</lib-ihe-xds.version>
         <ncpeh-simulation-api.version>1.5.0</ncpeh-simulation-api.version>
         <local.config.default>localConfigDefault</local.config.default>
