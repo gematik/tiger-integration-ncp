@@ -21,10 +21,10 @@
         <junit.version>5.9.3</junit.version>
         <version.mockito>5.4.0</version.mockito>
         <tiger.version>2.1.6</tiger.version>
-        <epa-fdv.version>2.8.11-726</epa-fdv.version>
-        <epa-ps.version>1.2.0-42</epa-ps.version>
-        <lib-ihe-xds.version>1.0.3-82</lib-ihe-xds.version>
-        <ncpeh-simulation-api.version>1.5.1-46</ncpeh-simulation-api.version>
+        <epa-fdv.version>2.8.11</epa-fdv.version>
+        <epa-ps.version>1.2.0</epa-ps.version>
+        <lib-ihe-xds.version>1.0.3</lib-ihe-xds.version>
+        <ncpeh-simulation-api.version>1.5.0</ncpeh-simulation-api.version>
         <local.config.default>localConfigDefault</local.config.default>
         <resources.folder>src/main/resources</resources.folder>
         <resources-not-in-jar.folder>not-in-jar</resources-not-in-jar.folder>
