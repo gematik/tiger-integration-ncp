@@ -381,13 +381,13 @@
     </profiles>
      <scm>
         <url>${project.url}</url>
-        <connection>scm:git:git://github.com/gematik/epa-ps-sim.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:gematik/epa-ps-sim.git</developerConnection>
+        <connection>scm:git:git://github.com/gematik/tiger-integration-ncp.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:gematik/tiger-integration-ncp.git</developerConnection>
     </scm>
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/gematik/epa-ps-sim/issues</url>
+        <url>https://github.com/gematik/tiger-integration-ncp/issues</url>
     </issueManagement>
 
     <organization>
