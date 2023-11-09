@@ -7,6 +7,9 @@
     <artifactId>tiger-integration-ncp</artifactId>
     <version>1.5.2</version>
     <packaging>jar</packaging>
+    <name>Projectname</name>
+    <description>Project for tiger based testcase implementations for testing the german NCPeH</description>
+    <url>${project.url}</url>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
