@@ -52,20 +52,6 @@ Five feature files cover certain aspects of this feature:
 
 Before executing the first test case be sure to have run the resources goal of maven, e.g. ```mvn process-resources```
 
-
-## Development
-
-* Default-Branch is Development_1.5
-* No direct pushing on the Development Branch is permitted
-* Instead, create a feature branch, push it and create a merge request for merging to the Development branch.
-* Before pushing, always run a maven build.
-  * The Google Code Formatter Maven Plugin is used and all new code should be formatted, before first checkin,
-    so "pseudo" changes, which just stem from changed code formatting, are avoided.
-* For information, about Tiger and testcase implementation using it, consult the [Tiger User Manual](https://gematik.github.io/app-Tiger/Tiger-User-Manual.html)
-or get your hands on the [Earn your stripes](https://wiki.gematik.de/display/PTTS/Earn+your+stripes+-+Tiger+Workshop) workshop.
-* Features and Scenarios can be excluded from test execution in Maven by adding the `@Ignore` annotation above them
-* To include a scenario into the integration tests run in Jenkins build jobs tag it with the `@CI` annotation
-
 ## Testdata description
 
 Some test data will be generated during test progress and some data have to be prepared before running the scenarios (static data).
@@ -308,21 +294,6 @@ Therefore, some in depth explanations are expedient:
     * Changing it won't make any difference, except in log messages, but it must contain a hostname conform to URL requirements
   * The property `basePath` defines the path part of the test components address under which the service endpoints are exposed.
     * Its value is application specific and thus should only need adjustment, if a different implementation is used for a test component.
-
-
-## gematik internal Links
-
-- [Project in Git](https://gitlab.prod.ccs.gematik.solutions/git/Testtools/tiger-integration-ncp)
-- [Jira Project](https://service.gematik.de/projects/NCP)
-- [Jenkins CI Job](https://jenkins.prod.ccs.gematik.solutions/job/tiger-integration-ncp-DP-CI/)
-- [Jenkins Release Job](https://jenkins.prod.ccs.gematik.solutions/job/tiger-integration-ncp-Release/)
-- [Builds on Nexus](https://nexus.prod.ccs.gematik.solutions/#browse/search/maven=attributes.maven2.artifactId%3Dtiger-integration-ncp:52384b79ab00c800daf387473628f047)
-- [Testkonzept NCPeH](https://wiki.gematik.de/display/PTEV/Testkonzept+NCPeH+1.0)
-- [Produktkonzept NCPeH](https://polarion.int.gematik.de/polarion/#/project/Mainline_OPB1/wiki/Euro%20Vision/gemPKPT_NCPeH_FD)
-- [Mock-Implementations](https://gitlab.prod.ccs.gematik.solutions/git/eurovision)
-- [Earn your stripes](https://wiki.gematik.de/display/PTTS/Earn+your+stripes+-+Tiger+Workshop)
-- [Tiger User Manual](https://gematik.github.io/app-Tiger/Tiger-User-Manual.html)
-- [Konnektor Service Plattform](https://wiki.gematik.de/display/TST/KSP+-+Konnektor+Service+Plattform)
 
 ## gematik external links
 
