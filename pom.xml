@@ -31,7 +31,7 @@
         <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <maven.javadoc.plugin.version>3.6.2</maven.javadoc.plugin.version>
-        <maven.nexusstaging.plugin.version>1.6.7</maven.nexusstaging.plugin.version>
+        <maven.nexusstaging.plugin.version>1.6.13</maven.nexusstaging.plugin.version>
         <local.config.default>localConfigDefault</local.config.default>
         <resources.folder>src/main/resources</resources.folder>
         <resources-not-in-jar.folder>not-in-jar</resources-not-in-jar.folder>
