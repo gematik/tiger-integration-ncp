@@ -7,14 +7,14 @@
     <artifactId>tiger-integration-ncp</artifactId>
     <version>1.5.2</version>
     <packaging>jar</packaging>
-    <name>Projectname</name>
+    <name>tiger-integration-ncp</name>
     <description>Project for tiger based testcase implementations for testing the german NCPeH</description>
     <url>https://github.com/gematik/tiger-integration-ncp</url>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <version.java>17</version.java>
-        <org.projectlombok.version>1.18.24</org.projectlombok.version>
+        <org.projectlombok.version>1.18.30</org.projectlombok.version>
         <jackson.version>2.15.2</jackson.version>
         <cxf.version>4.0.2</cxf.version>
         <jaxb.version>4.0.3</jaxb.version>
@@ -24,10 +24,14 @@
         <junit.version>5.9.3</junit.version>
         <version.mockito>5.4.0</version.mockito>
         <tiger.version>2.1.6</tiger.version>
-        <epa-fdv.version>2.8.11</epa-fdv.version>
-        <epa-ps.version>1.2.1</epa-ps.version>
-        <lib-ihe-xds.version>1.0.3</lib-ihe-xds.version>
-        <ncpeh-simulation-api.version>1.5.0</ncpeh-simulation-api.version>
+        <epa-fdv.version>2.8.11-726</epa-fdv.version>
+        <epa-ps.version>1.2.0-42</epa-ps.version>
+        <lib-ihe-xds.version>1.0.3-82</lib-ihe-xds.version>
+        <ncpeh-simulation-api.version>1.5.1-46</ncpeh-simulation-api.version>
+        <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
+        <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
+        <maven.javadoc.plugin.version>3.6.2</maven.javadoc.plugin.version>
+        <maven.nexusstaging.plugin.version>1.6.7</maven.nexusstaging.plugin.version>
         <local.config.default>localConfigDefault</local.config.default>
         <resources.folder>src/main/resources</resources.folder>
         <resources-not-in-jar.folder>not-in-jar</resources-not-in-jar.folder>
@@ -36,7 +40,8 @@
         <generated-not-in-jar.folder>${project.build.directory}/generated-not-in-jar</generated-not-in-jar.folder>
         <!-- Depdendencies from gematik parent-->
         <version.mockito>2.23.4</version.mockito>
-        <version.jacoco-maven-plugin>0.8.8</version.jacoco-maven-plugin>
+        <version.jacoco-maven-plugin>0.8.11</version.jacoco-maven-plugin>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
         <dependency>
@@ -136,6 +141,17 @@
         </resources>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <source>${version.java}</source>
+                    <target>${version.java}</target>
+                    <debug>true</debug>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${version.jacoco-maven-plugin}</version>
@@ -163,6 +179,37 @@
                     <execution>
                         <goals>
                             <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven.source.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <configuration>
+                    <doclint>none</doclint>
+                    <!--sourcepath>src/main/java</sourcepath-->
+                    <!-- falls javadoc via Jenkins nicht erstellt werden kann, die Zeile hinzufügen -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -357,7 +404,6 @@
                                     <goal>sign</goal>
                                 </goals>
                                 <configuration>
-                                    <!-- This is necessary for gpg to not try to use the pinentry programs -->
                                     <gpgArguments>
                                         <arg>--pinentry-mode</arg>
                                         <arg>loopback</arg>
@@ -369,12 +415,12 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
+                        <version>${maven.nexusstaging.plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
                             <stagingProgressTimeoutMinutes>20</stagingProgressTimeoutMinutes>
                         </configuration>
                     </plugin>
@@ -382,29 +428,25 @@
             </build>
         </profile>
     </profiles>
-     <scm>
+    <scm>
         <url>${project.url}</url>
         <connection>scm:git:git://github.com/gematik/tiger-integration-ncp.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:gematik/tiger-integration-ncp.git</developerConnection>
     </scm>
-
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/gematik/tiger-integration-ncp/issues</url>
     </issueManagement>
-
     <organization>
         <name>gematik GmbH</name>
         <url>https://www.gematik.de</url>
     </organization>
-
     <licenses>
         <license>
             <name>Apache License 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
-
     <developers>
         <developer>
             <name>gematik</name>
@@ -414,7 +456,6 @@
             <organizationUrl>https://www.gematik.de/</organizationUrl>
         </developer>
     </developers>
-
     <distributionManagement>
         <repository>
             <id>releases</id>
