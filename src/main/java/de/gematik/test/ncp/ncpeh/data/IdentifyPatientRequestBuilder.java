@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package de.gematik.test.ncp.ncpeh.data;
 
 import de.gematik.ncpeh.api.request.IdentifyPatientRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
@@ -26,18 +27,20 @@ import lombok.experimental.Accessors;
  * Note: Thus far only mandatory fields are set. Further fields might need to be added in the
  * future.
  */
+@EqualsAndHashCode(callSuper = true)
 @Accessors(fluent = true)
 @Data(staticConstructor = "newInstance")
-public class IdentifyPatientRequestBuilder extends RequestBaseBuilder<IdentifyPatientRequest> {
+public final class IdentifyPatientRequestBuilder
+    extends RequestBaseBuilder<IdentifyPatientRequest> {
 
-  private String accessCodeAssigningAuthority;
+  public static final String PSA_ACCESS_CODE_ASSIGNING_AUTHORITY = "1.2.276.0.76.4.298";
 
   public IdentifyPatientRequest build() {
     return new IdentifyPatientRequest(
         super.buildRequestBase(),
         super.buildPatientId(),
         accessCode(),
-        accessCodeAssigningAuthority,
+        PSA_ACCESS_CODE_ASSIGNING_AUTHORITY,
         null,
         null,
         null,

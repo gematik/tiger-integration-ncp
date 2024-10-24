@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import de.gematik.test.ncp.data.NcpehSimTestdataProfiles.NcpehSimTestdataProfile
 /**
  * Interface for the testdata to be used in generation of the requests for the three operations
  * {@link de.gematik.ncpeh.api.NcpehSimulatorApi#identifyPatient(IdentifyPatientRequest)}, {@link
- * de.gematik.ncpeh.api.NcpehSimulatorApi#findDocuments(FindDocumentsRequest)} & {@link
+ * de.gematik.ncpeh.api.NcpehSimulatorApi#findDocuments(FindDocumentsRequest)} and {@link
  * de.gematik.ncpeh.api.NcpehSimulatorApi#retrieveDocument(RetrieveDocumentRequest)} )}
  */
 @JsonDeserialize(as = NcpehSimTestdataProfileImpl.class)

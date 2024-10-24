@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,15 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class PsTestdata {
 
-  public static PutDocumentsRequestDTO createPutDocumentRequestForEPKA(String kvnr, byte[] epka) {
+  public static PutDocumentsRequestDTO createPutDocumentRequestForEPKA(
+      final String kvnr, final byte[] epka) {
     return createPutDocumentRequestForEPKA(kvnr, epka, createDocumentMetadata());
   }
 
   public static PutDocumentsRequestDTO createPutDocumentRequestForEPKA(
-      @NonNull String kvnr,
-      byte[] epka,
-      de.gematik.test.ncp.ps.epaps.data.DocumentMetadata documentMetadata) {
+      @NonNull final String kvnr,
+      final byte[] epka,
+      final de.gematik.test.ncp.ps.epaps.data.DocumentMetadata documentMetadata) {
     return new PutDocumentsRequestDTO(
         kvnr,
         List.of(
@@ -60,7 +61,7 @@ public final class PsTestdata {
    * @param code {@link CodeInterface} code for which to create the formatted String
    * @return the formatted String
    */
-  public static String createFindQueryValueString(@NonNull CodeInterface code) {
+  public static String createFindQueryValueString(@NonNull final CodeInterface code) {
     return "'" + code.getValue() + "^^" + code.getCodingScheme() + "'";
   }
 
@@ -71,7 +72,7 @@ public final class PsTestdata {
    * @param codes {@link CodeInterface} array - codes for which to create the formatted String
    * @return the formatted String
    */
-  public static String createFindQueryValueList(CodeInterface... codes) {
+  public static String createFindQueryValueList(final CodeInterface... codes) {
     return "("
         + Optional.ofNullable(codes).stream()
             .flatMap(Arrays::stream)

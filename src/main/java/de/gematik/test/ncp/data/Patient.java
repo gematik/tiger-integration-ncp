@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,22 +32,11 @@ public interface Patient {
 
   String accessCode();
 
-  default boolean samePerson(Patient o) {
+  default boolean samePerson(final Patient o) {
     return this.equals(o)
         || (Objects.nonNull(o)
             && name().equals(o.name())
             && kvnr().equals(o.kvnr())
             && birthDate().equals(o.birthDate()));
-  }
-
-  default String patientData() {
-    return new StringBuilder()
-        .append("Name: ")
-        .append(Objects.requireNonNullElse(name(), ""))
-        .append("; KVNR: ")
-        .append(Objects.requireNonNullElse(kvnr(), ""))
-        .append("; Birth Date: ")
-        .append(Objects.requireNonNullElse(birthDate(), ""))
-        .toString();
   }
 }

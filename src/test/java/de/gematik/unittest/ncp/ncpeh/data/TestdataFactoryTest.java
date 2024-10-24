@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import de.gematik.test.ncp.data.NcpehSimTestdataProfile;
 import de.gematik.test.ncp.data.Patient;
 import de.gematik.test.ncp.data.PatientImpl;
 import de.gematik.test.ncp.data.PersonName;
-import de.gematik.test.ncp.ncpeh.NcpehInterface.PatientSummaryLevel;
+import de.gematik.test.ncp.ncpeh.NcpehService.PatientSummaryLevel;
 import de.gematik.test.ncp.ncpeh.data.TestdataFactory;
 import de.gematik.unittest.testutil.TestUtils;
 import java.time.LocalDate;
@@ -57,7 +57,7 @@ class TestdataFactoryTest {
 
   @Test
   void buildStandardIdentifyPatientRequest() {
-    var result =
+    final var result =
         assertDoesNotThrow(
             () ->
                 TestdataFactory.buildStandardIdentifyPatientRequest(
@@ -68,7 +68,7 @@ class TestdataFactoryTest {
 
   @Test
   void buildStandardFindDocumentsRequest() {
-    var result =
+    final var result =
         assertDoesNotThrow(
             () ->
                 TestdataFactory.buildStandardFindDocumentsRequest(
@@ -79,9 +79,9 @@ class TestdataFactoryTest {
 
   @Test
   void buildStandardRetrieveDocumentRequest() {
-    var adhocQueryResponse = TestUtils.adhocQueryResponse();
+    final var adhocQueryResponse = TestUtils.adhocQueryResponse();
 
-    var retrieveDocRequest =
+    final var retrieveDocRequest =
         assertDoesNotThrow(
             () ->
                 TestdataFactory.buildStandardRetrieveDocumentRequest(
@@ -93,7 +93,7 @@ class TestdataFactoryTest {
 
     assertNotNull(retrieveDocRequest);
 
-    var metadata = ResponseUtils.toProxyFindResponse(adhocQueryResponse);
+    final var metadata = ResponseUtils.toProxyFindResponse(adhocQueryResponse);
     assertTrue(
         metadata.registryObjectLists().documentsMetadata().stream()
             .allMatch(

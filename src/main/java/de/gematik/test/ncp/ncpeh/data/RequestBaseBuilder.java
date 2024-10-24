@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.Builder;
 
 /**
  * Abstract base builder class to build the common elements of the different request types of the
- * {@link de.gematik.ncpeh.api.NcpehSimulatorApi}, which are {@link RequestBase} & {@link
+ * {@link de.gematik.ncpeh.api.NcpehSimulatorApi}, which are {@link RequestBase} and {@link
  * PatientId}.<br>
  * Warning: There is a caveat, when it comes to usage. The chained setters of this class, will
  * always return this class and not the actual builder class extending from this class. So order is
@@ -59,13 +59,12 @@ import org.apache.commons.lang3.builder.Builder;
 @Data
 public abstract class RequestBaseBuilder<R> implements Builder<R> {
 
+  public static final String KVNR_ASSIGNING_AUTHORITY = "1.2.276.0.76.3.1.580.147";
   private EuCountryCode euCountryCode;
 
   private String idaAssertionProfileName;
 
   private String kvnr;
-
-  private String oidAssigningAuthority;
 
   private String accessCode;
 
@@ -77,6 +76,6 @@ public abstract class RequestBaseBuilder<R> implements Builder<R> {
   }
 
   public PatientId buildPatientId() {
-    return new PatientId(kvnr, oidAssigningAuthority);
+    return new PatientId(kvnr, KVNR_ASSIGNING_AUTHORITY);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,45 +16,36 @@
 
 package de.gematik.test.ncp.ncpeh.client;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import de.gematik.ncpeh.api.NcpehSimulatorApi;
 import de.gematik.ncpeh.api.common.EuCountryCode;
 import de.gematik.test.ncp.ExternalServerConfig;
+import de.gematik.test.ncp.GeneralFactory;
 import de.gematik.test.ncp.data.Patient;
 import de.gematik.test.ncp.data.Testdata;
 import de.gematik.test.ncp.ncpeh.NcpehException;
-import de.gematik.test.ncp.ncpeh.NcpehInterface;
+import de.gematik.test.ncp.ncpeh.NcpehService;
 import de.gematik.test.ncp.ncpeh.client.dataobject.DataUtils;
 import de.gematik.test.ncp.ncpeh.client.dataobject.FindPatientSummaryDO;
 import de.gematik.test.ncp.ncpeh.client.dataobject.IdentifyPatientDO;
 import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryDO;
 import de.gematik.test.ncp.ncpeh.data.TestdataFactory;
-import de.gematik.test.ncp.util.Utils;
-import jakarta.ws.rs.core.MediaType;
 import java.net.URI;
-import java.time.LocalDate;
-import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.springframework.http.HttpStatus;
 
 /**
- * Implementation of the {@link NcpehInterface} using the NCPeH Trigger Interface ({@link
+ * Implementation of the {@link NcpehService} using the NCPeH Trigger Interface ({@link
  * NcpehSimulatorApi}) to trigger operations at an NCPeH server implementing the NCPeH Trigger
  * Interface.<br>
  */
 @Slf4j
 @RequiredArgsConstructor
-public class NcpehClientImpl implements NcpehInterface {
+public class NcpehClientImpl implements NcpehService {
 
   /**
    * Path to the info object of the NCPeH Trigger interface server<br>
@@ -67,7 +58,8 @@ public class NcpehClientImpl implements NcpehInterface {
 
   @Accessors(fluent = true)
   @Getter(lazy = true)
-  private final NcpehSimulatorApi clientProxy = initializeNcpehApiProxy();
+  private final NcpehSimulatorApi clientProxy =
+      GeneralFactory.createJAXRSClientProxy(NcpehSimulatorApi.class, config);
 
   @Override
   public Boolean ncpehIsUpAndRunning() {
@@ -79,10 +71,10 @@ public class NcpehClientImpl implements NcpehInterface {
 
   @Override
   public IdentifyPatientDO identifyPatient(
-      Patient patient, String testdataProfileName, String leiCountry) {
-    var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
+      final Patient patient, final String testdataProfileName, final String leiCountry) {
+    final var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
 
-    try (var response =
+    try (final var response =
         clientProxy()
             .identifyPatient(
                 TestdataFactory.buildStandardIdentifyPatientRequest(
@@ -99,10 +91,10 @@ public class NcpehClientImpl implements NcpehInterface {
 
   @Override
   public FindPatientSummaryDO findPatientSummary(
-      Patient patient, String testdataProfileName, String leiCountry) {
-    var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
+      final Patient patient, final String testdataProfileName, final String leiCountry) {
+    final var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
 
-    try (var response =
+    try (final var response =
         clientProxy()
             .findDocuments(
                 TestdataFactory.buildStandardFindDocumentsRequest(
@@ -118,14 +110,14 @@ public class NcpehClientImpl implements NcpehInterface {
 
   @Override
   public RetrievePatientSummaryDO retrievePatientSummary(
-      Patient patient,
-      String testdataProfileName,
-      String leiCountry,
-      AdhocQueryResponse metadata,
-      PatientSummaryLevel... patientSummaryLevels) {
-    var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
+      final Patient patient,
+      final String testdataProfileName,
+      final String leiCountry,
+      final AdhocQueryResponse metadata,
+      final PatientSummaryLevel... patientSummaryLevels) {
+    final var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
 
-    try (var response =
+    try (final var response =
         clientProxy()
             .retrieveDocument(
                 TestdataFactory.buildStandardRetrieveDocumentRequest(
@@ -143,27 +135,4 @@ public class NcpehClientImpl implements NcpehInterface {
           "retrievePatientSummary operation did not run successfully", response);
     }
   }
-
-  // region private
-
-  private NcpehSimulatorApi initializeNcpehApiProxy() {
-    var provider =
-        new JacksonJsonProvider()
-            .enable(SerializationFeature.INDENT_OUTPUT)
-            .enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING)
-            .enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
-
-    provider
-        .locateMapper(LocalDate.class, MediaType.APPLICATION_JSON_TYPE)
-        .registerModule(new JavaTimeModule())
-        .setSerializationInclusion(Include.NON_NULL);
-
-    assert config != null;
-    return JAXRSClientFactory.create(
-        Utils.buildUri(config.getHostname(), config.getBasePath()).toString(),
-        NcpehSimulatorApi.class,
-        List.of(provider));
-  }
-
-  // endregion private
 }

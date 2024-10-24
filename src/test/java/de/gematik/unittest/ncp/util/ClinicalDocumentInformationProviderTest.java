@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ class ClinicalDocumentInformationProviderTest {
 
   @Test
   void kvnrFromCDA3DocumentTest() {
-    var kvnr =
+    final var kvnr =
         assertDoesNotThrow(
             () -> ClinicalDocumentInformationProvider.kvnrFromCDA3Document(clinicalDocument));
 
@@ -42,17 +42,17 @@ class ClinicalDocumentInformationProviderTest {
 
   @Test
   void nameFromCDA3DocumentTest() {
-    var name =
+    final var name =
         assertDoesNotThrow(
             () -> ClinicalDocumentInformationProvider.nameFromCDA3Document(clinicalDocument));
 
     assertNotNull(name);
-    assertFalse(name.isEmpty());
+    assertFalse(name.toString().isEmpty());
   }
 
   @Test
   void birthDataFromCDA3DocumentTest() {
-    var birthDate =
+    final var birthDate =
         assertDoesNotThrow(
             () -> ClinicalDocumentInformationProvider.birthDataFromCDA3Document(clinicalDocument));
 

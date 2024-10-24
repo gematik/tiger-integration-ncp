@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package de.gematik.unittest.ncp.ncpeh.data;
 
+import static de.gematik.test.ncp.ncpeh.data.RetrieveDocumentRequestBuilder.NCPEH_HCID;
 import static org.junit.jupiter.api.Assertions.*;
 
 import de.gematik.ncpeh.api.common.EuCountryCode;
@@ -26,8 +27,6 @@ class RetrieveDocumentRequestBuilderTest {
 
   public static final String REPO_UNIQUE_ID = "312.6.23.90.3.0";
 
-  public static final String HOME_COMMUNITY_ID = "312.6.23.90.3.1";
-
   public static final String DOC_UNIQUE_ID = "1.34.56.356.5464.9";
 
   public static final String SECOND_DOC_UNIQUE_ID = "1.34.56.356.5464.8";
@@ -36,10 +35,9 @@ class RetrieveDocumentRequestBuilderTest {
 
   @Test
   void build() {
-    var tstObj =
+    final var tstObj =
         RetrieveDocumentRequestBuilder.newInstance()
             .repositoryUniqueId(REPO_UNIQUE_ID)
-            .homeCommunityId(HOME_COMMUNITY_ID)
             .documentUniqueId(DOC_UNIQUE_ID)
             .documentUniqueId(SECOND_DOC_UNIQUE_ID)
             .trcAssertionProfileName(TRC_APN)
@@ -48,16 +46,14 @@ class RetrieveDocumentRequestBuilderTest {
             .kvnr("X124250984")
             .accessCode("ABC123");
 
-    var result = assertDoesNotThrow(tstObj::build, "Method build threw exception");
+    final var result = assertDoesNotThrow(tstObj::build, "Method build threw exception");
 
     assertEquals(
         REPO_UNIQUE_ID,
         result.repositoryUniqueId(),
         "Repository unique ID does not have the expected value");
     assertEquals(
-        HOME_COMMUNITY_ID,
-        result.homeCommunityId(),
-        "Home community ID does not have the expected value");
+        NCPEH_HCID, result.homeCommunityId(), "Home community ID does not have the expected value");
     assertEquals(
         SECOND_DOC_UNIQUE_ID,
         result.documentUniqueId(),

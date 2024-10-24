@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ public class TestUtils {
   @SneakyThrows
   public static String readFileContentFromResource(final String filePath) {
     Objects.requireNonNull(filePath, "The path of the file must not be null!");
-    var file = FileUtils.getFile(filePath);
+    final var file = FileUtils.getFile(filePath);
     return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
   }
 
@@ -112,7 +112,7 @@ public class TestUtils {
   }
 
   private static PRPAIN201306UV02 createUnknownKvnrResponseContent() {
-    var result =
+    final var result =
         DataUtils.convertResponseDataForIdentifyPatient(
                 Response.ok(identifyPatientResponse()).build())
             .ncpehFdResponseContent();
@@ -125,20 +125,20 @@ public class TestUtils {
         .map(PRPAIN201306UV02MFMIMT700711UV01RegistrationEvent::getSubject1)
         .forEach(subj1 -> subj1.setPatient(null));
 
-    var cd = new CD();
+    final var cd = new CD();
     cd.setCode(UNKNOWN_KVNR_RESPONSE_REASON);
     cd.setCodeSystem(DataUtils.CODE_SYSTEM_XCPD_ERROR);
 
-    var detectedIssueMgmt = new MCAIMT900001UV01DetectedIssueManagement();
+    final var detectedIssueMgmt = new MCAIMT900001UV01DetectedIssueManagement();
     detectedIssueMgmt.setCode(cd);
 
-    var sourceOf = new MCAIMT900001UV01SourceOf();
+    final var sourceOf = new MCAIMT900001UV01SourceOf();
     sourceOf.setDetectedIssueManagement(detectedIssueMgmt);
 
-    var detectedIssueEvent = new MCAIMT900001UV01DetectedIssueEvent();
+    final var detectedIssueEvent = new MCAIMT900001UV01DetectedIssueEvent();
     detectedIssueEvent.getMitigatedBy().add(sourceOf);
 
-    var reason = new MFMIMT700711UV01Reason();
+    final var reason = new MFMIMT700711UV01Reason();
     reason.setDetectedIssueEvent(detectedIssueEvent);
 
     result.getControlActProcess().getReasonOf().add(reason);

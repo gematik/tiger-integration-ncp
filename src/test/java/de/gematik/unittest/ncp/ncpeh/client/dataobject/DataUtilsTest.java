@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import de.gematik.ncpeh.api.common.EuCountryCode;
 import de.gematik.test.ncp.data.Patient;
 import de.gematik.test.ncp.data.PatientImpl;
 import de.gematik.test.ncp.data.PersonName;
-import de.gematik.test.ncp.ncpeh.NcpehInterface.PatientSummaryLevel;
 import de.gematik.test.ncp.ncpeh.NcpehProvider;
+import de.gematik.test.ncp.ncpeh.NcpehService.PatientSummaryLevel;
 import de.gematik.test.ncp.ncpeh.client.dataobject.DataUtils;
 import de.gematik.test.ncp.ncpeh.client.dataobject.NcpehInterfaceResponse;
 import de.gematik.unittest.testutil.NcpehClientImplForUnittest;
@@ -51,11 +51,11 @@ class DataUtilsTest {
 
   @Test
   void readPatientDataFromIdentifyPatientResponseTest() {
-    var testdata =
+    final var testdata =
         new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig())
             .identifyPatient(PATIENT, "default", COUNTRY);
 
-    var testResult =
+    final var testResult =
         assertDoesNotThrow(
             () ->
                 DataUtils.readPatientDataFromIdentifyPatientResponse(
@@ -67,7 +67,7 @@ class DataUtilsTest {
 
   @Test
   void readPatientDataFromIdentifyPatientResponseTestBadCase() {
-    var testdata =
+    final var testdata =
         new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig())
             .identifyPatient(PATIENT, "default", COUNTRY)
             .ncpehFdResponseContent();
@@ -82,7 +82,7 @@ class DataUtilsTest {
         .get(0)
         .setExtension(null);
 
-    var testResult =
+    final var testResult =
         assertThrows(
             IllegalArgumentException.class,
             () -> DataUtils.readPatientDataFromIdentifyPatientResponse(testdata));
@@ -92,7 +92,7 @@ class DataUtilsTest {
 
   @Test
   void readPatientDataFromIdentifyPatientResponseNoPatientTest() {
-    var testdata =
+    final var testdata =
         new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig())
             .identifyPatient(PATIENT, "default", COUNTRY)
             .ncpehFdResponseContent();
@@ -104,7 +104,7 @@ class DataUtilsTest {
         .getSubject1()
         .setPatient(null);
 
-    var testResult =
+    final var testResult =
         assertThrows(
             IllegalArgumentException.class,
             () -> DataUtils.readPatientDataFromIdentifyPatientResponse(testdata));
@@ -114,7 +114,7 @@ class DataUtilsTest {
 
   @Test
   void readPatientDataFromIdentifyPatientResponseTwoPatientTest() {
-    var testdata =
+    final var testdata =
         new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig())
             .identifyPatient(PATIENT, "default", COUNTRY)
             .ncpehFdResponseContent();
@@ -123,7 +123,7 @@ class DataUtilsTest {
         .getSubject()
         .add(testdata.getControlActProcess().getSubject().get(0));
 
-    var testResult =
+    final var testResult =
         assertThrows(
             IllegalArgumentException.class,
             () -> DataUtils.readPatientDataFromIdentifyPatientResponse(testdata));
@@ -133,9 +133,9 @@ class DataUtilsTest {
 
   @Test
   void readReasonEncodingFromIdentifyPatientResponseTest() {
-    var testdata = TestUtils.unknownKvnrResponseContent();
+    final var testdata = TestUtils.unknownKvnrResponseContent();
 
-    var result =
+    final var result =
         assertDoesNotThrow(() -> DataUtils.readReasonEncodingFromIdentifyPatientResponse(testdata));
 
     assertNotNull(result);
@@ -145,7 +145,7 @@ class DataUtilsTest {
 
   @Test
   void readPatientSummaryLvl3Test() {
-    var testdata =
+    final var testdata =
         new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig())
             .retrievePatientSummary(
                 PATIENT,
@@ -154,12 +154,12 @@ class DataUtilsTest {
                 TestUtils.adhocQueryResponse(),
                 PatientSummaryLevel.LEVEL_3);
 
-    var testResult = assertDoesNotThrow(() -> DataUtils.readPatientSummaryLvl3(testdata));
+    final var testResult = assertDoesNotThrow(() -> DataUtils.readPatientSummaryLvl3(testdata));
 
     assertNotNull(testResult);
     assertFalse(testResult.getRecordTarget().isEmpty());
 
-    var recordTarget = testResult.getRecordTarget().get(0);
+    final var recordTarget = testResult.getRecordTarget().get(0);
     assertNotNull(recordTarget.getPatientRole());
     assertNotNull(recordTarget.getPatientRole().getPatient());
     assertFalse(recordTarget.getPatientRole().getElementId().isEmpty());
@@ -167,7 +167,7 @@ class DataUtilsTest {
 
   @Test
   void readPatientSummaryLvl1Test() {
-    var testdata =
+    final var testdata =
         new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig())
             .retrievePatientSummary(
                 PATIENT,
@@ -176,7 +176,7 @@ class DataUtilsTest {
                 TestUtils.adhocQueryResponse(),
                 PatientSummaryLevel.LEVEL_1);
 
-    var testResult = assertDoesNotThrow(() -> DataUtils.readPatientSummaryLvl1(testdata));
+    final var testResult = assertDoesNotThrow(() -> DataUtils.readPatientSummaryLvl1(testdata));
 
     assertNotNull(testResult);
     assertNotNull(testResult.getContent());
@@ -185,7 +185,7 @@ class DataUtilsTest {
 
   @Test
   void writePatientSummaryToLocalFile() {
-    var testdata =
+    final var testdata =
         new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig())
             .retrievePatientSummary(
                 PATIENT,
@@ -194,13 +194,13 @@ class DataUtilsTest {
                 TestUtils.adhocQueryResponse(),
                 PatientSummaryLevel.LEVEL_1);
 
-    var cda1Document = DataUtils.readPatientSummaryLvl1(testdata);
+    final var cda1Document = DataUtils.readPatientSummaryLvl1(testdata);
 
-    var filePath = DataUtils.writePatientSummaryToLocalFile(PATIENT, cda1Document);
+    final var filePath = DataUtils.writePatientSummaryToLocalFile(PATIENT, cda1Document);
 
     assertNotNull(filePath);
 
-    var tempFile = new File(filePath);
+    final var tempFile = new File(filePath);
     tempFile.deleteOnExit();
     assertTrue(tempFile.exists());
     assertTrue(tempFile.isFile());
@@ -210,9 +210,9 @@ class DataUtilsTest {
 
   @Test
   void convertResponseDataForIdentifyPatient() {
-    var response = Response.ok(TestUtils.identifyPatientResponse()).build();
+    final var response = Response.ok(TestUtils.identifyPatientResponse()).build();
 
-    var result =
+    final var result =
         assertDoesNotThrow(() -> DataUtils.convertResponseDataForIdentifyPatient(response));
 
     assertNcpehInterfaceResponse(result);
@@ -220,9 +220,9 @@ class DataUtilsTest {
 
   @Test
   void convertResponseDataForFindPatientSummary() {
-    var response = Response.ok(TestUtils.findDocumentResponse()).build();
+    final var response = Response.ok(TestUtils.findDocumentResponse()).build();
 
-    var result =
+    final var result =
         assertDoesNotThrow(() -> DataUtils.convertResponseDataForFindPatientSummary(response));
 
     assertNcpehInterfaceResponse(result);
@@ -230,15 +230,16 @@ class DataUtilsTest {
 
   @Test
   void convertResponseDataForRetrievePatientSummary() {
-    var response = Response.ok(TestUtils.retrieveDocumentResponse()).build();
+    final var response = Response.ok(TestUtils.retrieveDocumentResponse()).build();
 
-    var result =
+    final var result =
         assertDoesNotThrow(() -> DataUtils.convertResponseDataForRetrievePatientSummary(response));
 
     assertNcpehInterfaceResponse(result);
   }
 
-  private void assertNcpehInterfaceResponse(NcpehInterfaceResponse<?, ?> ncpehInterfaceResponse) {
+  private void assertNcpehInterfaceResponse(
+      final NcpehInterfaceResponse<?, ?> ncpehInterfaceResponse) {
     assertNotNull(ncpehInterfaceResponse);
     assertEquals(HttpStatus.OK, ncpehInterfaceResponse.ncpehResponseStatus());
 

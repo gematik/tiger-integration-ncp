@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ class PsExceptionTest {
 
   @Test
   void psExceptionNoOp() {
-    var tstObj = new PsException(responseTestdata.statusMessage());
+    final var tstObj = new PsException(responseTestdata.statusMessage());
     assertTrue(
         tstObj.getMessage().contains(responseTestdata.statusMessage()),
         "response status message is not part of the PsException message");
@@ -39,7 +39,7 @@ class PsExceptionTest {
 
   @Test
   void psExceptionOp() {
-    var tstObj = new PsException(responseTestdata.statusMessage(), operationTestdata);
+    final var tstObj = new PsException(responseTestdata.statusMessage(), operationTestdata);
     assertTrue(
         tstObj.getMessage().contains(responseTestdata.statusMessage()),
         "response status message is not part of the PsException message");

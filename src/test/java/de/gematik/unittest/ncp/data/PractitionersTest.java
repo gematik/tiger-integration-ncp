@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package de.gematik.unittest.ncp.data;
 import static org.junit.jupiter.api.Assertions.*;
 
 import de.gematik.test.ncp.data.Practitioner;
+import de.gematik.test.ncp.data.PractitionerImpl;
 import de.gematik.test.ncp.data.Practitioners;
-import de.gematik.test.ncp.screenplay.LeiActor;
 import de.gematik.test.tiger.common.config.TigerConfigurationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,8 +28,9 @@ import org.junit.jupiter.api.Test;
 class PractitionersTest {
 
   private static final String name = "Dr. Dude Mate";
+  private static final String country = "DE";
 
-  private static final Practitioner practitioner = new LeiActor(name);
+  private static final Practitioner practitioner = new PractitionerImpl(name, country, "profile");
 
   private final Practitioners tstObj = new Practitioners();
 
@@ -39,14 +40,40 @@ class PractitionersTest {
   }
 
   @Test
-  void findByName() {
-    var tstResult = assertDoesNotThrow(() -> tstObj.findByName(name));
+  void testFindByName() {
+    // Arrange
+    // Act
+    final var tstResult = assertDoesNotThrow(() -> tstObj.findByName(name));
+
+    // Assert
     assertNotNull(tstResult);
     assertEquals(practitioner, tstResult);
   }
 
   @Test
-  void findByNameFail() {
-    assertThrows(TigerConfigurationException.class, () -> tstObj.findByName(name + "n"));
+  void testFindByNameFail() {
+    // Arrange
+    // Act
+    // Assert
+    assertThrows(TigerConfigurationException.class, () -> tstObj.findByName("NONAME"));
+  }
+
+  @Test
+  void testFindByCountry() {
+    // Arrange
+    // Act
+    final var tstResult = assertDoesNotThrow(() -> tstObj.findByCountry(country));
+
+    // Assert
+    assertNotNull(tstResult);
+    assertEquals(practitioner, tstResult);
+  }
+
+  @Test
+  void testFindByCountryFail() {
+    // Arrange
+    // Act
+    // Assert
+    assertThrows(TigerConfigurationException.class, () -> tstObj.findByCountry("CA"));
   }
 }

@@ -3,8 +3,9 @@
 **/logs
 *.iml
 **/*.jar
+/reports/
 
 *.jenkinsfile
-README_INTERNAL.md
-
+README.md
+src/main/resources/epa-ps/**
 

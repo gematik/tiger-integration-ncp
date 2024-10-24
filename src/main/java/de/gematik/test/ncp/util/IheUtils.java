@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import de.gematik.epa.conversion.internal.response.RegistryObjectListMapper;
 import de.gematik.epa.ihe.model.document.DocumentMetadata;
 import de.gematik.epa.ihe.model.response.ProxyFindResponse;
 import de.gematik.epa.ihe.model.response.RegistryObjectLists;
-import de.gematik.test.ncp.ncpeh.NcpehInterface.PatientSummaryLevel;
+import de.gematik.test.ncp.ncpeh.NcpehService.PatientSummaryLevel;
 import jakarta.xml.bind.JAXBElement;
 import java.util.Collection;
 import java.util.Optional;
@@ -41,7 +41,7 @@ public class IheUtils {
       "urn:oasis:names:tc:ebxml-regrep:StatusType:Approved";
 
   public static DocumentMetadata readDocumentMetadataFromAdhocQueryResponse(
-      AdhocQueryResponse adhocQueryResponse, Integer cdaLevel) {
+      final AdhocQueryResponse adhocQueryResponse, final Integer cdaLevel) {
     return Optional.ofNullable(adhocQueryResponse)
         .map(ResponseUtils::toProxyFindResponse)
         .map(ProxyFindResponse::registryObjectLists)
@@ -57,7 +57,7 @@ public class IheUtils {
   }
 
   public static ExtrinsicObjectType retrieveExtrinsicObjectToCdaLevel(
-      AdhocQueryResponse adhocQueryResponse, Integer cdaLevel) {
+      final AdhocQueryResponse adhocQueryResponse, final Integer cdaLevel) {
     return Optional.ofNullable(adhocQueryResponse)
         .map(AdhocQueryResponse::getRegistryObjectList)
         .map(RegistryObjectListType::getIdentifiable)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ class FindDocumentsRequestBuilderTest {
 
   @Test
   void build() {
-    var tstObj =
+    final var tstObj =
         FindDocumentsRequestBuilder.newInstance()
             .trcAssertionProfileName(TRC_APN)
             .euCountryCode(EuCountryCode.AUSTRIA)
@@ -36,7 +36,7 @@ class FindDocumentsRequestBuilderTest {
             .kvnr("X123456789")
             .accessCode("ABC123");
 
-    var result = assertDoesNotThrow(tstObj::build, "Method build threw exception");
+    final var result = assertDoesNotThrow(tstObj::build, "Method build threw exception");
 
     assertEquals(
         TRC_APN,

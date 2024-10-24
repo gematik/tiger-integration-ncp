@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,9 +45,10 @@ class NcpehClientImplTest {
 
   @Test
   void identifyPatient() {
-    var tstObj = new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
+    final var tstObj =
+        new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
 
-    var result =
+    final var result =
         assertDoesNotThrow(
             () -> tstObj.identifyPatient(PATIENT, "default", COUNTRY),
             "method identifyPatient threw exception");
@@ -60,13 +61,14 @@ class NcpehClientImplTest {
 
   @Test
   void identifyPatientThrows() {
-    var tstObj = new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
-    var errorInfo = new ErrorInformation("a spectacular error occurred");
+    final var tstObj =
+        new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
+    final var errorInfo = new ErrorInformation("a spectacular error occurred");
 
     Mockito.when(tstObj.clientProxy().identifyPatient(Mockito.any()))
         .thenReturn(Response.status(Status.BAD_REQUEST).entity(errorInfo).build());
 
-    var exception =
+    final var exception =
         assertThrows(
             NcpehException.class,
             () -> tstObj.identifyPatient(PATIENT, "default", COUNTRY),
@@ -77,9 +79,10 @@ class NcpehClientImplTest {
 
   @Test
   void findPatientSummaryTest() {
-    var tstObj = new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
+    final var tstObj =
+        new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
 
-    var result =
+    final var result =
         assertDoesNotThrow(
             () -> tstObj.findPatientSummary(PATIENT, "default", COUNTRY),
             "method findPatientSummaryData threw exception");
@@ -90,7 +93,8 @@ class NcpehClientImplTest {
 
   @Test
   void findPatientSummaryThrowsTest() {
-    var tstObj = new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
+    final var tstObj =
+        new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
     Mockito.when(tstObj.clientProxy().findDocuments(Mockito.any()))
         .thenReturn(
             Response.status(Status.BAD_REQUEST).entity(new ErrorInformation("error")).build());
@@ -103,10 +107,11 @@ class NcpehClientImplTest {
 
   @Test
   void retrievePatientSummaryTest() {
-    var tstObj = new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
+    final var tstObj =
+        new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
 
-    var tstData = tstObj.findPatientSummary(PATIENT, "default", COUNTRY);
-    var result =
+    final var tstData = tstObj.findPatientSummary(PATIENT, "default", COUNTRY);
+    final var result =
         assertDoesNotThrow(
             () ->
                 tstObj.retrievePatientSummary(
@@ -119,13 +124,14 @@ class NcpehClientImplTest {
 
   @Test
   void retrievePatientSummaryThrowsTest() {
-    var tstObj = new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
+    final var tstObj =
+        new NcpehClientImplForUnittest(NcpehProvider.getNcpehProvider().getNcpehConfig());
     Mockito.when(tstObj.clientProxy().retrieveDocument(Mockito.any()))
         .thenReturn(
             Response.status(Status.BAD_REQUEST).entity(new ErrorInformation("error")).build());
 
-    var tstData = tstObj.findPatientSummary(PATIENT, "default", COUNTRY);
-    var ncpehResponseContent = tstData.ncpehFdResponseContent();
+    final var tstData = tstObj.findPatientSummary(PATIENT, "default", COUNTRY);
+    final var ncpehResponseContent = tstData.ncpehFdResponseContent();
     assertThrows(
         NcpehException.class,
         () -> tstObj.retrievePatientSummary(PATIENT, "default", COUNTRY, ncpehResponseContent),
@@ -134,7 +140,7 @@ class NcpehClientImplTest {
 
   @Test
   void clientProxy() {
-    var tstObj = new NcpehClientImpl(NcpehProvider.getNcpehProvider().getNcpehConfig());
+    final var tstObj = new NcpehClientImpl(NcpehProvider.getNcpehProvider().getNcpehConfig());
 
     assertDoesNotThrow(tstObj::clientProxy, "Method clientProxy threw exception");
   }

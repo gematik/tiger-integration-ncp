@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,16 +36,16 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @Data(staticConstructor = "newInstance")
 @EqualsAndHashCode(callSuper = true)
-public class RetrieveDocumentRequestBuilder extends RequestBaseBuilder<RetrieveDocumentRequest> {
+public final class RetrieveDocumentRequestBuilder
+    extends RequestBaseBuilder<RetrieveDocumentRequest> {
 
+  public static final String NCPEH_HCID = "urn:oid:1.2.276.0.76.4.291";
   private String repositoryUniqueId;
 
   private String documentUniqueId;
 
   @Setter(AccessLevel.PROTECTED)
   private String additionalDocumentUniqueId;
-
-  private String homeCommunityId;
 
   private String trcAssertionProfileName;
 
@@ -60,10 +60,10 @@ public class RetrieveDocumentRequestBuilder extends RequestBaseBuilder<RetrieveD
         repositoryUniqueId(),
         documentUniqueId(),
         additionalDocumentUniqueId(),
-        homeCommunityId());
+        NCPEH_HCID);
   }
 
-  public RetrieveDocumentRequestBuilder documentUniqueId(@NonNull String docUniqueId) {
+  public RetrieveDocumentRequestBuilder documentUniqueId(@NonNull final String docUniqueId) {
     Optional.ofNullable(documentUniqueId).ifPresent(duid -> additionalDocumentUniqueId = duid);
     documentUniqueId = docUniqueId;
     return this;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package de.gematik.unittest.ncp.ps;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.gematik.test.ncp.ps.PsMockImpl;
 import de.gematik.test.ncp.ps.PsProvider;
-import de.gematik.test.ncp.ps.epaps.EpaPsInterfaceImpl;
+import de.gematik.test.ncp.ps.epaps.EpaPrimarySystemServiceImpl;
+import de.gematik.test.ncp.ps.epaps.PrimarySystemServiceMockImpl;
 import de.gematik.test.tiger.common.config.TigerGlobalConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -28,12 +28,12 @@ class PsProviderTest {
 
   @Test
   void standardImpl() {
-    var origCfgValue = TigerGlobalConfiguration.readBoolean(PsProvider.PS_JAR_ACTIVE_KEY);
+    final var origCfgValue = TigerGlobalConfiguration.readBoolean(PsProvider.PS_JAR_ACTIVE_KEY);
     try {
       TigerGlobalConfiguration.putValue(PsProvider.PS_JAR_ACTIVE_KEY, true);
       assertEquals(
-          EpaPsInterfaceImpl.class,
-          PsProvider.getPsImplementation().getClass(),
+          EpaPrimarySystemServiceImpl.class,
+          PsProvider.getPrimarySystemService().getClass(),
           "Default PsInterface implementation is of unexpected class type");
     } finally {
       TigerGlobalConfiguration.putValue(PsProvider.PS_JAR_ACTIVE_KEY, origCfgValue);
@@ -42,15 +42,15 @@ class PsProviderTest {
 
   @Test
   void customImpl() {
-    var psProvider = new PsProviderForTest();
-    psProvider.defaultPsImpl.set(PsMockImpl::instance);
-    var origJarCfgValue = TigerGlobalConfiguration.readBoolean(PsProvider.PS_JAR_ACTIVE_KEY);
-    var origExtCfgValue = TigerGlobalConfiguration.readBoolean(PsProvider.PS_EXT_ACTIVE_KEY);
+    final var psProvider = new PsProviderForTest();
+    psProvider.defaultPsImpl.set(PrimarySystemServiceMockImpl::instance);
+    final var origJarCfgValue = TigerGlobalConfiguration.readBoolean(PsProvider.PS_JAR_ACTIVE_KEY);
+    final var origExtCfgValue = TigerGlobalConfiguration.readBoolean(PsProvider.PS_EXT_ACTIVE_KEY);
     try {
       TigerGlobalConfiguration.putValue(PsProvider.PS_JAR_ACTIVE_KEY, false);
       TigerGlobalConfiguration.putValue(PsProvider.PS_EXT_ACTIVE_KEY, false);
       assertEquals(
-          PsMockImpl.class,
+          PrimarySystemServiceMockImpl.class,
           psProvider.getPsImpl().getClass(),
           "PsInterface implementation is of unexpected class type");
     } finally {

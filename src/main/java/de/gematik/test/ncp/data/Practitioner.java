@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package de.gematik.test.ncp.data;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.gematik.test.ncp.data.Practitioners.PractitionerImpl;
 
 /** Interface for objects holding the persistent properties of practitioners */
 @JsonDeserialize(as = PractitionerImpl.class)

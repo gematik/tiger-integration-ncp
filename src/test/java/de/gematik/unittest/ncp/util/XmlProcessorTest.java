@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,21 +41,21 @@ class XmlProcessorTest {
 
   @Test
   void retrieveNode() {
-    var tstResult = assertDoesNotThrow(() -> tstObj.retrieveNode(EpkaProcessor.kvnrXpath()));
+    final var tstResult = assertDoesNotThrow(() -> tstObj.retrieveNode(EpkaProcessor.kvnrXpath()));
     assertNotNull(tstResult);
     assertEquals(Node.ATTRIBUTE_NODE, tstResult.getNodeType());
   }
 
   @Test
   void updateNode() {
-    var newValue = "X123456789";
+    final var newValue = "X123456789";
     assertDoesNotThrow(() -> tstObj.updateNode(EpkaProcessor.kvnrXpath(), newValue));
     assertEquals(newValue, tstObj.retrieveNode(EpkaProcessor.kvnrXpath()).getNodeValue());
   }
 
   @Test
   void toXmlString() {
-    var xmlString = assertDoesNotThrow(() -> tstObj.toXmlString());
+    final var xmlString = assertDoesNotThrow(() -> tstObj.toXmlString());
     assertNotNull(xmlString);
     assertTrue(xmlString.startsWith("<"));
     assertTrue(xmlString.endsWith(">"));

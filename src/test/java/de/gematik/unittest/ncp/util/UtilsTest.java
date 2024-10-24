@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ class UtilsTest {
                     TEST_FUNCTION, RuntimeException.class, Boolean.FALSE));
 
     assertDoesNotThrow(() -> func.apply("true"));
-    var result = assertDoesNotThrow(() -> func.apply("no boolean"));
+    final var result = assertDoesNotThrow(() -> func.apply("no boolean"));
     assertFalse(result, "Wrong value of result");
 
     final var func2 =
@@ -77,20 +77,20 @@ class UtilsTest {
 
   @Test
   void swallowExceptionFunctionPrm2() {
-    var func =
+    final var func =
         assertDoesNotThrow(() -> Utils.swallowExceptionFunction(TEST_FUNCTION, Boolean.FALSE));
 
     assertDoesNotThrow(() -> func.apply("true"));
-    var result = assertDoesNotThrow(() -> func.apply("no boolean"));
+    final var result = assertDoesNotThrow(() -> func.apply("no boolean"));
     assertFalse(result, "Wrong value of result");
   }
 
   @Test
   void swallowExceptionFunctionPrm1() {
-    var func = assertDoesNotThrow(() -> Utils.swallowExceptionFunction(TEST_FUNCTION));
+    final var func = assertDoesNotThrow(() -> Utils.swallowExceptionFunction(TEST_FUNCTION));
 
     assertDoesNotThrow(() -> func.apply("true"));
-    var result = assertDoesNotThrow(() -> func.apply("no boolean"));
+    final var result = assertDoesNotThrow(() -> func.apply("no boolean"));
     assertNull(result, "result is not null");
   }
 
@@ -121,9 +121,9 @@ class UtilsTest {
 
   @Test
   void buildUri() {
-    String hostname = "superhost";
+    final String hostname = "superhost";
 
-    var tstResult = assertDoesNotThrow(() -> Utils.buildUri(hostname));
+    final var tstResult = assertDoesNotThrow(() -> Utils.buildUri(hostname));
     assertEquals("http", tstResult.getScheme());
     assertEquals(hostname, tstResult.getHost());
     assertTrue(Objects.isNull(tstResult.getPath()) || tstResult.getPath().isEmpty());
@@ -132,11 +132,12 @@ class UtilsTest {
 
   @Test
   void buildUriWithPath() {
-    String hostname = "superhost";
-    String basePath = "services";
-    String addPath = "/myservice";
+    final String hostname = "superhost";
+    final String basePath = "services";
+    final String addPath = "/myservice";
 
-    var tstResult = assertDoesNotThrow(() -> Utils.buildUri(hostname, basePath, addPath, null));
+    final var tstResult =
+        assertDoesNotThrow(() -> Utils.buildUri(hostname, basePath, addPath, null));
     assertEquals("http", tstResult.getScheme());
     assertEquals(hostname, tstResult.getHost());
     assertTrue(
@@ -148,12 +149,13 @@ class UtilsTest {
 
   @Test
   void buildUriWithPortAndScheme() {
-    String scheme = "https";
-    String hostname = "superhost";
-    Integer port = 8080;
-    String basePath = "rest";
+    final String scheme = "https";
+    final String hostname = "superhost";
+    final Integer port = 8080;
+    final String basePath = "rest";
 
-    var tstResult = assertDoesNotThrow(() -> Utils.buildUri(scheme, hostname, port, basePath));
+    final var tstResult =
+        assertDoesNotThrow(() -> Utils.buildUri(scheme, hostname, port, basePath));
     assertEquals(scheme, tstResult.getScheme());
     assertEquals(port, tstResult.getPort());
     assertEquals(hostname, tstResult.getHost());
@@ -164,15 +166,15 @@ class UtilsTest {
 
   @Test
   void doesEndWith() {
-    String testString = "teststring";
-    String testSuffix = ":12aB/&";
+    final String testString = "teststring";
+    final String testSuffix = ":12aB/&";
 
-    var tstResult = assertDoesNotThrow(() -> Utils.ensureEndsWith(testString, testSuffix));
+    final var tstResult = assertDoesNotThrow(() -> Utils.ensureEndsWith(testString, testSuffix));
     assertNotNull(tstResult);
     assertTrue(tstResult.startsWith(testString));
     assertTrue(tstResult.endsWith(testSuffix));
 
-    var tstResult2 = assertDoesNotThrow(() -> Utils.ensureEndsWith(tstResult, testSuffix));
+    final var tstResult2 = assertDoesNotThrow(() -> Utils.ensureEndsWith(tstResult, testSuffix));
     assertTrue(tstResult.startsWith(testString));
     assertTrue(tstResult.endsWith(testSuffix));
     assertEquals(tstResult, tstResult2);
@@ -180,15 +182,15 @@ class UtilsTest {
 
   @Test
   void doesStartWith() {
-    String testString = "teststring";
-    String testPrefix = ":/98xY$=";
+    final String testString = "teststring";
+    final String testPrefix = ":/98xY$=";
 
-    var tstResult = assertDoesNotThrow(() -> Utils.ensureStartsWith(testString, testPrefix));
+    final var tstResult = assertDoesNotThrow(() -> Utils.ensureStartsWith(testString, testPrefix));
     assertNotNull(tstResult);
     assertTrue(tstResult.startsWith(testPrefix));
     assertTrue(tstResult.endsWith(testString));
 
-    var tstResult2 = assertDoesNotThrow(() -> Utils.ensureStartsWith(tstResult, testPrefix));
+    final var tstResult2 = assertDoesNotThrow(() -> Utils.ensureStartsWith(tstResult, testPrefix));
     assertTrue(tstResult.startsWith(testPrefix));
     assertTrue(tstResult.endsWith(testString));
     assertEquals(tstResult, tstResult2);
@@ -196,7 +198,7 @@ class UtilsTest {
 
   @Test
   void toStringListElementsTest() {
-    var testdata = new ArrayList<Patient>();
+    final var testdata = new ArrayList<Patient>();
     testdata.add(
         new PatientImpl()
             .name(PersonName.fromString("Max Murks"))
@@ -204,7 +206,8 @@ class UtilsTest {
             .birthDate(LocalDate.now()));
     testdata.add(new PatientImpl().name(PersonName.fromString("Sybille Tille")));
 
-    var result = assertDoesNotThrow(() -> Utils.toStringListElements(testdata, Object::toString));
+    final var result =
+        assertDoesNotThrow(() -> Utils.toStringListElements(testdata, Object::toString));
 
     assertNotNull(result);
     assertEquals(testdata.size(), result.size());
@@ -215,7 +218,7 @@ class UtilsTest {
 
   @Test
   void toStringListElementsNullTest() {
-    var result = assertDoesNotThrow(() -> Utils.toStringListElements(null, Object::toString));
+    final var result = assertDoesNotThrow(() -> Utils.toStringListElements(null, Object::toString));
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
