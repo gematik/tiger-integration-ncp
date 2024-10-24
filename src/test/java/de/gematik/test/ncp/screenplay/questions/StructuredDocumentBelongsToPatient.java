@@ -1,0 +1,39 @@
+/*
+ * Copyright (c) 2024. gematik GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package de.gematik.test.ncp.screenplay.questions;
+
+import de.gematik.test.ncp.data.PatientImpl;
+import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
+import de.gematik.test.ncp.screenplay.abilities.TreatPatient;
+import de.gematik.test.ncp.util.ClinicalDocumentInformationProvider;
+import net.serenitybdd.screenplay.Actor;
+import net.serenitybdd.screenplay.Question;
+
+public class StructuredDocumentBelongsToPatient implements Question<Boolean> {
+
+  @Override
+  public Boolean answeredBy(final Actor actor) {
+    final var patient = actor.usingAbilityTo(TreatPatient.class).getPatient();
+    final var patientData = patient.usingAbilityTo(ProvidePatientData.class);
+    final var cda3Document = patientData.getPatientSummaryLvl3();
+    return patientData.samePerson(
+        new PatientImpl(
+            ClinicalDocumentInformationProvider.nameFromCDA3Document(cda3Document),
+            ClinicalDocumentInformationProvider.kvnrFromCDA3Document(cda3Document),
+            ClinicalDocumentInformationProvider.birthDataFromCDA3Document(cda3Document)));
+  }
+}

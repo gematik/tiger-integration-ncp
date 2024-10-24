@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ class PsTestdataTest {
 
   @Test
   void createFindQueryValueStringTest() {
-    var testdata = ClassCode.DOK_ADMINISTRATIV;
-    var result = assertDoesNotThrow(() -> PsTestdata.createFindQueryValueString(testdata));
+    final var testdata = ClassCode.DOK_ADMINISTRATIV;
+    final var result = assertDoesNotThrow(() -> PsTestdata.createFindQueryValueString(testdata));
 
     assertNotNull(result);
     assertQueryValueString(result, testdata);
@@ -40,7 +40,7 @@ class PsTestdataTest {
 
   @Test
   void createFindQueryValueListNullTest() {
-    var result =
+    final var result =
         assertDoesNotThrow(() -> PsTestdata.createFindQueryValueList((CodeInterface[]) null));
 
     assertNotNull(result);
@@ -50,8 +50,8 @@ class PsTestdataTest {
 
   @Test
   void createFindQueryValueListOneValueTest() {
-    var testdata = ConfidentialityCode.RESTRICTED;
-    var result = assertDoesNotThrow(() -> PsTestdata.createFindQueryValueList(testdata));
+    final var testdata = ConfidentialityCode.RESTRICTED;
+    final var result = assertDoesNotThrow(() -> PsTestdata.createFindQueryValueList(testdata));
 
     assertNotNull(result);
     assertTrue(result.startsWith("("));
@@ -61,18 +61,18 @@ class PsTestdataTest {
 
   @Test
   void createFindQueryValueListSeveralValueTest() {
-    CodeInterface[] testdata = {
+    final CodeInterface[] testdata = {
       EventCode.AMBULANTE_OP,
       EventCode.STATIONAERE_ENTLASSUNG_NACH_REHA,
       EventCode.EXTERNE_VERLEGUNG_PSYCHIATRIE
     };
-    var result = assertDoesNotThrow(() -> PsTestdata.createFindQueryValueList(testdata));
+    final var result = assertDoesNotThrow(() -> PsTestdata.createFindQueryValueList(testdata));
 
     assertNotNull(result);
     assertTrue(result.startsWith("("));
     assertTrue(result.endsWith(")"));
 
-    var resultValues = result.substring(1, result.length() - 1).split(",");
+    final var resultValues = result.substring(1, result.length() - 1).split(",");
     assertEquals(testdata.length, resultValues.length);
     assertAll(
         Arrays.stream(testdata)
@@ -90,7 +90,7 @@ class PsTestdataTest {
                 dataPair -> () -> assertQueryValueString(dataPair.getLeft(), dataPair.getRight())));
   }
 
-  private void assertQueryValueString(String queryValueString, CodeInterface testdata) {
+  private void assertQueryValueString(final String queryValueString, final CodeInterface testdata) {
     assertTrue(queryValueString.startsWith("'"));
     assertTrue(queryValueString.endsWith("'"));
     assertTrue(0 < queryValueString.indexOf(testdata.getValue()));

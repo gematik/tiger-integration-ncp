@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,17 @@ package de.gematik.unittest.ncp.fdv;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.gematik.test.ncp.fdv.FdvInterfaceImpl;
 import de.gematik.test.ncp.fdv.FdvProvider;
+import de.gematik.test.ncp.fdv.FdvServiceImpl;
 import org.junit.jupiter.api.Test;
 
 class FdvProviderTest {
 
   @Test
   void getDefaultFdvClientTest() {
-    var fdvClient = assertDoesNotThrow(FdvProvider::getDefaultFdvClient);
+    final var fdvClient = assertDoesNotThrow(FdvProvider::getDefaultFdvClient);
 
     assertNotNull(fdvClient);
-    assertEquals(FdvInterfaceImpl.class, fdvClient.getClass());
+    assertEquals(FdvServiceImpl.class, fdvClient.getClass());
   }
 }

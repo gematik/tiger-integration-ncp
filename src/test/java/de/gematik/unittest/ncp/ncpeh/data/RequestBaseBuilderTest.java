@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,14 @@ class RequestBaseBuilderTest {
 
   @Test
   void buildRequestBase() {
-    var tstObj =
+    final var tstObj =
         FindDocumentsRequestBuilder.newInstance()
             .euCountryCode(EU_COUNTRY_CODE)
             .idaAssertionProfileName(IDA_APN)
             .kvnr(KVNR)
             .accessCode(ACCESS_CODE);
 
-    var requestBase =
+    final var requestBase =
         assertDoesNotThrow(tstObj::buildRequestBase, "Method buildRequestBase threw exception");
 
     assertEquals(
@@ -56,15 +56,14 @@ class RequestBaseBuilderTest {
 
   @Test
   void buildPatientId() {
-    var tstObj =
+    final var tstObj =
         FindDocumentsRequestBuilder.newInstance()
             .euCountryCode(EU_COUNTRY_CODE)
             .idaAssertionProfileName(IDA_APN)
             .kvnr(KVNR);
 
-    var patientId =
-        assertDoesNotThrow(tstObj::buildPatientId, "Method buildRequestBase threw exception");
-
+    final var patientId = tstObj.buildPatientId();
+    assertNotNull(patientId, "Method buildRequestBase threw exception");
     assertEquals(KVNR, patientId.kvnr(), "KVNR does not have the expected value");
   }
 }

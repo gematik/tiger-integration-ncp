@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 
 /**
- * Exception type to be thrown by the {@link NcpehInterface} operations. Its purpose is to indicate,
+ * Exception type to be thrown by the {@link NcpehService} operations. Its purpose is to indicate,
  * that something went wrong with either the processing of the client data submitted or in the
  * communication between NCPeH Simulation and NCPeH FD.
  */
@@ -36,25 +36,25 @@ public class NcpehException extends RuntimeException {
 
   @Getter private final String additionalErrorInfo;
 
-  public NcpehException(String message) {
+  public NcpehException(final String message) {
     super(message);
     responseStatusCode = null;
     additionalErrorInfo = null;
   }
 
-  public NcpehException(String message, Throwable cause) {
+  public NcpehException(final String message, final Throwable cause) {
     super(message, cause);
     responseStatusCode = null;
     additionalErrorInfo = null;
   }
 
-  public NcpehException(String message, @NonNull Response response) {
+  public NcpehException(final String message, @NonNull final Response response) {
     super(message);
     responseStatusCode = response.getStatus();
     additionalErrorInfo = retrieveAdditionalErrorInfo(response);
   }
 
-  private String retrieveAdditionalErrorInfo(Response response) {
+  private String retrieveAdditionalErrorInfo(final Response response) {
     return Optional.ofNullable(response)
         .map(swallowExceptionFunction(resp -> resp.readEntity(ErrorInformation.class)))
         .map(ErrorInformation::errorMessage)

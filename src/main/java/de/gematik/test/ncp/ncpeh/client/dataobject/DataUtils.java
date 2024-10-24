@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ import de.gematik.ncpeh.api.response.SimulatorCommunicationData;
 import de.gematik.test.ncp.data.Patient;
 import de.gematik.test.ncp.data.PatientImpl;
 import de.gematik.test.ncp.data.PersonName;
-import de.gematik.test.ncp.ncpeh.NcpehInterface.PatientSummaryLevel;
+import de.gematik.test.ncp.ncpeh.NcpehService;
+import de.gematik.test.ncp.ncpeh.NcpehService.PatientSummaryLevel;
 import de.gematik.test.ncp.util.Utils;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
@@ -109,7 +110,8 @@ public class DataUtils {
    *     NCPeH FD
    * @return {@link Patient} object containing the patient data
    */
-  public static Patient readPatientDataFromIdentifyPatientResponse(PRPAIN201306UV02 response) {
+  public static Patient readPatientDataFromIdentifyPatientResponse(
+      final PRPAIN201306UV02 response) {
     return readPatientDataFromControlActProcess(response.getControlActProcess());
   }
 
@@ -122,10 +124,10 @@ public class DataUtils {
    * @return {@link List} of found reason encodings.
    */
   public static List<String> readReasonEncodingFromIdentifyPatientResponse(
-      PRPAIN201306UV02 response) {
+      final PRPAIN201306UV02 response) {
     try {
       return readReasonEncodingFromControlActProcess(response.getControlActProcess());
-    } catch (Exception e) {
+    } catch (final Exception e) {
       return Collections.emptyList();
     }
   }
@@ -135,11 +137,11 @@ public class DataUtils {
    * retrieveDocument response
    *
    * @param psdo {@link RetrievePatientSummaryDO} response object of the {@link
-   *     de.gematik.test.ncp.ncpeh.NcpehInterface#retrievePatientSummary(Patient, String, String,
-   *     AdhocQueryResponse, PatientSummaryLevel...)} operation
+   *     NcpehService#retrievePatientSummary(Patient, String, String, AdhocQueryResponse,
+   *     PatientSummaryLevel...)} operation
    * @return {@link ClinicalDocument} patient summary, or null if non was found
    */
-  public static ClinicalDocument readPatientSummaryLvl3(RetrievePatientSummaryDO psdo) {
+  public static ClinicalDocument readPatientSummaryLvl3(final RetrievePatientSummaryDO psdo) {
     return Optional.ofNullable(getPatientSummaryOfLevel(psdo, PatientSummaryLevel.LEVEL_3))
         .map(dr -> Utils.unmarshalXml(ClinicalDocument.class, dr))
         .orElse(null);
@@ -149,11 +151,12 @@ public class DataUtils {
    * Read the patient summary in the CDA1 format (PDF) from an NCPeH retrieveDocument response
    *
    * @param retrievePatientSummaryDO {@link RetrievePatientSummaryDO} response object of the {@link
-   *     de.gematik.test.ncp.ncpeh.NcpehInterface#retrievePatientSummary(Patient, String, String,
-   *     AdhocQueryResponse, PatientSummaryLevel...)} operation
+   *     NcpehService#retrievePatientSummary(Patient, String, String, AdhocQueryResponse,
+   *     PatientSummaryLevel...)} operation
    * @return {@link Pdf} patient summary, or null if non was found
    */
-  public static Pdf readPatientSummaryLvl1(RetrievePatientSummaryDO retrievePatientSummaryDO) {
+  public static Pdf readPatientSummaryLvl1(
+      final RetrievePatientSummaryDO retrievePatientSummaryDO) {
     return Optional.ofNullable(
             getPatientSummaryOfLevel(retrievePatientSummaryDO, PatientSummaryLevel.LEVEL_1))
         .map(doc -> new Pdf(Base64.encodeBase64String(doc)))
@@ -169,8 +172,9 @@ public class DataUtils {
    * @return {@link String} the absolute path of the file, where the patient summary was written to.
    */
   @SneakyThrows
-  public static String writePatientSummaryToLocalFile(Patient patient, Pdf cda1Document) {
-    var tempFile = createTempFile(".pdf", patient.kvnr(), "Patient_Summary_Level_1");
+  public static String writePatientSummaryToLocalFile(
+      final Patient patient, final Pdf cda1Document) {
+    final var tempFile = createTempFile(".pdf", patient.kvnr(), "Patient_Summary_Level_1");
 
     var pdfBytes = Base64.decodeBase64(cda1Document.getContent());
     while (Base64.isArrayByteBase64(pdfBytes)) pdfBytes = Base64.decodeBase64(pdfBytes);
@@ -187,8 +191,8 @@ public class DataUtils {
    * @param response {@link Response} as received in an HTTP communication
    * @return {@link IdentifyPatientDO} object created from the response body contents
    */
-  public static IdentifyPatientDO convertResponseDataForIdentifyPatient(Response response) {
-    var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
+  public static IdentifyPatientDO convertResponseDataForIdentifyPatient(final Response response) {
+    final var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
 
     return new IdentifyPatientDO(
         HttpStatus.valueOf(response.getStatus()),
@@ -203,8 +207,9 @@ public class DataUtils {
    * @param response {@link Response} as received in an HTTP communication
    * @return {@link FindPatientSummaryDO} object created from the response body contents
    */
-  public static FindPatientSummaryDO convertResponseDataForFindPatientSummary(Response response) {
-    var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
+  public static FindPatientSummaryDO convertResponseDataForFindPatientSummary(
+      final Response response) {
+    final var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
 
     return new FindPatientSummaryDO(
         HttpStatus.valueOf(response.getStatus()),
@@ -220,8 +225,8 @@ public class DataUtils {
    * @return {@link RetrievePatientSummaryDO} object created from the response body contents
    */
   public static RetrievePatientSummaryDO convertResponseDataForRetrievePatientSummary(
-      Response response) {
-    var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
+      final Response response) {
+    final var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
 
     return new RetrievePatientSummaryDO(
         HttpStatus.valueOf(response.getStatus()),
@@ -230,8 +235,8 @@ public class DataUtils {
             simulatorComData.responseReceived(), RetrieveDocumentSetResponseType.class));
   }
 
-  public static PersonName createNameFromPNList(List<PN> nameList) {
-    var names =
+  public static PersonName createNameFromPNList(final List<PN> nameList) {
+    final var names =
         nameList.stream()
             .flatMap(pn -> pn.getContent().stream())
             .filter(content -> content instanceof JAXBElement<?>)
@@ -257,15 +262,18 @@ public class DataUtils {
   // region private
 
   private static File createTempFile(
-      @NonNull String fileNameSuffix, @NonNull String firstNamePart, String... furtherNameParts)
+      @NonNull final String fileNameSuffix,
+      @NonNull final String firstNamePart,
+      final String... furtherNameParts)
       throws IOException {
-    var nameParts = new ArrayList<String>();
+    final var nameParts = new ArrayList<String>();
     nameParts.add(firstNamePart);
     Optional.ofNullable(furtherNameParts).ifPresent(fnp -> nameParts.addAll(Arrays.asList(fnp)));
     nameParts.add(LocalDateTime.now().format(BASIC_DATE_TIME_FORMAT));
 
-    var file = File.createTempFile(String.join("_", nameParts), fileNameSuffix, testsuiteTempDir());
-    var fileRestricted = file.setWritable(true, true) && file.setExecutable(true, true);
+    final var file =
+        File.createTempFile(String.join("_", nameParts), fileNameSuffix, testsuiteTempDir());
+    final var fileRestricted = file.setWritable(true, true) && file.setExecutable(true, true);
     if (!fileRestricted) {
       log.warn("Access rights of temporary file could not be set as requested");
     }
@@ -276,8 +284,8 @@ public class DataUtils {
 
   @SneakyThrows
   private static File getOrCreateTestsuiteTmpFolder() {
-    var tempDirPath = Paths.get(System.getProperty("java.io.tmpdir"));
-    var testsuiteTempDirPath = tempDirPath.resolve(TESTSUITE_PATH_PART);
+    final var tempDirPath = Paths.get(System.getProperty("java.io.tmpdir"));
+    final var testsuiteTempDirPath = tempDirPath.resolve(TESTSUITE_PATH_PART);
 
     if (Files.notExists(testsuiteTempDirPath)) {
       Files.createDirectory(testsuiteTempDirPath);
@@ -287,8 +295,8 @@ public class DataUtils {
   }
 
   private static Patient readPatientDataFromControlActProcess(
-      PRPAIN201306UV02MFMIMT700711UV01ControlActProcess controlActProcess) {
-    var pats =
+      final PRPAIN201306UV02MFMIMT700711UV01ControlActProcess controlActProcess) {
+    final var pats =
         controlActProcess.getSubject().stream()
             .map(PRPAIN201306UV02MFMIMT700711UV01Subject1::getRegistrationEvent)
             .map(PRPAIN201306UV02MFMIMT700711UV01RegistrationEvent::getSubject1)
@@ -303,15 +311,15 @@ public class DataUtils {
       throw new IllegalArgumentException(
           "Data to more than one patient were found in the identifyPatient response");
 
-    var pat = pats.get(0);
+    final var pat = pats.get(0);
 
-    var patient = new PatientImpl();
+    final var patient = new PatientImpl();
 
     patient.kvnr(readKvnrFromPATPatient(pat));
 
     patient.accessCode(readAccessCodeFromPATPatient(pat));
 
-    var patPerson = pat.getPatientPerson().getValue();
+    final var patPerson = pat.getPatientPerson().getValue();
 
     patient.name(readNameFromPatientPerson(patPerson));
 
@@ -321,7 +329,7 @@ public class DataUtils {
   }
 
   private static List<String> readReasonEncodingFromControlActProcess(
-      PRPAIN201306UV02MFMIMT700711UV01ControlActProcess controlActProcess) {
+      final PRPAIN201306UV02MFMIMT700711UV01ControlActProcess controlActProcess) {
     return controlActProcess.getReasonOf().stream()
         .map(MFMIMT700711UV01Reason::getDetectedIssueEvent)
         .map(MCAIMT900001UV01DetectedIssueEvent::getMitigatedBy)
@@ -334,8 +342,8 @@ public class DataUtils {
   }
 
   @SneakyThrows
-  private static String readKvnrFromPATPatient(PRPAMT201310UV02Patient patPatient) {
-    var value = readKvnrConcAccessCodeFromPATPatient(patPatient)[0];
+  private static String readKvnrFromPATPatient(final PRPAMT201310UV02Patient patPatient) {
+    final var value = readKvnrConcAccessCodeFromPATPatient(patPatient)[0];
 
     if (Objects.isNull(value) || value.isEmpty())
       throw new ParseException("No extension (KVNR) found in patient data", 0);
@@ -343,19 +351,20 @@ public class DataUtils {
     return value;
   }
 
-  private static PersonName readNameFromPatientPerson(PRPAMT201310UV02Person patientPerson) {
+  private static PersonName readNameFromPatientPerson(final PRPAMT201310UV02Person patientPerson) {
     return createNameFromPNList(patientPerson.getName());
   }
 
-  private static LocalDate readBirthDateFromPatientPerson(PRPAMT201310UV02Person patientPerson) {
+  private static LocalDate readBirthDateFromPatientPerson(
+      final PRPAMT201310UV02Person patientPerson) {
     return LocalDate.parse(
         patientPerson.getBirthTime().getValue(),
         new DateTimeFormatterBuilder().appendPattern("yyyyMMdd").toFormatter());
   }
 
   @SneakyThrows
-  private static String readAccessCodeFromPATPatient(PRPAMT201310UV02Patient patPatient) {
-    var value = readKvnrConcAccessCodeFromPATPatient(patPatient)[1];
+  private static String readAccessCodeFromPATPatient(final PRPAMT201310UV02Patient patPatient) {
+    final var value = readKvnrConcAccessCodeFromPATPatient(patPatient)[1];
 
     if (Objects.isNull(value) || value.isEmpty())
       throw new ParseException("No access code found in patient data", 0);
@@ -364,8 +373,9 @@ public class DataUtils {
   }
 
   @SneakyThrows
-  private static String[] readKvnrConcAccessCodeFromPATPatient(PRPAMT201310UV02Patient patPatient) {
-    var kvnrAccessCode =
+  private static String[] readKvnrConcAccessCodeFromPATPatient(
+      final PRPAMT201310UV02Patient patPatient) {
+    final var kvnrAccessCode =
         patPatient.getId().stream()
             .map(II::getExtension)
             .filter(Objects::nonNull)
@@ -375,7 +385,7 @@ public class DataUtils {
                     new IllegalArgumentException(
                         "No extension (KVNR) and access code found in patient data"));
 
-    var parts = kvnrAccessCode.split("\\|");
+    final var parts = kvnrAccessCode.split("\\|");
 
     if (parts.length != 2)
       throw new ParseException(
@@ -387,8 +397,8 @@ public class DataUtils {
   }
 
   private static Hashtable<String, String> jaxbElementToTable(
-      JAXBElement<? extends ENXP> jaxbElement) {
-    var res = new Hashtable<String, String>();
+      final JAXBElement<? extends ENXP> jaxbElement) {
+    final var res = new Hashtable<String, String>();
     res.put(
         jaxbElement.getName().getLocalPart(),
         jaxbElement.getValue().getContent().stream()
@@ -398,8 +408,8 @@ public class DataUtils {
   }
 
   private static byte[] getPatientSummaryOfLevel(
-      @NonNull RetrievePatientSummaryDO psdo, PatientSummaryLevel level) {
-    var retrieveResponse =
+      @NonNull final RetrievePatientSummaryDO psdo, final PatientSummaryLevel level) {
+    final var retrieveResponse =
         Objects.requireNonNull(
             psdo.ncpehFdResponseContent(),
             "No response of the NCPeH FD is present in the data received from the NCPeH Simulator");
@@ -412,10 +422,10 @@ public class DataUtils {
   }
 
   private static <T> HttpRequestData<T> parseHttpRequest(
-      WrappedHttpRequest request, Class<T> requestBodyType) {
-    var requestContent = parseHttpBody(request.messageContent(), requestBodyType);
-    var requestHeader = parseHttpHeaders(request.messageContent());
-    var requestLineSeparatorPosition = request.requestLine().indexOf("\s");
+      final WrappedHttpRequest request, final Class<T> requestBodyType) {
+    final var requestContent = parseHttpBody(request.messageContent(), requestBodyType);
+    final var requestHeader = parseHttpHeaders(request.messageContent());
+    final var requestLineSeparatorPosition = request.requestLine().indexOf(" ");
     return new HttpRequestDataRecord<>(
         HttpMethod.valueOf(request.requestLine().substring(0, requestLineSeparatorPosition).trim()),
         request.requestLine().substring(requestLineSeparatorPosition).trim(),
@@ -424,9 +434,9 @@ public class DataUtils {
   }
 
   private static <T> HttpResponseData<T> parseHttpResponse(
-      WrappedHttpResponse response, Class<T> responseBodyType) {
-    var responseContent = parseHttpBody(response.messageContent(), responseBodyType);
-    var responseHeader = parseHttpHeaders(response.messageContent());
+      final WrappedHttpResponse response, final Class<T> responseBodyType) {
+    final var responseContent = parseHttpBody(response.messageContent(), responseBodyType);
+    final var responseHeader = parseHttpHeaders(response.messageContent());
 
     return new HttpResponseDataRecord<>(
         HttpStatus.valueOf(Integer.parseInt(response.statusLine().substring(0, 3))),
@@ -434,13 +444,14 @@ public class DataUtils {
         responseContent);
   }
 
-  private static <T> T parseHttpBody(WrappedHttpMessage httpMessage, Class<T> bodyType) {
-    var bodyEncoded = httpMessage.httpBody();
+  private static <T> T parseHttpBody(
+      final WrappedHttpMessage httpMessage, final Class<T> bodyType) {
+    final var bodyEncoded = httpMessage.httpBody();
 
     return unmarshalBase64EncodedXml(bodyType, bodyEncoded);
   }
 
-  private static Map<String, String> parseHttpHeaders(WrappedHttpMessage httpMessage) {
+  private static Map<String, String> parseHttpHeaders(final WrappedHttpMessage httpMessage) {
     byte[] headersDecoded = httpMessage.httpHeader();
 
     while (Base64.isArrayByteBase64(headersDecoded)) {
@@ -455,8 +466,8 @@ public class DataUtils {
         .flatMap(line -> Arrays.stream(Utils.splitConsideringQuotes(line, ",")))
         .map(
             headerLine -> {
-              var colonIndex = headerLine.indexOf(":");
-              var headerMap = new HashMap<String, String>();
+              final var colonIndex = headerLine.indexOf(":");
+              final var headerMap = new HashMap<String, String>();
               headerMap.put(
                   headerLine.substring(0, colonIndex).trim(),
                   headerLine.substring(colonIndex).trim());

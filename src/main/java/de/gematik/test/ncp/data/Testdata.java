@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import org.springframework.util.ResourceUtils;
  */
 @Slf4j
 @Accessors(fluent = true)
-public class Testdata {
+public final class Testdata {
 
   public static final String TESTDATA_BASEKEY = "testdata";
 
@@ -66,7 +66,7 @@ public class Testdata {
 
   public static final String RECORD_SYSTEMS_CONFIG_KEY = TESTDATA_BASEKEY + ".recordsystems";
 
-  public static final String KONNEKTOR_ADDRESSES_CONFIG_KEY = TESTDATA_BASEKEY + ".konnektor";
+  public static final String CONNECTOR_ADDRESSES_CONFIG_KEY = TESTDATA_BASEKEY + ".konnektor";
 
   public static final String DO_NOT_FAIL_CONFIG_KEY = CONFIG_BASEKEY + ".doNotFail";
 
@@ -107,8 +107,8 @@ public class Testdata {
       Utils.loadConfig(RecordSystems.class, RECORD_SYSTEMS_CONFIG_KEY);
 
   @Getter(lazy = true)
-  private final KonnektorAddresses konnektorAddresses =
-      Utils.loadConfig(KonnektorAddresses.class, KONNEKTOR_ADDRESSES_CONFIG_KEY);
+  private final ConnectorAddresses connectorAddresses =
+      Utils.loadConfig(ConnectorAddresses.class, CONNECTOR_ADDRESSES_CONFIG_KEY);
 
   @Getter(lazy = true)
   private final Boolean doNotFail = Utils.loadConfig(Boolean.class, DO_NOT_FAIL_CONFIG_KEY);
@@ -117,7 +117,7 @@ public class Testdata {
     initialize();
   }
 
-  protected void initialize() {
+  private void initialize() {
     TigerGlobalConfiguration.getObjectMapper()
         .registerModule(new JavaTimeModule())
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -130,8 +130,8 @@ public class Testdata {
    * @return {@link File} the loaded file
    */
   @SneakyThrows
-  public File loadFileFromPathInConfig(@NonNull String configPath) {
-    var filePath = TigerGlobalConfiguration.readString(configPath);
+  public File loadFileFromPathInConfig(@NonNull final String configPath) {
+    final var filePath = TigerGlobalConfiguration.readString(configPath);
     return ResourceUtils.getFile(filePath);
   }
 
@@ -157,7 +157,7 @@ public class Testdata {
    * @return {@code byte[]} the create ePKA as byte array
    */
   @SneakyThrows
-  public byte[] createEpkaFromTemplate(Patient patient) {
+  public byte[] createEpkaFromTemplate(final Patient patient) {
     return createEpkaFromTemplateFile(patient, ResourceUtils.getURL(getDefaultEpkaTemplatePath()));
   }
 
@@ -172,13 +172,15 @@ public class Testdata {
    * @return {@code byte[]} the create ePKA as byte array
    */
   @SneakyThrows
-  public byte[] createEpkaFromTemplate(Patient patient, @NonNull String epkaTemplateName) {
-    var templateFile = ResourceUtils.getURL(epkaTemplates().get(epkaTemplateName));
+  public byte[] createEpkaFromTemplate(
+      final Patient patient, @NonNull final String epkaTemplateName) {
+    final var templateFile = ResourceUtils.getURL(epkaTemplates().get(epkaTemplateName));
 
     return createEpkaFromTemplateFile(patient, templateFile);
   }
 
-  private byte[] createEpkaFromTemplateFile(@NonNull Patient patient, @NonNull URL templateFile) {
+  private byte[] createEpkaFromTemplateFile(
+      @NonNull final Patient patient, @NonNull final URL templateFile) {
     return new EpkaProcessor(templateFile)
         .updateBirthDate(patient.birthDate())
         .updateKvnr(patient.kvnr())
@@ -193,29 +195,29 @@ public class Testdata {
    * @param name {@link String} the full name to split
    * @return {@link Triple} the three name parts
    */
-  public Triple<String, String, String> getNameParts(@NonNull String name) {
-    var nameParts = name.split("\\s");
-    var lastLastName = nameParts[nameParts.length - 1];
+  public Triple<String, String, String> getNameParts(@NonNull final String name) {
+    final var nameParts = name.split("\\s");
+    final var lastLastName = nameParts[nameParts.length - 1];
 
-    var titles =
+    final var titles =
         Arrays.stream(nameParts)
             .takeWhile(namepart -> knownTitles().contains(namepart))
             .reduce((result, namepart) -> result + " " + namepart)
             .orElse(null);
 
-    var names =
+    final var names =
         Arrays.stream(nameParts)
             .limit(nameParts.length - 1L)
             .dropWhile(namepart -> knownTitles().contains(namepart))
             .toList();
 
-    var firstNames =
+    final var firstNames =
         names.stream()
             .takeWhile(namepart -> !knownPrefixes().contains(namepart))
             .reduce((result, namepart) -> result + " " + namepart)
             .orElseThrow(() -> new IllegalArgumentException("No first name was found"));
 
-    var lastNames =
+    final var lastNames =
         names.stream()
             .dropWhile(namepart -> !knownPrefixes().contains(namepart))
             .reduce((result, namepart) -> result + " " + namepart)

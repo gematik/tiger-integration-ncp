@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Singleton class to provide the instance of an {@link NcpehInterface} implementation. Currently,
+ * Singleton class to provide the instance of an {@link NcpehService} implementation. Currently,
  * quite trivial, as only one implementation exists ({@link NcpehClientImpl}).
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class NcpehProvider {
+public final class NcpehProvider {
 
   public static final String NCPEH_SIMULATION_CONFIG_KEY =
       ExternalServerConfig.INFRASTRUCTURE_KEY + ".ncpehSim";
@@ -37,13 +37,13 @@ public class NcpehProvider {
   private static final NcpehProvider ncpehProvider = new NcpehProvider();
 
   @Getter(lazy = true)
-  private final NcpehInterface ncpehImpl = new NcpehClientImpl(getNcpehConfig());
+  private final NcpehService ncpehImpl = new NcpehClientImpl(getNcpehConfig());
 
   @Getter(lazy = true)
   private final ExternalServerConfig ncpehConfig =
       Utils.loadConfig(ExternalServerConfig.class, NCPEH_SIMULATION_CONFIG_KEY);
 
-  public static NcpehInterface getNcpehImplementation() {
+  public static NcpehService getNcpehService() {
     return getNcpehProvider().getNcpehImpl();
   }
 }

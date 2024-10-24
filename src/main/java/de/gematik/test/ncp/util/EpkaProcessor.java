@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class EpkaProcessor extends XmlProcessor<EpkaProcessor> {
   private static final XPathExpression namePrefixPath =
       supplyOrThrowSneaky(() -> xpathProcessor().compile(NAME_PREFIX_XPATH_IN_EPKA));
 
-  public EpkaProcessor(@NonNull URL epkaFileUrl) {
+  public EpkaProcessor(@NonNull final URL epkaFileUrl) {
     super(epkaFileUrl);
   }
 
@@ -82,17 +82,17 @@ public class EpkaProcessor extends XmlProcessor<EpkaProcessor> {
   }
 
   @SneakyThrows
-  public EpkaProcessor updateKvnr(@NonNull String kvnr) {
+  public EpkaProcessor updateKvnr(@NonNull final String kvnr) {
     return updateNode(kvnrXpath(), kvnr);
   }
 
   @SneakyThrows
-  public EpkaProcessor updateBirthDate(@NonNull LocalDate birthDate) {
+  public EpkaProcessor updateBirthDate(@NonNull final LocalDate birthDate) {
     return updateNode(birthDatePath(), birthDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
   }
 
   @SneakyThrows
-  public EpkaProcessor updateName(@NonNull PersonName name) {
+  public EpkaProcessor updateName(@NonNull final PersonName name) {
     updateNode(fullNamePath(), name.toString());
 
     updateNode(namePrefixPath(), Objects.requireNonNullElse(name.titles(), ""));

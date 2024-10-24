@@ -8,6 +8,24 @@ additionalYamls:
   - filename: testdata.yaml
     baseKey: testdata
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info
+
+  info:
+    env:
+      enabled: true
+
+info:
+  application:
+    name: ${spring.application.name}
+    description: Very cool Spring Boot application
+    version: '@project.version@'
+    spring-cloud-version: '@spring-cloud.version@'
+    spring-boot-version: '@project.parent.version@'
+
 ports:
   tigerProxy: "${free.port.0}"
   epaFdV: "${free.port.1}"
@@ -19,28 +37,28 @@ tigerProxy:
   proxyPort: ${tiger.ports.tigerProxy}
   adminPort: 33030
   proxyLogLevel: WARN
-#  forwardToProxy:
-#    hostname: 192.168.110.10
-#    port: 3128
-#    type: http
-#  trafficEndpoints:
-#    - http://localhost:${tiger.ports.tigerProxy}
+  #  forwardToProxy:
+  #    hostname: 192.168.110.10
+  #    port: 3128
+  #    type: http
+  #  trafficEndpoints:
+  #    - http://localhost:${tiger.ports.tigerProxy}
   proxyRoutes:
 #    - from: http://ncpeh
 #      to: http://localhost:8082/rest
 
 servers:
-#  tigerRemoteProxy:
-#    type: tigerProxy
-#
-#    tigerProxyCfg:
-#      adminPort:
-#      proxyPort:
-#      proxiedServerProtocol: http
-#      proxyRoutes:
-#        - from:
-#          to:
-#
+  #  tigerRemoteProxy:
+  #    type: tigerProxy
+  #
+  #    tigerProxyCfg:
+  #      adminPort:
+  #      proxyPort:
+  #      proxiedServerProtocol: http
+  #      proxyRoutes:
+  #        - from:
+  #          to:
+  #
   epaFdvJar:
     type: externalJar
     active: "!{not ${tiger.servers.epaFdVUrl.active}}"
@@ -81,10 +99,8 @@ servers:
         - -Djdk.internal.httpclient.disableHostnameVerification
         - -Dfile.encoding=UTF-8
       arguments:
-        - --spring.profiles.active=gematik
-        #- --spring.config.additional-location=${workplace.epaps.resourcesPath}/
+        - --spring.profiles.active=ncp
         - --server.port=${tiger.ports.epaPs}
-        #- --config.path=${workplace.epaps.configDir}
         - --logging.level.org.apache.cxf.services=INFO
 
   epaPsUrl:
@@ -120,7 +136,7 @@ servers:
       - http://localhost:8082/
     healthcheckUrl: http://localhost:8082
 
-# the docker integration is untested and will be realized with story NCP-48
+  # the docker integration is untested and will be realized with story NCP-48
   ncpehSimDocker:
     type: docker
     active: "!{not ${tiger.servers.ncpehSimUrl.active} and ${workplace.ncpeh.inDocker}}"
@@ -136,3 +152,13 @@ lib:
   rbelAnsiColors: true
   activateWorkflowUi: true
   addCurlCommandsForRaCallsToReport: true
+
+logging:
+  level:
+    de.gematik.test.ncp: INFO
+    # activate tracing for a specific class
+    de.gematik.test.tiger.testenvmgr.TigerTestEnvMgr: INFO
+    # activate tracing for all classes and subpackages of a package
+    de.gematik.test.tiger.proxy: INFO
+    # activate tracing for the local Tiger Proxy. This logger has a special name due to its importance in the tiger test framework
+    localTigerProxy: INFO

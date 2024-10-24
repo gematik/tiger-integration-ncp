@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,14 @@ import lombok.NonNull;
 /** Configuration object to hold all patient information loaded from the testdata configuration */
 public class Patients extends ArrayList<Patient> {
 
-  public Patient findByName(@NonNull PersonName name) {
+  public Patient findByName(@NonNull final PersonName name) {
     return this.stream()
         .filter(patient -> name.equals(patient.name()))
         .findFirst()
         .orElseThrow(() -> new TigerConfigurationException("No patient found with name " + name));
   }
 
-  public Patient findByKvnr(@NonNull String kvnr) {
+  public Patient findByKvnr(@NonNull final String kvnr) {
     return this.stream()
         .filter(patient -> kvnr.equals(patient.kvnr()))
         .findFirst()

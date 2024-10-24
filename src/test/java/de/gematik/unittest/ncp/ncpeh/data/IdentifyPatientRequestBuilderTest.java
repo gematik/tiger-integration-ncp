@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import de.gematik.ncpeh.api.common.EuCountryCode;
 import de.gematik.test.ncp.ncpeh.data.IdentifyPatientRequestBuilder;
+import de.gematik.test.ncp.ncpeh.data.RequestBaseBuilder;
 import org.junit.jupiter.api.Test;
 
 class IdentifyPatientRequestBuilderTest {
 
   @Test
   void build() {
-    var tstObj =
+    final var tstObj =
         IdentifyPatientRequestBuilder.newInstance()
-            .accessCodeAssigningAuthority("2.25.1593158")
+            .accessCode(RequestBaseBuilder.KVNR_ASSIGNING_AUTHORITY)
             .euCountryCode(EuCountryCode.AUSTRIA)
             .idaAssertionProfileName("ida")
             .kvnr("X123456789")
             .accessCode("ABC123");
 
-    var result = assertDoesNotThrow(tstObj::build, "Method build threw exception");
+    final var result = assertDoesNotThrow(tstObj::build, "Method build threw exception");
   }
 }

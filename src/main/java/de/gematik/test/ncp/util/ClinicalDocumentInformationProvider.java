@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import org.hl7.v3.TS;
 @UtilityClass
 public class ClinicalDocumentInformationProvider {
 
-  public static String kvnrFromCDA3Document(ClinicalDocument document) {
+  public static String kvnrFromCDA3Document(final ClinicalDocument document) {
     return Optional.ofNullable(getPatientRoleFromClinicalDocument(document))
         .map(POCDMT000040PatientRole::getElementId)
         .stream()
@@ -46,7 +46,7 @@ public class ClinicalDocumentInformationProvider {
         .orElse(null);
   }
 
-  public static PersonName nameFromCDA3Document(ClinicalDocument document) {
+  public static PersonName nameFromCDA3Document(final ClinicalDocument document) {
     return Optional.ofNullable(getPatientRoleFromClinicalDocument(document))
         .map(POCDMT000040PatientRole::getPatient)
         .map(POCDMT000040Patient::getName)
@@ -54,7 +54,7 @@ public class ClinicalDocumentInformationProvider {
         .orElse(null);
   }
 
-  public static LocalDate birthDataFromCDA3Document(ClinicalDocument document) {
+  public static LocalDate birthDataFromCDA3Document(final ClinicalDocument document) {
     return Optional.ofNullable(getPatientRoleFromClinicalDocument(document))
         .map(POCDMT000040PatientRole::getPatient)
         .map(POCDMT000040Patient::getBirthTime)
@@ -67,7 +67,7 @@ public class ClinicalDocumentInformationProvider {
   }
 
   private static POCDMT000040PatientRole getPatientRoleFromClinicalDocument(
-      @NonNull ClinicalDocument document) {
+      @NonNull final ClinicalDocument document) {
     return Optional.ofNullable(document.getRecordTarget()).stream()
         .flatMap(Collection::stream)
         .map(POCDMT000040RecordTarget::getPatientRole)

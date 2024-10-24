@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,20 +22,20 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * Exception type to be thrown by the {@link PsInterface} operations. It's purpose is to indicate,
- * that something went wrong with either the processing of the data submitted to the PS or in the
- * communication between PS and Konnektor.
+ * Exception type to be thrown by the {@link PrimarySystemService} operations. It's purpose is to
+ * indicate, that something went wrong with either the processing of the data submitted to the PS or
+ * in the communication between PS and Konnektor.
  */
 public class PsException extends RuntimeException {
 
   @Getter private final @Nullable String operation;
 
-  public PsException(@NonNull String statusMessage) {
+  public PsException(@NonNull final String statusMessage) {
     super(statusMessage);
     this.operation = null;
   }
 
-  public PsException(String statusMessage, @Nullable String operation) {
+  public PsException(final String statusMessage, @Nullable final String operation) {
     super(statusMessage);
     this.operation = operation;
   }

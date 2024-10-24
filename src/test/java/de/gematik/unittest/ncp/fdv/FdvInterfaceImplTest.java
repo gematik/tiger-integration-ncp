@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,17 @@ package de.gematik.unittest.ncp.fdv;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.gematik.test.ncp.fdv.FdvInterfaceImpl;
 import de.gematik.test.ncp.fdv.FdvProvider;
+import de.gematik.test.ncp.fdv.FdvServiceImpl;
 import org.junit.jupiter.api.Test;
 
 class FdvInterfaceImplTest {
 
   @Test
   void isUpAndRunning() {
-    var fdvInterfaceImpl = new FdvInterfaceImpl(FdvProvider.getInstance().getEpaFdvConfig());
+    final var fdvInterfaceImpl = new FdvServiceImpl(FdvProvider.getInstance().getEpaFdvConfig());
 
-    var result = assertDoesNotThrow(fdvInterfaceImpl::isUpAndRunning);
+    final var result = assertDoesNotThrow(fdvInterfaceImpl::isUpAndRunning);
 
     assertNotNull(result);
     assertTrue(result);
@@ -36,9 +36,9 @@ class FdvInterfaceImplTest {
 
   @Test
   void authorizeEuCountry() {
-    var fdvInterfaceImpl = new FdvInterfaceImpl(FdvProvider.getInstance().getEpaFdvConfig());
+    final var fdvInterfaceImpl = new FdvServiceImpl(FdvProvider.getInstance().getEpaFdvConfig());
 
-    var accessCode =
+    final var accessCode =
         assertDoesNotThrow(() -> fdvInterfaceImpl.authorizeEuCountry("X1209120947", "SPAIN"));
 
     assertNotNull(accessCode);

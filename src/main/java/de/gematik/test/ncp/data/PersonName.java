@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,16 @@
 package de.gematik.test.ncp.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.stream.Stream;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.EqualsAndHashCode.Exclude;
-import lombok.Getter;
 import lombok.experimental.Accessors;
-import lombok.experimental.Delegate;
 
-@Getter
+@Data
 @EqualsAndHashCode
 @Accessors(fluent = true)
-public class PersonName implements CharSequence {
+public class PersonName {
 
   @JsonProperty private String givenNames;
 
@@ -35,41 +34,16 @@ public class PersonName implements CharSequence {
 
   @JsonProperty private String titles;
 
-  @Delegate(types = CharSequence.class)
-  @Exclude
-  private String toString;
-
-  public PersonName titles(String titles) {
-    this.titles = titles;
-    return updateToString();
-  }
-
-  public PersonName givenNames(String givenNames) {
-    this.givenNames = givenNames;
-    return updateToString();
-  }
-
-  public PersonName lastNames(String lastNames) {
-    this.lastNames = lastNames;
-    return updateToString();
-  }
-
   @Override
   public String toString() {
-    return Optional.ofNullable(toString).orElse(updateToString().toString);
+    return Stream.of(titles, givenNames, lastNames)
+        .filter(Objects::nonNull)
+        .reduce((a, b) -> a + " " + b)
+        .orElse("");
   }
 
-  private PersonName updateToString() {
-    var builder = new StringBuilder();
-    Optional.ofNullable(titles).ifPresent(t -> builder.append(t).append(" "));
-    Optional.ofNullable(givenNames).ifPresent(gn -> builder.append(gn).append(" "));
-    Optional.ofNullable(lastNames).ifPresent(builder::append);
-    toString = builder.toString().trim();
-    return this;
-  }
-
-  public static PersonName fromString(String name) {
-    var nameParts = Testdata.instance().getNameParts(name);
+  public static PersonName fromString(final String name) {
+    final var nameParts = Testdata.instance().getNameParts(name);
     return new PersonName()
         .titles(nameParts.getLeft())
         .givenNames(nameParts.getMiddle())

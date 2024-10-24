@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,14 +41,14 @@ class EpkaProcessorTest {
 
   @Test
   void updateKvnr() {
-    var newKvnr = "X987654321";
+    final var newKvnr = "X987654321";
     assertDoesNotThrow(() -> tstObj.updateKvnr(newKvnr));
     assertEquals(newKvnr, tstObj.retrieveNode(EpkaProcessor.kvnrXpath()).getNodeValue());
   }
 
   @Test
   void updateBirthDate() {
-    var newBirthDate = LocalDate.now();
+    final var newBirthDate = LocalDate.now();
     assertDoesNotThrow(() -> tstObj.updateBirthDate(newBirthDate));
     assertEquals(
         newBirthDate.format(DateTimeFormatter.ISO_LOCAL_DATE),
@@ -57,7 +57,7 @@ class EpkaProcessorTest {
 
   @Test
   void updateName() {
-    var newName =
+    final var newName =
         PersonName.fromString(
             "Prof. Freifrau Sybille Gertrud von Oberammergau und Niederrheindings");
     assertDoesNotThrow(() -> tstObj.updateName(newName));
@@ -74,7 +74,7 @@ class EpkaProcessorTest {
 
   @Test
   void that() {
-    var alsoTstObj =
+    final var alsoTstObj =
         assertDoesNotThrow(
             () -> tstObj.updateNode(EpkaProcessor.fullNamePath(), "Mr. Bli Bla Blubs"));
     assertInstanceOf(EpkaProcessor.class, alsoTstObj);

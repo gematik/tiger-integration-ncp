@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,12 @@ public class NcpehClientImplForUnittest extends NcpehClientImpl {
   @Getter(lazy = true)
   private final NcpehSimulatorApi clientProxy = initializeNcpehApiMock();
 
-  public NcpehClientImplForUnittest(ExternalServerConfig config) {
+  public NcpehClientImplForUnittest(final ExternalServerConfig config) {
     super(config);
   }
 
   private NcpehSimulatorApi initializeNcpehApiMock() {
-    var mock = Mockito.mock(NcpehSimulatorApi.class);
+    final var mock = Mockito.mock(NcpehSimulatorApi.class);
 
     Mockito.when(mock.identifyPatient(Mockito.any()))
         .thenReturn(Response.ok().entity(TestUtils.identifyPatientResponse()).build());

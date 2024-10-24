@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,12 @@ public class PatientImpl implements Patient {
 
   private String accessCode;
 
-  public PatientImpl(PersonName name, String kvnr, LocalDate birthDate) {
+  public PatientImpl(final PersonName name, final String kvnr, final LocalDate birthDate) {
     this(name, kvnr, birthDate, null);
+  }
+
+  @Override
+  public String toString() {
+    return String.format("Name: %s; KVNR: %s; Birth Date: %s", name, kvnr, birthDate);
   }
 }

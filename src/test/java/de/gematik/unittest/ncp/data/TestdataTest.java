@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@ package de.gematik.unittest.ncp.data;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import de.gematik.test.ncp.data.PatientImpl;
+import de.gematik.test.ncp.data.PersonName;
 import de.gematik.test.ncp.data.Testdata;
-import de.gematik.test.ncp.screenplay.PatientActor;
 import de.gematik.test.ncp.util.Utils;
 import de.gematik.test.tiger.common.config.TigerConfigurationException;
 import java.net.URI;
@@ -49,23 +50,25 @@ class TestdataTest {
 
   @Test
   void loadFileFromPathInConfig() {
-    var configKey =
+    final var configKey =
         Testdata.EPKA_TEMPLATES_CONFIG_PATH + Utils.ensureStartsWith(epkaTemplateConfigKey, ".");
 
-    var tstResult = assertDoesNotThrow(() -> tstObj.loadFileFromPathInConfig(configKey));
+    final var tstResult = assertDoesNotThrow(() -> tstObj.loadFileFromPathInConfig(configKey));
     assertNotNull(tstResult);
     assertTrue(tstResult.exists());
   }
 
   @Test
   void createEpkaFromTemplate() {
-    var patient = new PatientActor("Dr. John Doedeldie", "X190471029", LocalDate.of(1987, 11, 23));
-    var tstResult =
+    final var patient =
+        new PatientImpl(
+            PersonName.fromString("Dr. John Doedeldie"), "X190471029", LocalDate.of(1987, 11, 23));
+    final var tstResult =
         assertDoesNotThrow(() -> tstObj.createEpkaFromTemplate(patient, epkaTemplateConfigKey));
     assertNotNull(tstResult);
 
-    var tstResultString = new String(tstResult, StandardCharsets.UTF_8);
-    assertTrue(tstResultString.contains(patient.name()));
+    final var tstResultString = new String(tstResult, StandardCharsets.UTF_8);
+    assertTrue(tstResultString.contains(patient.name().toString()));
     assertTrue(tstResultString.contains(patient.kvnr()));
     assertTrue(
         tstResultString.contains(patient.birthDate().format(DateTimeFormatter.ISO_LOCAL_DATE)));
@@ -73,12 +76,14 @@ class TestdataTest {
 
   @Test
   void createEpkaFromDefaultTemplate() {
-    var patient = new PatientActor("Dr. John Doedeldie", "X190471029", LocalDate.of(1987, 11, 23));
-    var tstResult = assertDoesNotThrow(() -> tstObj.createEpkaFromTemplate(patient));
+    final var patient =
+        new PatientImpl(
+            PersonName.fromString("Dr. John Doedeldie"), "X190471029", LocalDate.of(1987, 11, 23));
+    final var tstResult = assertDoesNotThrow(() -> tstObj.createEpkaFromTemplate(patient));
     assertNotNull(tstResult);
 
-    var tstResultString = new String(tstResult, StandardCharsets.UTF_8);
-    assertTrue(tstResultString.contains(patient.name()));
+    final var tstResultString = new String(tstResult, StandardCharsets.UTF_8);
+    assertTrue(tstResultString.contains(patient.name().toString()));
     assertTrue(tstResultString.contains(patient.kvnr()));
     assertTrue(
         tstResultString.contains(patient.birthDate().format(DateTimeFormatter.ISO_LOCAL_DATE)));
@@ -86,11 +91,11 @@ class TestdataTest {
 
   @Test
   void getNameParts() {
-    var title = "Graf";
-    var firstnames = "Hubert Herbert Harald";
-    var lastname = "Herford";
-    var name = title + " " + firstnames + " " + lastname;
-    var tstResult = assertDoesNotThrow(() -> tstObj.getNameParts(name));
+    final var title = "Graf";
+    final var firstnames = "Hubert Herbert Harald";
+    final var lastname = "Herford";
+    final var name = title + " " + firstnames + " " + lastname;
+    final var tstResult = assertDoesNotThrow(() -> tstObj.getNameParts(name));
     assertEquals(title, tstResult.getLeft());
     assertEquals(firstnames, tstResult.getMiddle());
     assertEquals(lastname, tstResult.getRight());
@@ -98,11 +103,11 @@ class TestdataTest {
 
   @Test
   void patientsTestdata() {
-    var tstResult = assertDoesNotThrow(tstObj::patientsTestdata);
+    final var tstResult = assertDoesNotThrow(tstObj::patientsTestdata);
     assertNotNull(tstResult);
     assertFalse(tstResult.isEmpty());
 
-    var patient = assertDoesNotThrow(() -> tstResult.stream().findFirst().orElseThrow());
+    final var patient = assertDoesNotThrow(() -> tstResult.stream().findFirst().orElseThrow());
     assertNotNull(patient.birthDate());
     assertNotNull(patient.name());
     assertNotNull(patient.kvnr());
@@ -110,12 +115,12 @@ class TestdataTest {
 
   @Test
   void euPractitioners() {
-    var tstResult = assertDoesNotThrow(tstObj::euPractitioners);
+    final var tstResult = assertDoesNotThrow(tstObj::euPractitioners);
 
     assertNotNull(tstResult);
     assertFalse(tstResult.isEmpty());
 
-    var practitioner = assertDoesNotThrow(() -> tstResult.stream().findFirst().orElseThrow());
+    final var practitioner = assertDoesNotThrow(() -> tstResult.stream().findFirst().orElseThrow());
     assertNotNull(practitioner.name());
     assertNotNull(practitioner.country());
     assertNotNull(practitioner.profileName());
@@ -123,50 +128,51 @@ class TestdataTest {
 
   @Test
   void knownTitles() {
-    var tstResult = assertDoesNotThrow(tstObj::knownTitles);
+    final var tstResult = assertDoesNotThrow(tstObj::knownTitles);
 
     assertNotNull(tstResult);
     assertFalse(tstResult.isEmpty());
 
-    var title = assertDoesNotThrow(() -> tstResult.stream().findFirst().orElseThrow());
+    final var title = assertDoesNotThrow(() -> tstResult.stream().findFirst().orElseThrow());
     assertNotNull(title);
   }
 
   @Test
   void knownPrefixes() {
-    var tstResult = assertDoesNotThrow(tstObj::knownPrefixes);
+    final var tstResult = assertDoesNotThrow(tstObj::knownPrefixes);
 
     assertNotNull(tstResult);
     assertFalse(tstResult.isEmpty());
 
-    var prefix = assertDoesNotThrow(() -> tstResult.stream().findFirst().orElseThrow());
+    final var prefix = assertDoesNotThrow(() -> tstResult.stream().findFirst().orElseThrow());
     assertNotNull(prefix);
   }
 
   @Test
   void testdataProfiles() {
-    var tstResult = assertDoesNotThrow(tstObj::ncpehSimTestdataProfiles);
+    final var tstResult = assertDoesNotThrow(tstObj::ncpehSimTestdataProfiles);
 
     assertNotNull(tstResult);
     assertFalse(tstResult.isEmpty());
 
-    var testdataProfile =
+    final var testdataProfile =
         assertDoesNotThrow(() -> tstResult.entrySet().stream().findFirst().orElseThrow());
     assertNotNull(testdataProfile.getValue());
   }
 
   @Test
   void konnektorAddressesTest() {
-    var tstResult = assertDoesNotThrow(tstObj::konnektorAddresses);
+    final var tstResult = assertDoesNotThrow(tstObj::connectorAddresses);
 
     assertNotNull(tstResult);
     assertFalse(tstResult.isEmpty());
 
-    var example = tstResult.values().stream().flatMap(Collection::stream).findFirst().orElse(null);
+    final var example =
+        tstResult.values().stream().flatMap(Collection::stream).findFirst().orElse(null);
 
     assertNotNull(example);
 
-    var exampleUri = assertDoesNotThrow(() -> URI.create(example));
+    final var exampleUri = assertDoesNotThrow(() -> URI.create(example));
     assertDoesNotThrow(exampleUri::toURL);
   }
 }

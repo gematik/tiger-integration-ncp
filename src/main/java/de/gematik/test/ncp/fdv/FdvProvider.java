@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class FdvProvider {
   @Getter(lazy = true)
   private static final FdvProvider instance = new FdvProvider();
 
-  public static FdvInterface getDefaultFdvClient() {
+  public static FdvService getDefaultFdvClient() {
     return getInstance().getFdvClient();
   }
 
@@ -38,5 +38,5 @@ public class FdvProvider {
 
   @Getter(lazy = true)
   // Hier wird zwar die FdvInterfaceImpl erstellt, aber letzlich führt diese nichts aus.
-  private final FdvInterface fdvClient = new FdvInterfaceImpl(getEpaFdvConfig());
+  private final FdvService fdvClient = new FdvServiceImpl(getEpaFdvConfig());
 }

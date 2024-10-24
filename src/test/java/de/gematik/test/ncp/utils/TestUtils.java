@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,11 @@ public class TestUtils {
    * @param loglevel {@link Level} new log level
    * @return {@link Level} the previous log level
    */
-  public static Level overwriteLoglevel(String fullName, Level loglevel) {
-    var itsLogger = LoggerFactory.getLogger(fullName);
+  public static Level overwriteLoglevel(final String fullName, final Level loglevel) {
+    final var itsLogger = LoggerFactory.getLogger(fullName);
 
-    if (itsLogger instanceof Logger javaLogger) {
-      var oldLevel = javaLogger.getLevel();
+    if (itsLogger instanceof final Logger javaLogger) {
+      final var oldLevel = javaLogger.getLevel();
       javaLogger.setLevel(loglevel);
       return oldLevel;
     }

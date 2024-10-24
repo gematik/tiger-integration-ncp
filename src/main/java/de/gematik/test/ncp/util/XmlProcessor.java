@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,24 +57,15 @@ public abstract class XmlProcessor<T extends XmlProcessor<?>> {
 
   protected abstract T that();
 
-  public Node retrieveNode(@NonNull XPathExpression xpath) {
+  public Node retrieveNode(@NonNull final XPathExpression xpath) {
     try {
-      if (xpath == null) {
-        throw new NullPointerException("xpath is marked non-null but is null");
-      }
       return (Node) xpath.evaluate(xmlDocument(), XPathConstants.NODE);
     } catch (final java.lang.Throwable $ex) {
       throw lombok.Lombok.sneakyThrow($ex);
     }
   }
 
-  public T updateNode(@NonNull XPathExpression xpath, @NonNull String newValue) {
-    if (xpath == null) {
-      throw new NullPointerException("xpath is marked non-null but is null");
-    }
-    if (newValue == null) {
-      throw new NullPointerException("newValue is marked non-null but is null");
-    }
+  public T updateNode(@NonNull final XPathExpression xpath, @NonNull final String newValue) {
     retrieveNode(xpath).setNodeValue(newValue);
     return that();
   }
@@ -86,7 +77,7 @@ public abstract class XmlProcessor<T extends XmlProcessor<?>> {
    */
   public String toXmlString() {
     try {
-      var writer = new StringWriter();
+      final var writer = new StringWriter();
       transformer().transform(new DOMSource(xmlDocument()), new StreamResult(writer));
       return writer.toString();
     } catch (final java.lang.Throwable $ex) {
@@ -95,7 +86,7 @@ public abstract class XmlProcessor<T extends XmlProcessor<?>> {
   }
 
   private static class XmlProcessorImpl extends XmlProcessor<XmlProcessorImpl> {
-    XmlProcessorImpl(URL xmlFileUrl) {
+    XmlProcessorImpl(final URL xmlFileUrl) {
       super(xmlFileUrl);
     }
 
@@ -111,10 +102,7 @@ public abstract class XmlProcessor<T extends XmlProcessor<?>> {
    * @param xmlFileUrl
    * @return
    */
-  public static XmlProcessor<XmlProcessorImpl> instance(@NonNull URL xmlFileUrl) {
-    if (xmlFileUrl == null) {
-      throw new NullPointerException("xmlFileUrl is marked non-null but is null");
-    }
+  public static XmlProcessor<XmlProcessorImpl> instance(@NonNull final URL xmlFileUrl) {
     return new XmlProcessorImpl(xmlFileUrl);
   }
 

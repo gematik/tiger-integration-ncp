@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package de.gematik.unittest.ncp.ncpeh.client.dataobject;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.gematik.test.ncp.ncpeh.NcpehInterface;
-import de.gematik.test.ncp.ncpeh.NcpehInterface.PatientSummaryLevel;
+import de.gematik.test.ncp.ncpeh.NcpehService;
+import de.gematik.test.ncp.ncpeh.NcpehService.PatientSummaryLevel;
 import org.junit.jupiter.api.Test;
 
 class NcpehInterfaceTest {
@@ -30,9 +30,9 @@ class NcpehInterfaceTest {
 
   @Test
   void patientSummaryLevelFromDocumentUniqueIdTest() {
-    var result =
+    final var result =
         assertDoesNotThrow(
-            () -> NcpehInterface.PatientSummaryLevel.fromDocumentUniqueId(DOC_UNIQUE_ID));
+            () -> NcpehService.PatientSummaryLevel.fromDocumentUniqueId(DOC_UNIQUE_ID));
 
     assertNotNull(result);
     assertEquals(PatientSummaryLevel.LEVEL_3, result);
@@ -40,19 +40,19 @@ class NcpehInterfaceTest {
 
   @Test
   void patientSummaryLevelFromDocumentUniqueIdThrowsTest() {
-    var invalidDocId = "2.25.12436";
+    final var invalidDocId = "2.25.12436";
 
-    var result =
+    final var result =
         assertThrows(
             IllegalArgumentException.class,
-            () -> NcpehInterface.PatientSummaryLevel.fromDocumentUniqueId(invalidDocId));
+            () -> NcpehService.PatientSummaryLevel.fromDocumentUniqueId(invalidDocId));
 
     assertTrue(result.getMessage().contains(invalidDocId));
   }
 
   @Test
   void patientSummaryLevelFromValueTest() {
-    var result = assertDoesNotThrow(() -> NcpehInterface.PatientSummaryLevel.fromValue(LEVEL));
+    final var result = assertDoesNotThrow(() -> NcpehService.PatientSummaryLevel.fromValue(LEVEL));
 
     assertNotNull(result);
     assertEquals(PatientSummaryLevel.LEVEL_1, result);
@@ -60,12 +60,12 @@ class NcpehInterfaceTest {
 
   @Test
   void patientSummaryLevelFromValueThrowsTest() {
-    Integer invalidLevel = 2;
+    final Integer invalidLevel = 2;
 
-    var result =
+    final var result =
         assertThrows(
             IllegalArgumentException.class,
-            () -> NcpehInterface.PatientSummaryLevel.fromValue(invalidLevel));
+            () -> NcpehService.PatientSummaryLevel.fromValue(invalidLevel));
 
     assertTrue(result.getMessage().contains(invalidLevel.toString()));
   }

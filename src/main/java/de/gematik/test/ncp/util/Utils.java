@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class Utils {
   private static final XMLInputFactory xmlInputFactory = newXmlInputFactory();
 
   private static XMLInputFactory newXmlInputFactory() {
-    XMLInputFactory factory = XMLInputFactory.newInstance();
+    final XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
     return factory;
@@ -71,13 +71,13 @@ public class Utils {
    * @param <R> return type of the function
    */
   public static <T, R> Function<T, R> swallowExceptionFunction(
-      @NonNull Function<T, R> code,
-      @NonNull Class<? extends Exception> exceptionType,
-      R insteadValue) {
+      @NonNull final Function<T, R> code,
+      @NonNull final Class<? extends Exception> exceptionType,
+      final R insteadValue) {
     return t -> {
       try {
         return code.apply(t);
-      } catch (Exception e) {
+      } catch (final Exception e) {
         if (exceptionType.isAssignableFrom(e.getClass())) {
           return insteadValue;
         }
@@ -97,7 +97,7 @@ public class Utils {
    * @param <R> return type of the function
    */
   public static <T, R> Function<T, R> swallowExceptionFunction(
-      @NonNull Function<T, R> code, R insteadValue) {
+      @NonNull final Function<T, R> code, final R insteadValue) {
     return swallowExceptionFunction(code, Exception.class, insteadValue);
   }
 
@@ -110,7 +110,7 @@ public class Utils {
    * @param <T> parameter type of the function
    * @param <R> return type of the function
    */
-  public static <T, R> Function<T, R> swallowExceptionFunction(@NonNull Function<T, R> code) {
+  public static <T, R> Function<T, R> swallowExceptionFunction(@NonNull final Function<T, R> code) {
     return swallowExceptionFunction(code, null);
   }
 
@@ -123,7 +123,7 @@ public class Utils {
    * @return the entity read from the response or null, if it couldn't be read
    * @param <T> type of the entity
    */
-  public static <T> T readEntityFromResponse(Response response, Class<T> entityType) {
+  public static <T> T readEntityFromResponse(final Response response, final Class<T> entityType) {
     return swallowExceptionFunction((Function<Response, T>) resp -> resp.readEntity(entityType))
         .apply(response);
   }
@@ -137,7 +137,7 @@ public class Utils {
    * @param <T> the return type of the suppliers {@code get()} function.
    */
   @SneakyThrows
-  public static <T> T supplyOrThrowSneaky(ThrowingSupplier<T> supplier) {
+  public static <T> T supplyOrThrowSneaky(final ThrowingSupplier<T> supplier) {
     return supplier.get();
   }
 
@@ -150,7 +150,7 @@ public class Utils {
    * @return the loaded data in an instance of the given class
    * @param <T> return type
    */
-  public static <T> T loadConfig(Class<T> configClass, String configPath) {
+  public static <T> T loadConfig(final Class<T> configClass, final String configPath) {
     return TigerGlobalConfiguration.instantiateConfigurationBean(configClass, configPath)
         .orElseThrow(
             () -> new TigerConfigurationException("No configuration data found for " + configPath));
@@ -169,9 +169,12 @@ public class Utils {
    * @return {@link URI} the created URI
    */
   public static URI buildUri(
-      @NonNull String scheme, @NonNull String hostname, Integer port, String... paths) {
-    var formattedScheme = ensureEndsWith(scheme, "://");
-    var result =
+      @NonNull final String scheme,
+      @NonNull final String hostname,
+      final Integer port,
+      final String... paths) {
+    final var formattedScheme = ensureEndsWith(scheme, "://");
+    final var result =
         URI.create(
             formattedScheme
                 .concat(hostname)
@@ -194,7 +197,7 @@ public class Utils {
    *     Missing "/" will be added.
    * @return {@link URI} the created URI
    */
-  public static URI buildUri(@NonNull String hostname, String... paths) {
+  public static URI buildUri(@NonNull final String hostname, final String... paths) {
     return buildUri("http://", hostname, null, paths);
   }
 
@@ -206,7 +209,7 @@ public class Utils {
    * @return {@link String} If it already ends with the suffix, the original string is returned, if
    *     not the suffix is added to the end of the string and the concatenated String is returned
    */
-  public static String ensureEndsWith(@NonNull String string, @NonNull String suffix) {
+  public static String ensureEndsWith(@NonNull final String string, @NonNull final String suffix) {
     if (!string.endsWith(suffix)) return string.concat(suffix);
     return string;
   }
@@ -220,7 +223,8 @@ public class Utils {
    *     if not the prefix is added at the start of the string and the concatenated String is
    *     returned
    */
-  public static String ensureStartsWith(@NonNull String string, @NonNull String prefix) {
+  public static String ensureStartsWith(
+      @NonNull final String string, @NonNull final String prefix) {
     if (!string.startsWith(prefix)) return prefix.concat(string);
     return string;
   }
@@ -232,8 +236,9 @@ public class Utils {
    * @param characters character(s) to remove from the given String
    * @return the trimmed String
    */
-  public static String trimCharacters(@NonNull String value, @NonNull String characters) {
-    var charactersLength = characters.length();
+  public static String trimCharacters(
+      @NonNull final String value, @NonNull final String characters) {
+    final var charactersLength = characters.length();
     var newValue = value;
 
     while (newValue.startsWith(characters)) {
@@ -257,9 +262,10 @@ public class Utils {
    * @param characters character(s) to remove from the given String
    * @return the trimmed String
    */
-  public static String trimCharacters(@NonNull String value, @NonNull String... characters) {
+  public static String trimCharacters(
+      @NonNull final String value, @NonNull final String... characters) {
     var newValue = value;
-    for (String chars : characters) {
+    for (final String chars : characters) {
       newValue = trimCharacters(newValue, chars);
     }
     return newValue;
@@ -273,7 +279,8 @@ public class Utils {
    * @param delimiter character(s) at which to split
    * @return array of the parts of the given value
    */
-  public static String[] splitConsideringQuotes(@NonNull String value, @NonNull String delimiter) {
+  public static String[] splitConsideringQuotes(
+      @NonNull final String value, @NonNull final String delimiter) {
     return value.split(delimiter + "(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)(?=(?:[^']*'[^']*')*[^']*$)");
   }
 
@@ -286,9 +293,10 @@ public class Utils {
    * @param <T> type of the Java result object
    */
   @SneakyThrows
-  public static <T> T unmarshalXml(@NonNull Class<T> objectType, byte[] marshalledObject) {
-    var jaxbUnmarshaller = JAXBContext.newInstance(objectType).createUnmarshaller();
-    var inputStream = new ByteArrayInputStream(marshalledObject);
+  public static <T> T unmarshalXml(
+      @NonNull final Class<T> objectType, final byte[] marshalledObject) {
+    final var jaxbUnmarshaller = JAXBContext.newInstance(objectType).createUnmarshaller();
+    final var inputStream = new ByteArrayInputStream(marshalledObject);
     return jaxbUnmarshaller
         .unmarshal(xmlInputFactory().createXMLStreamReader(inputStream), objectType)
         .getValue();
@@ -302,7 +310,8 @@ public class Utils {
    * @return the Java object created from the XML
    * @param <T> type of the Java result object
    */
-  public static <T> T unmarshalBase64EncodedXml(Class<T> objectType, byte[] xmlEncoded) {
+  public static <T> T unmarshalBase64EncodedXml(
+      final Class<T> objectType, final byte[] xmlEncoded) {
 
     byte[] xmlDecoded = xmlEncoded;
 
@@ -324,7 +333,7 @@ public class Utils {
    * @param <T> type of the list elements
    */
   public static <T> List<String> toStringListElements(
-      List<T> list, Function<T, String> toStringFunction) {
+      final List<T> list, final Function<T, String> toStringFunction) {
     return Optional.ofNullable(list).stream().flatMap(List::stream).map(toStringFunction).toList();
   }
 }

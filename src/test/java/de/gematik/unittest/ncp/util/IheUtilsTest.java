@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package de.gematik.unittest.ncp.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.gematik.test.ncp.ncpeh.NcpehInterface.PatientSummaryLevel;
+import de.gematik.test.ncp.ncpeh.NcpehService.PatientSummaryLevel;
 import de.gematik.test.ncp.util.IheUtils;
 import de.gematik.unittest.testutil.TestUtils;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
@@ -30,8 +30,8 @@ class IheUtilsTest {
 
   @Test
   void readDocumentMetadataFromAdhocQueryResponse() {
-    var patientSummaryLvl = PatientSummaryLevel.LEVEL_3;
-    var documentMetadata =
+    final var patientSummaryLvl = PatientSummaryLevel.LEVEL_3;
+    final var documentMetadata =
         assertDoesNotThrow(
             () ->
                 IheUtils.readDocumentMetadataFromAdhocQueryResponse(
@@ -45,8 +45,8 @@ class IheUtilsTest {
 
   @Test
   void retrieveExtrinsicObjectToCdaLevel() {
-    var patientSummaryLvl = PatientSummaryLevel.LEVEL_1;
-    var extrinsicObject =
+    final var patientSummaryLvl = PatientSummaryLevel.LEVEL_1;
+    final var extrinsicObject =
         assertDoesNotThrow(
             () -> IheUtils.retrieveExtrinsicObjectToCdaLevel(testdata, patientSummaryLvl.level()));
 

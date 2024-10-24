@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 gematik GmbH
+ * Copyright (c) 2024. gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package de.gematik.test.ncp.ncpeh.data;
 
-import static de.gematik.test.ncp.util.IheUtils.STATUS_APPROVED;
-
 import de.gematik.epa.conversion.ResponseUtils;
 import de.gematik.epa.ihe.model.response.ProxyFindResponse;
 import de.gematik.ncpeh.api.common.EuCountryCode;
@@ -26,7 +24,8 @@ import de.gematik.ncpeh.api.request.IdentifyPatientRequest;
 import de.gematik.ncpeh.api.request.RetrieveDocumentRequest;
 import de.gematik.test.ncp.data.NcpehSimTestdataProfile;
 import de.gematik.test.ncp.data.Patient;
-import de.gematik.test.ncp.ncpeh.NcpehInterface.PatientSummaryLevel;
+import de.gematik.test.ncp.ncpeh.NcpehService;
+import de.gematik.test.ncp.ncpeh.NcpehService.PatientSummaryLevel;
 import java.util.Arrays;
 import java.util.Optional;
 import lombok.NonNull;
@@ -41,9 +40,7 @@ import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 @UtilityClass
 public class TestdataFactory {
 
-  public static final String NCPEH_HCID = "1.2.276.0.76.4.291";
-
-  public static final String NCPEH_SIGNING_AUTHORITY = "1.2.276.0.76.3.1.580.147";
+  public static final String EPED_ACCESS_CODE_ASSIGNING_AUTHORITY = "1.2.276.0.76.4.299";
 
   /**
    * Build an IdentifyPatientRequest with the given KVNR and some fixed test data (see constants in
@@ -56,9 +53,9 @@ public class TestdataFactory {
    * @return {@link IdentifyPatientRequest}
    */
   public static IdentifyPatientRequest buildStandardIdentifyPatientRequest(
-      @NonNull Patient patient,
-      @NonNull EuCountryCode country,
-      @NonNull NcpehSimTestdataProfile testdata) {
+      @NonNull final Patient patient,
+      @NonNull final EuCountryCode country,
+      @NonNull final NcpehSimTestdataProfile testdata) {
     return IdentifyPatientRequestBuilder.newInstance()
         .accessCode(patient.accessCode())
         .kvnr(patient.kvnr())
@@ -78,16 +75,13 @@ public class TestdataFactory {
    * @return {@link FindDocumentsRequest}
    */
   public static FindDocumentsRequest buildStandardFindDocumentsRequest(
-      @NonNull Patient patient,
-      @NonNull EuCountryCode country,
-      @NonNull NcpehSimTestdataProfile testdata) {
+      @NonNull final Patient patient,
+      @NonNull final EuCountryCode country,
+      @NonNull final NcpehSimTestdataProfile testdata) {
     return FindDocumentsRequestBuilder.newInstance()
-        .xdsDocumentEntryClassCode("('60591-5^^2.16.840.1.113883.6.1')")
-        .xdsDocumentEntryStatus("('" + STATUS_APPROVED + "')")
         .trcAssertionProfileName(testdata.trcProfileName())
         .kvnr(patient.kvnr())
         .accessCode(patient.accessCode())
-        .oidAssigningAuthority(NCPEH_SIGNING_AUTHORITY)
         .euCountryCode(country)
         .idaAssertionProfileName(testdata.idaProfileName())
         .build();
@@ -102,23 +96,22 @@ public class TestdataFactory {
    * @param testdata configured testdata profile, e.g. for information regarding ida and trc
    *     assertion profile
    * @param metadata data as they are returned by the {@link
-   *     de.gematik.test.ncp.ncpeh.NcpehInterface#findPatientSummary(Patient, String, String)}
-   *     operation<br>
+   *     NcpehService#findPatientSummary(Patient, String, String)} operation<br>
    *     Note: So far no data are read from metadata, but test data defined in the constants of this
    *     class are used instead
-   * @param patientSummaryLevels List of patient summary levels (1 & 3), which shall be retrieved.
+   * @param patientSummaryLevels List of patient summary levels (1 and 3), which shall be retrieved.
    * @return {@link RetrieveDocumentRequest}
    */
   public static RetrieveDocumentRequest buildStandardRetrieveDocumentRequest(
-      @NonNull Patient patient,
-      @NonNull EuCountryCode country,
-      @NonNull NcpehSimTestdataProfile testdata,
-      AdhocQueryResponse metadata,
-      PatientSummaryLevel... patientSummaryLevels) {
+      @NonNull final Patient patient,
+      @NonNull final EuCountryCode country,
+      @NonNull final NcpehSimTestdataProfile testdata,
+      final AdhocQueryResponse metadata,
+      final PatientSummaryLevel... patientSummaryLevels) {
 
-    var structuredMetadata = ResponseUtils.toProxyFindResponse(metadata);
+    final var structuredMetadata = ResponseUtils.toProxyFindResponse(metadata);
 
-    var builder = RetrieveDocumentRequestBuilder.newInstance();
+    final var builder = RetrieveDocumentRequestBuilder.newInstance();
 
     Optional.ofNullable(patientSummaryLevels).stream()
         .flatMap(Arrays::stream)
@@ -134,11 +127,11 @@ public class TestdataFactory {
   }
 
   private static void insertDocumentInformationForRetrieve(
-      RetrieveDocumentRequestBuilder builder,
-      ProxyFindResponse metadata,
-      PatientSummaryLevel patientSummaryLevel) {
+      final RetrieveDocumentRequestBuilder builder,
+      final ProxyFindResponse metadata,
+      final PatientSummaryLevel patientSummaryLevel) {
 
-    var docMetadata =
+    final var docMetadata =
         metadata.registryObjectLists().documentsMetadata().stream()
             .filter(md -> patientSummaryLevel.documentIsOfLevel(md.uniqueId()))
             .findFirst()
@@ -151,7 +144,6 @@ public class TestdataFactory {
 
     builder
         .documentUniqueId(docMetadata.uniqueId())
-        .homeCommunityId(docMetadata.home())
         .repositoryUniqueId(docMetadata.repositoryUniqueId());
   }
 }
