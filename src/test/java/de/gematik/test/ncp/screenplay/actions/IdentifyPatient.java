@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package de.gematik.test.ncp.screenplay.actions;
 
+import de.gematik.test.ncp.glue.psa.UCHeaders;
 import de.gematik.test.ncp.ncpeh.client.dataobject.DataUtils;
+import de.gematik.test.ncp.screenplay.abilities.ProvidePatientAccessData;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePractitionerData;
 import de.gematik.test.ncp.screenplay.abilities.TreatPatient;
@@ -36,13 +38,17 @@ public class IdentifyPatient implements Performable {
 
     final var ncpeh = actor.usingAbilityTo(UseNcpeh.class);
     final var practitionerData = actor.usingAbilityTo(ProvidePractitionerData.class);
+    final var patientAccessData = actor.usingAbilityTo(ProvidePatientAccessData.class);
 
     patientData.setIdentifyPatientDataResponse(null);
     patientData.setIdentifyPatientData(null);
     try {
       final var identifyPatientDataResponse =
           ncpeh.identifyPatient(
-              patientData, practitionerData.profileName(), practitionerData.country());
+              patientAccessData,
+              practitionerData.profileName(),
+              practitionerData.country(),
+              ncpeh.getNcpehMockControlRequestHeaders().get(UCHeaders.UC1));
       log.trace("Retrieved patient identification data: {}", identifyPatientDataResponse);
       patientData.setIdentifyPatientDataResponse(identifyPatientDataResponse);
       final var actualPatientData =

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package de.gematik.test.ncp.ncpeh.client;
 
 import de.gematik.ncpeh.api.NcpehSimulatorApi;
 import de.gematik.ncpeh.api.common.EuCountryCode;
 import de.gematik.test.ncp.ExternalServerConfig;
-import de.gematik.test.ncp.GeneralFactory;
-import de.gematik.test.ncp.data.Patient;
+import de.gematik.test.ncp.data.PatientAccessData;
 import de.gematik.test.ncp.data.Testdata;
 import de.gematik.test.ncp.ncpeh.NcpehException;
 import de.gematik.test.ncp.ncpeh.NcpehService;
+import de.gematik.test.ncp.ncpeh.PatientSummaryLevel;
 import de.gematik.test.ncp.ncpeh.client.dataobject.DataUtils;
 import de.gematik.test.ncp.ncpeh.client.dataobject.FindPatientSummaryDO;
 import de.gematik.test.ncp.ncpeh.client.dataobject.IdentifyPatientDO;
 import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryDO;
 import de.gematik.test.ncp.ncpeh.data.TestdataFactory;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.net.URI;
+import java.util.List;
+import java.util.Optional;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+import org.apache.cxf.jaxrs.client.Client;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -44,6 +50,7 @@ import org.springframework.http.HttpStatus;
  * Interface.<br>
  */
 @Slf4j
+@Builder
 @RequiredArgsConstructor
 public class NcpehClientImpl implements NcpehService {
 
@@ -54,12 +61,13 @@ public class NcpehClientImpl implements NcpehService {
    */
   public static final String INFO_PATH = "/actuator/info";
 
-  protected final ExternalServerConfig config;
+  public static final String REQUEST_HEADER_X_NCPEHMOCK_RESPONSE = "X-NCPeHMock-Response";
+
+  @NonNull private final ExternalServerConfig config;
 
   @Accessors(fluent = true)
-  @Getter(lazy = true)
-  private final NcpehSimulatorApi clientProxy =
-      GeneralFactory.createJAXRSClientProxy(NcpehSimulatorApi.class, config);
+  @Getter
+  private final NcpehSimulatorApi clientProxy;
 
   @Override
   public Boolean ncpehIsUpAndRunning() {
@@ -71,14 +79,21 @@ public class NcpehClientImpl implements NcpehService {
 
   @Override
   public IdentifyPatientDO identifyPatient(
-      final Patient patient, final String testdataProfileName, final String leiCountry) {
+      final PatientAccessData patientAccessData,
+      final String testdataProfileName,
+      final String leiCountry,
+      final String ncpehMockControlRequestHeader) {
     final var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
+
+    setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader);
 
     try (final var response =
         clientProxy()
             .identifyPatient(
                 TestdataFactory.buildStandardIdentifyPatientRequest(
-                    patient, EuCountryCode.valueOf(leiCountry.toUpperCase()), testdata))) {
+                    patientAccessData,
+                    EuCountryCode.valueOf(leiCountry.toUpperCase()),
+                    testdata))) {
 
       if (HttpStatus.valueOf(response.getStatus()).is2xxSuccessful()) {
         return DataUtils.convertResponseDataForIdentifyPatient(response);
@@ -89,16 +104,34 @@ public class NcpehClientImpl implements NcpehService {
     }
   }
 
+  private void setNcpehMockControlRequestHeader(final String ncpehMockControlRequestHeader) {
+    // Cast to Client to add headers
+    final Client client = (Client) clientProxy();
+    final MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
+    headers.put(
+        REQUEST_HEADER_X_NCPEHMOCK_RESPONSE,
+        List.of(Optional.ofNullable(ncpehMockControlRequestHeader).orElse("")));
+
+    client.headers(headers);
+  }
+
   @Override
   public FindPatientSummaryDO findPatientSummary(
-      final Patient patient, final String testdataProfileName, final String leiCountry) {
+      final PatientAccessData patientAccessData,
+      final String testdataProfileName,
+      final String leiCountry,
+      final String ncpehMockControlRequestHeader) {
     final var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
+
+    setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader);
 
     try (final var response =
         clientProxy()
             .findDocuments(
                 TestdataFactory.buildStandardFindDocumentsRequest(
-                    patient, EuCountryCode.valueOf(leiCountry.toUpperCase()), testdata))) {
+                    patientAccessData,
+                    EuCountryCode.valueOf(leiCountry.toUpperCase()),
+                    testdata))) {
 
       if (HttpStatus.valueOf(response.getStatus()).is2xxSuccessful()) {
         return DataUtils.convertResponseDataForFindPatientSummary(response);
@@ -110,18 +143,21 @@ public class NcpehClientImpl implements NcpehService {
 
   @Override
   public RetrievePatientSummaryDO retrievePatientSummary(
-      final Patient patient,
+      final PatientAccessData patientAccessData,
       final String testdataProfileName,
       final String leiCountry,
       final AdhocQueryResponse metadata,
+      final String ncpehMockControlRequestHeader,
       final PatientSummaryLevel... patientSummaryLevels) {
     final var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
+
+    setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader);
 
     try (final var response =
         clientProxy()
             .retrieveDocument(
                 TestdataFactory.buildStandardRetrieveDocumentRequest(
-                    patient,
+                    patientAccessData,
                     EuCountryCode.valueOf(leiCountry.toUpperCase()),
                     testdata,
                     metadata,

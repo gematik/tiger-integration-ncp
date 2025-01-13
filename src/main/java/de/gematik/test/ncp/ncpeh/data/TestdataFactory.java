@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import de.gematik.ncpeh.api.request.FindDocumentsRequest;
 import de.gematik.ncpeh.api.request.IdentifyPatientRequest;
 import de.gematik.ncpeh.api.request.RetrieveDocumentRequest;
 import de.gematik.test.ncp.data.NcpehSimTestdataProfile;
-import de.gematik.test.ncp.data.Patient;
+import de.gematik.test.ncp.data.PatientAccessData;
 import de.gematik.test.ncp.ncpeh.NcpehService;
-import de.gematik.test.ncp.ncpeh.NcpehService.PatientSummaryLevel;
+import de.gematik.test.ncp.ncpeh.PatientSummaryLevel;
 import java.util.Arrays;
 import java.util.Optional;
 import lombok.NonNull;
@@ -46,19 +46,19 @@ public class TestdataFactory {
    * Build an IdentifyPatientRequest with the given KVNR and some fixed test data (see constants in
    * this class) for the remaining mandatory fields. All optional fields will be null.
    *
-   * @param patient Patient Identification Number, a.k.a. KVNR
+   * @param patientAccessData Patient Identification Number, a.k.a. KVNR
    * @param country code of the country, where the EU practitioner is located
    * @param testdata configured testdata profile, e.g. for information regarding the ida assertion
    *     profile
    * @return {@link IdentifyPatientRequest}
    */
   public static IdentifyPatientRequest buildStandardIdentifyPatientRequest(
-      @NonNull final Patient patient,
+      @NonNull final PatientAccessData patientAccessData,
       @NonNull final EuCountryCode country,
       @NonNull final NcpehSimTestdataProfile testdata) {
     return IdentifyPatientRequestBuilder.newInstance()
-        .accessCode(patient.accessCode())
-        .kvnr(patient.kvnr())
+        .accessCode(patientAccessData.getAccessCode())
+        .kvnr(patientAccessData.getKvnr())
         .euCountryCode(country)
         .idaAssertionProfileName(testdata.idaProfileName())
         .build();
@@ -68,20 +68,20 @@ public class TestdataFactory {
    * Build a FindDocumentsRequest with the given KVNR and some fixed test data (see constants in
    * this class) for the remaining mandatory fields. All optional fields will be null.
    *
-   * @param patient patient information e.g. KVNR
+   * @param patientAccessData patientAccessData information e.g. KVNR
    * @param country code of the country, where the EU practitioner is located
    * @param testdata configured testdata profile, e.g. for information regarding ida and trc
    *     assertion profile
    * @return {@link FindDocumentsRequest}
    */
   public static FindDocumentsRequest buildStandardFindDocumentsRequest(
-      @NonNull final Patient patient,
+      @NonNull final PatientAccessData patientAccessData,
       @NonNull final EuCountryCode country,
       @NonNull final NcpehSimTestdataProfile testdata) {
     return FindDocumentsRequestBuilder.newInstance()
         .trcAssertionProfileName(testdata.trcProfileName())
-        .kvnr(patient.kvnr())
-        .accessCode(patient.accessCode())
+        .kvnr(patientAccessData.getKvnr())
+        .accessCode(patientAccessData.getAccessCode())
         .euCountryCode(country)
         .idaAssertionProfileName(testdata.idaProfileName())
         .build();
@@ -91,19 +91,20 @@ public class TestdataFactory {
    * Build a RetrieveDocumentRequest with the given metadata and some fixed test data (see constants
    * in this class) for the remaining mandatory fields. All optional fields will be null.<br>
    *
-   * @param patient patient information e.g. KVNR
+   * @param patientAccessData patientAccessData information e.g. KVNR
    * @param country code of the country, where the EU practitioner is located
    * @param testdata configured testdata profile, e.g. for information regarding ida and trc
    *     assertion profile
    * @param metadata data as they are returned by the {@link
-   *     NcpehService#findPatientSummary(Patient, String, String)} operation<br>
+   *     NcpehService#findPatientSummary(PatientAccessData, String, String, String)} operation<br>
    *     Note: So far no data are read from metadata, but test data defined in the constants of this
    *     class are used instead
-   * @param patientSummaryLevels List of patient summary levels (1 and 3), which shall be retrieved.
+   * @param patientSummaryLevels List of patientAccessData summary levels (1 and 3), which shall be
+   *     retrieved.
    * @return {@link RetrieveDocumentRequest}
    */
   public static RetrieveDocumentRequest buildStandardRetrieveDocumentRequest(
-      @NonNull final Patient patient,
+      @NonNull final PatientAccessData patientAccessData,
       @NonNull final EuCountryCode country,
       @NonNull final NcpehSimTestdataProfile testdata,
       final AdhocQueryResponse metadata,
@@ -119,8 +120,8 @@ public class TestdataFactory {
 
     return builder
         .trcAssertionProfileName(testdata.trcProfileName())
-        .kvnr(patient.kvnr())
-        .accessCode(patient.accessCode())
+        .kvnr(patientAccessData.getKvnr())
+        .accessCode(patientAccessData.getAccessCode())
         .euCountryCode(country)
         .idaAssertionProfileName(testdata.idaProfileName())
         .build();

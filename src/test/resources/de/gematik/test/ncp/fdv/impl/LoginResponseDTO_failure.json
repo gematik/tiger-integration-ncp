@@ -1,0 +1,6 @@
+{
+  "success": false,
+  "statusMessage": "Wrong kvnr, login is not possible",
+  "insurantId": null,
+  "fqdn": null
+}

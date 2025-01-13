@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@
 package de.gematik.test.ncp.glue.psa;
 
 import static net.serenitybdd.screenplay.GivenWhenThen.and;
+import static net.serenitybdd.screenplay.GivenWhenThen.then;
 import static net.serenitybdd.screenplay.GivenWhenThen.when;
 
 import de.gematik.test.ncp.screenplay.actions.FindPatientSummaryData;
 import de.gematik.test.ncp.screenplay.questions.GetNumberOfPatientSummaryDocuments;
+import de.gematik.test.ncp.screenplay.questions.GetRegistryErrorCodesFromAdhocQueryResponse;
 import de.gematik.test.ncp.screenplay.questions.IsDocumentFoundOfLevel;
+import de.gematik.test.ncp.screenplay.questions.IsFindPatientSummaryResponseStatusFailure;
 import de.gematik.test.ncp.screenplay.questions.IsSourcePatientIdCorrectForDocument;
 import io.cucumber.java.de.Dann;
 import io.cucumber.java.de.Und;
@@ -95,11 +98,20 @@ public class LeEuFindDocumentsTestSteps {
     // "urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure"
     // verify, that the find document response contains an AcknowledgementDetail with the given
     // errorCode
+
+    final var leEuActor = OnStage.theActorInTheSpotlight();
+    then(leEuActor)
+        .attemptsTo(Ensure.that(new IsFindPatientSummaryResponseStatusFailure()).isTrue());
+    then(leEuActor)
+        .attemptsTo(
+            Ensure.that(new GetRegistryErrorCodesFromAdhocQueryResponse()).contains(errorCode));
   }
 
   @Dann("erhält der LE-EU keine Liste von Dokumentreferenzen")
   public void leEuReceivesFindDocumentResponseErrorWithoutDocumentlist() {
     // verify, that the find document response contains no list with document references
+    final var leEuActor = OnStage.theActorInTheSpotlight();
+    then(leEuActor).attemptsTo(Ensure.that(new GetNumberOfPatientSummaryDocuments()).isEqualTo(0L));
   }
 
   @Wenn("der LE-EU {int} Minuten anderweitig beschäftigt ist")

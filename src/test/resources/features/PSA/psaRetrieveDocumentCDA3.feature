@@ -55,7 +55,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
     Hinweis: es erfolgt kein umfassender Test der Transformation und Transkodierung,
       Es wird nur rudimentär das Vorhandensein der persönliche Daten des/der Versicherten im Ergebnisdokument geprüft.
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und ein LE-DE hat ein ePKA-Dokument in das ePA-Konto der versicherten Person eingestellt, in dem Name und Geburtsdatum der versicherten Person enthalten ist
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff des EU-Landes auf ihr ePA Konto berechtigt
@@ -73,8 +73,10 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
   @AF-ID:AF_10122
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC34:RetrieveDocumentSetResponse_020
   @eHDSI-Szenario:PSA_RetrieveDocumentCDA3
   @IOP
+  @CI
   Szenario: NCPeH - PSA UC3 Patient Summary als strukturiertes Dokument abrufen - ePKA Dokumentenschema verletzt
     Die Identifikation des Patienten wurde vom LE-EU erfolgreich durchgeführt, der NCPeH Land B hat intern
     eine Treatment Relationship Confirmation (TRC) erstellt und der LE-EU hat die Liste der verfügbaren Dokumente
@@ -90,7 +92,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
     Hinweis: reduzierte Testfallpriorität: 3, wegen der zeitlichen Rahmenbedingungen, die ein solches
       Fehlerauftreten erschweren.
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und ein LE-DE hat ein ePKA-Dokument in das ePA-Konto der versicherten Person eingestellt, in dem Name und Geburtsdatum der versicherten Person enthalten ist
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff des EU-Landes auf ihr ePA Konto berechtigt
@@ -108,8 +110,10 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
   @AF-ID:AF_10122
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC34:RetrieveDocumentSetResponse_020
   @eHDSI-Szenario:PSA_RetrieveDocumentCDA3
   @IOP
+  @CI
   Szenario: NCPeH - PSA UC3 Patient Summary als strukturiertes Dokument abrufen - ePKA Dokument ohne NFD
     Die Identifikation des Patienten wurde vom LE-EU erfolgreich durchgeführt, der NCPeH Land B hat intern
     eine Treatment Relationship Confirmation (TRC) erstellt und der LE-EU hat die Liste der verfügbaren Dokumente
@@ -127,7 +131,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
       und gemäß TUC_NCPeH_014 ein eigener Fehlercode vorgesehen wurde, kann die Priorität nicht weiter
       gesenkt werden.
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und ein LE-DE hat ein ePKA-Dokument in das ePA-Konto der versicherten Person eingestellt, in dem Name und Geburtsdatum der versicherten Person enthalten ist
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff des EU-Landes auf ihr ePA Konto berechtigt
@@ -145,8 +149,10 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
   @AF-ID:AF_10122
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC34:RetrieveDocumentSetResponse_020
   @eHDSI-Szenario:PSA_RetrieveDocumentCDA3
   @IOP
+  @CI
   Szenario: NCPeH - PSA UC3 Patient Summary als strukturiertes Dokument abrufen - falsche DocumentUniqueId
     Die Identifikation des Patienten wurde vom LE-EU erfolgreich durchgeführt, der NCPeH Land B hat intern
     eine Treatment Relationship Confirmation (TRC) erstellt und der LE-EU hat die Liste der verfügbaren Dokumente
@@ -163,7 +169,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
     den Fehler ERROR_GENERIC_DOCUMENT_MISSING zurück.
       (siehe https://gemspec.gematik.de/docs/gemSpec/gemSpec_NCPeH_FD/latest/#6.2.2)
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und ein LE-DE hat ein ePKA-Dokument in das ePA-Konto der versicherten Person eingestellt, in dem Name und Geburtsdatum der versicherten Person enthalten ist
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff des EU-Landes auf ihr ePA Konto berechtigt
@@ -181,8 +187,10 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
   @AF-ID:AF_10122
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC34:RetrieveDocumentSetResponse_020
   @eHDSI-Szenario:PSA_RetrieveDocumentCDA3
   @IOP
+  @CI
   Szenario: NCPeH - PSA UC3 Patient Summary als strukturiertes Dokument abrufen - falsche RepositoryUniqueId
     Im Aktenkonto des Versicherten ist ein ePKA Dokument (als Datenbasis für das Patient Summary) vorhanden.
     Die Identifikation des Patienten wurde vom LE-EU erfolgreich durchgeführt, der NCPeH Land B hat intern
@@ -204,7 +212,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
 
     Hinweis: reduzierte Testfallpriorität: 3, da die Wahrscheinlichkeit des Auftretens gering ist
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und ein LE-DE hat ein ePKA-Dokument in das ePA-Konto der versicherten Person eingestellt, in dem Name und Geburtsdatum der versicherten Person enthalten ist
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff des EU-Landes auf ihr ePA Konto berechtigt
@@ -233,7 +241,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
 
     Hinweis: prüft die Datenvariante sowohl für Patient Identification als auf DocumentRetrieve im gleichen Szenario
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und ein LE-DE hat ein ePKA-Dokument ohne Signatur in das ePA-Konto der versicherten Person eingestellt
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff des EU-Landes auf ihr ePA Konto berechtigt
@@ -263,7 +271,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
 
     Hinweis: prüft die Datenvariante sowohl für Patient Identification als auf DocumentRetrieve im gleichen Szenario
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und ein LE-DE hat ein ePKA-Dokument mit einer mathematisch ungültigen Signatur in das ePA-Konto der versicherten Person eingestellt
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff des EU-Landes auf ihr ePA Konto berechtigt

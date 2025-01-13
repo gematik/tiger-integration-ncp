@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package de.gematik.test.ncp.screenplay.questions;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
 import de.gematik.test.ncp.screenplay.abilities.TreatPatient;
 import jakarta.xml.bind.JAXBElement;
+import java.util.Collection;
+import java.util.Optional;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Question;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
@@ -29,7 +31,12 @@ public class GetNumberOfPatientSummaryDocuments implements Question<Long> {
   public Long answeredBy(final Actor actor) {
     final var patient = actor.usingAbilityTo(TreatPatient.class).getPatient();
     final var patientData = patient.usingAbilityTo(ProvidePatientData.class);
-    return patientData.getPsaMetadata().getRegistryObjectList().getIdentifiable().stream()
+
+    return Optional.ofNullable(patientData.getPsaMetadata())
+        .flatMap(metadata -> Optional.ofNullable(metadata.getRegistryObjectList()))
+        .flatMap(list -> Optional.ofNullable(list.getIdentifiable()))
+        .stream()
+        .flatMap(Collection::stream)
         .map(JAXBElement::getValue)
         .filter(identifiable -> identifiable instanceof ExtrinsicObjectType)
         .count();

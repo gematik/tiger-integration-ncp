@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,20 +26,31 @@ import net.serenitybdd.screenplay.Performable;
 public class CreateEpka implements Performable {
 
   private final Testdata testData;
+  private final String epkaTemplate;
 
   public CreateEpka(final Testdata testData) {
     this.testData = testData;
+    this.epkaTemplate = null;
+  }
+
+  public CreateEpka(final Testdata testData, final String epkaTemplate) {
+    this.testData = testData;
+    this.epkaTemplate = epkaTemplate;
   }
 
   @Override
   public <T extends Actor> void performAs(final T actor) {
     final var patient = actor.usingAbilityTo(TreatPatient.class).getPatient();
     final var patientData = patient.usingAbilityTo(ProvidePatientData.class);
-    final var epka = testData.createEpkaFromTemplate(patientData);
+    final var epka = testData.createEpkaFromTemplate(patientData, epkaTemplate);
     patientData.setEpka(epka);
   }
 
   public static CreateEpka fromTestdata(final Testdata testData) {
     return Instrumented.instanceOf(CreateEpka.class).withProperties(testData);
+  }
+
+  public static CreateEpka fromTestdata(final Testdata testData, final String epkaTemplate) {
+    return Instrumented.instanceOf(CreateEpka.class).withProperties(testData, epkaTemplate);
   }
 }

@@ -1,7 +1,5 @@
 epafdv:
-  jarPath: target/externalJars
-  configDir: /bin/epa-modul/config
-  isStarted: true
+  isStarted: false
 epaps:
   jarPath: target/externalJars
   isStarted: false
@@ -9,13 +7,13 @@ ncpeh:
   jarPath: target/externalJars
   isStarted: false
   inDocker: false
-  
+
 management:
   endpoints:
     web:
       exposure:
         include: info
-        
+
   info:
     env:
       enabled: true

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import static de.gematik.test.ncp.util.IheUtils.STATUS_APPROVED;
 import de.gematik.epa.api.ConfigurationApi;
 import de.gematik.epa.api.DocumentsApi;
 import de.gematik.epa.api.SignatureApi;
+import de.gematik.epa.api.authentication.LoginLogoutApi;
 import de.gematik.epa.api.entitlement.EntitlementApi;
 import de.gematik.epa.api.entitlement.dto.PostEntitlementRequestDTO;
 import de.gematik.epa.api.information.InformationApi;
@@ -92,6 +93,10 @@ public class EpaPrimarySystemServiceImpl implements PrimarySystemService {
   @Getter
   private final InformationApi informationProxy;
 
+  @Accessors(fluent = true)
+  @Getter
+  private final LoginLogoutApi loginLogoutProxy;
+
   @Override
   public boolean psIsUpAndRunning() {
     try {
@@ -108,9 +113,15 @@ public class EpaPrimarySystemServiceImpl implements PrimarySystemService {
   }
 
   @Override
-  public void authorizeLeForKvnr(@NonNull final String kvnr) {
-    log.info("authorizeLeForKvnr for KVNR: {}", kvnr);
-    final var request = new PostEntitlementRequestDTO().kvnr(kvnr);
+  public void authorizeLeForKvnr(@NonNull final String telematikId, @NonNull final String kvnr) {
+    log.info("authorizeLeForKvnr for TelematikId: {} KVNR: {}", telematikId, kvnr);
+
+    final var loginResponse = loginLogoutProxy.login(telematikId, kvnr, null);
+    if (Boolean.FALSE.equals(loginResponse.getSuccess())) {
+      throw new PsException(loginResponse.getStatusMessage(), "login");
+    }
+
+    final var request = new PostEntitlementRequestDTO().telematikId(telematikId).kvnr(kvnr);
     final var response = entitlementProxy.postEntitlement(request);
     if (Boolean.FALSE.equals(response.getSuccess())) {
       throw new PsException(response.getStatusMessage(), "postEntitlement");

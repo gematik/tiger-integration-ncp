@@ -44,7 +44,7 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
     Der NCPeH-FD kann im ePA Aktenkonto nur ein (oder kein) ePKA-Dokument finden.
 
   Grundlage:
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff dieses EU-Landes auf ihr ePA Konto berechtigt
     Und die versicherte Person hat ihre KVNR und den AccessCode an den LE-EU übergeben
@@ -75,8 +75,10 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
   @AF-ID:AF_10107
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC1:PRPA_IN201306UV02_4
   @eHDSI-Szenario:PSA_PatIdentification
   @E2E
+  @CI
   Szenario: NCPeH - PSA UC1 Identifikation eines Versicherten - Suche findet kein ePKA Dokument
     Der LE-EU startet die Patient Identification mit gültiger KVNR und erteilter Berechtigung.
     Es existiert jedoch kein ePKA-Dokument in dem Konto, so dass die Suche nach dem Dokument fehlschlägt
@@ -88,12 +90,11 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
 
     Angenommen in dem ePA Konto der versicherten Person ist kein ePKA Dokument vorhanden
     Wenn der LE-EU mit KVNR und AccessCode der versicherten Person die Identifikation aufruft
-    # TODO: in Dann should any data/response changed -> here missing some Angenommen or Wenn step
     Dann erhält der LE-EU ein Identifikationsergebnis ohne Versichertendaten zurück
     Und das Identifikationsergebnis enthält Reason Encoding AnswerNotAvailable
     Und das Identifikationsergebnis enthält im acknowledgementDetail den Fehlercode ERROR_PI_NO_MATCH
     Und das Identifikationsergebnis enthält im acknowledgementDetail den Fehlertext "Patient Identification Error"
-    Und das Identifikationsergebnis enthält im acknowledgementDetail den Locationtext "It was not possible to localise the patient's health record in the national health record system."
+    Und das Identifikationsergebnis enthält im acknowledgementDetail den Locationtext "No match with an existing patient."
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_UC1_011
@@ -101,8 +102,10 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
   @AF-ID:AF_10107
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC1:PRPA_IN201306UV02_43
   @eHDSI-Szenario:PSA_PatIdentification
   @IOP
+  @CI
   Szenario: NCPeH - PSA UC1 Identifikation eines Versicherten - ePKA Dokument nur mit DPE Composition
     Der LE-EU ruft über den NCPeH die persönlichen Informationen der Versicherten aus der ePKA mit gültiger,
     berechtigter KVNR ab.
@@ -114,7 +117,6 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
 
     Angenommen in dem Konto befindet sich ein valides ePKA-Dokument, in dem nur eine DPE Composition enthalten ist
     Wenn der LE-EU mit KVNR und AccessCode der versicherten Person die Identifikation aufruft
-    #TODO: Same issue like in NCP1_E2E_PSA_UC1_010
     Dann erhält der LE-EU ein Identifikationsergebnis ohne Versichertendaten zurück
     Und das Identifikationsergebnis enthält Reason Encoding AnswerNotAvailable
     Und das Identifikationsergebnis enthält im acknowledgementDetail den Fehlercode ERROR_PI_GENERIC
@@ -127,8 +129,10 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
   @AF-ID:AF_10107
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC1:PRPA_IN201306UV02_42
   @eHDSI-Szenario:PSA_PatIdentification
   @IOP
+  @CI
   Szenario: NCPeH - PSA UC1 Identifikation eines Versicherten - ePKA Dokument ohne Patient.birthDate.value
     Der LE-EU ruft über den NCPeH die persönlichen Informationen der Versicherten aus der ePKA mit gültiger,
     berechtigter KVNR ab.
@@ -143,7 +147,6 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
 
     Angenommen in dem Konto befindet sich ein valides ePKA-Dokument, in dem das Geburtsdatum der versicherten Person fehlt
     Wenn der LE-EU mit KVNR und AccessCode der versicherten Person die Identifikation aufruft
-    #TODO: Same issue like in NCP1_E2E_PSA_UC1_010
     Dann erhält der LE-EU ein Identifikationsergebnis ohne Versichertendaten zurück
     Und das Identifikationsergebnis enthält Reason Encoding AnswerNotAvailable
     Und das Identifikationsergebnis enthält im acknowledgementDetail den Fehlercode ERROR_PI_GENERIC
@@ -156,8 +159,10 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
   @AF-ID:AF_10107
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC1:PRPA_IN201306UV02_41
   @eHDSI-Szenario:PSA_PatIdentification
   @IOP
+  @CI
   Szenario: NCPeH - PSA UC1 Identifikation eines Versicherten - ePKA Dokumentenschema verletzt
     Der LE-EU startet die Patient Identification mit gültiger KVNR und erteilter Berechtigung.
     Das Schema des ePKA Dokumentes ist jedoch fehlerhaft (das Pflicht-Element "gender" im NFD-Datensatz fehlt)
@@ -167,7 +172,6 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
 
     Angenommen das ePKA Dokument der versicherten Person ist nicht konform zum FHIR Schema des ePKA MIO
     Wenn der LE-EU mit KVNR und AccessCode der versicherten Person die Identifikation aufruft
-    #TODO: Same issue like in NCP1_E2E_PSA_UC1_010
     Dann erhält der LE-EU ein Identifikationsergebnis ohne Versichertendaten zurück
     Und das Identifikationsergebnis enthält Reason Encoding AnswerNotAvailable
     Und das Identifikationsergebnis enthält im acknowledgementDetail den Fehlercode ERROR_PI_GENERIC

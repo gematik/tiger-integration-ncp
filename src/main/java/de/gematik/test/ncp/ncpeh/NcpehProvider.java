@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package de.gematik.test.ncp.ncpeh;
 
+import de.gematik.ncpeh.api.NcpehSimulatorApi;
 import de.gematik.test.ncp.ExternalServerConfig;
+import de.gematik.test.ncp.GeneralFactory;
 import de.gematik.test.ncp.ncpeh.client.NcpehClientImpl;
 import de.gematik.test.ncp.util.Utils;
 import lombok.AccessLevel;
@@ -34,16 +36,21 @@ public final class NcpehProvider {
       ExternalServerConfig.INFRASTRUCTURE_KEY + ".ncpehSim";
 
   @Getter(lazy = true)
-  private static final NcpehProvider ncpehProvider = new NcpehProvider();
+  private static final NcpehProvider instance = new NcpehProvider();
 
   @Getter(lazy = true)
-  private final NcpehService ncpehImpl = new NcpehClientImpl(getNcpehConfig());
+  private final NcpehService ncpehImpl =
+      NcpehClientImpl.builder()
+          .config(getNcpehConfig())
+          .clientProxy(
+              GeneralFactory.createJAXRSClientProxy(NcpehSimulatorApi.class, getNcpehConfig()))
+          .build();
 
   @Getter(lazy = true)
   private final ExternalServerConfig ncpehConfig =
       Utils.loadConfig(ExternalServerConfig.class, NCPEH_SIMULATION_CONFIG_KEY);
 
   public static NcpehService getNcpehService() {
-    return getNcpehProvider().getNcpehImpl();
+    return getInstance().getNcpehImpl();
   }
 }

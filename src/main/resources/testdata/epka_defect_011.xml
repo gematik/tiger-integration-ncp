@@ -1,0 +1,251 @@
+<!--
+  ~ Copyright (c) 2024-2025 gematik GmbH
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<Bundle xmlns="http://hl7.org/fhir">
+  <id value="ec5bf24f-e823-45d6-97c6-14e35ded0ec0"/>
+  <meta>
+    <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFDxDPE_Bundle|1.0.0"/>
+  </meta>
+  <identifier>
+    <type>
+      <coding>
+        <code value="DPE_Gewebe_Organspendeerklärung"/>
+      </coding>
+    </type>
+    <system value="urn:ietf:rfc:3986"/>
+    <value value="urn:uuid:ec5bf24f-e823-45d6-97c6-14e35ded0ec0"/>
+  </identifier>
+  <type value="document"/>
+  <timestamp value="2021-08-09T12:30:02Z"/>
+  <entry>
+    <fullUrl value="urn:uuid:8e17ccc0-9d1a-11eb-a8b3-0242ac130003"/>
+    <resource>
+      <Composition xmlns="http://hl7.org/fhir">
+        <id value="8e17ccc0-9d1a-11eb-a8b3-0242ac130003"/>
+        <meta>
+          <versionId value="1.0"/>
+          <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_DPE_Composition_DPE|1.0.0"/>
+        </meta>
+        <status value="final"/>
+        <type>
+          <coding>
+            <system value="http://snomed.info/sct"/>
+            <version value="http://snomed.info/sct/900000000000207008/version/20210731"/>
+            <code value="408403008"/>
+            <display value="Patient held record (record artifact)"/>
+          </coding>
+        </type>
+        <subject>
+          <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73"/>
+        </subject>
+        <date value="2009-12-10"/>
+        <author>
+          <extension url="http://hl7.org/fhir/StructureDefinition/data-absent-reason">
+            <valueCode value="unknown"/>
+          </extension>
+        </author>
+        <title value="DPE"/>
+        <section>
+          <title value="Persönliche Erklärungen"/>
+          <code>
+            <coding>
+              <system value="http://snomed.info/sct"/>
+              <version value="http://snomed.info/sct/900000000000207008/version/20210731"/>
+              <code value="371538006"/>
+              <display value="Advance directive report (record artifact)"/>
+            </coding>
+          </code>
+          <entry>
+            <reference value="urn:uuid:f3f8f8ea-054a-43b8-8442-2c4f84028ad3"/>
+          </entry>
+          <entry>
+            <reference value="urn:uuid:1443cb86-df52-11eb-ba80-0242ac130004"/>
+          </entry>
+        </section>
+      </Composition>
+    </resource>
+  </entry>
+  <entry>
+    <fullUrl value="urn:uuid:1443cb86-df52-11eb-ba80-0242ac130004"/>
+    <resource>
+      <Consent xmlns="http://hl7.org/fhir">
+        <id value="1443cb86-df52-11eb-ba80-0242ac130004"/>
+        <meta>
+          <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFDxDPE_Consent_Active_Advance_Directive|1.0.0"/>
+        </meta>
+        <status value="active"/>
+        <scope>
+          <coding>
+            <system value="http://terminology.hl7.org/CodeSystem/consentscope"/>
+            <version value="4.0.1"/>
+            <code value="patient-privacy"/>
+            <display value="Privacy Consent"/>
+          </coding>
+        </scope>
+        <category>
+          <coding>
+            <system value="http://loinc.org"/>
+            <version value="2.71"/>
+            <code value="59284-0"/>
+            <display value="Consent Document"/>
+          </coding>
+        </category>
+        <patient>
+          <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73"/>
+        </patient>
+        <dateTime value="2020-03-10"/>
+        <sourceReference>
+          <display value="Rennweg 35, 56626 Andernach, D">
+            <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_MIO_NFDxDPE_Consent_Description_File_Location">
+              <valueAddress>
+                <line value="Rennweg 35">
+                  <extension url="http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName">
+                    <valueString value="Rennweg"/>
+                  </extension>
+                  <extension url="http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber">
+                    <valueString value="35"/>
+                  </extension>
+                </line>
+                <city value="Andernach"/>
+                <postalCode value="56626"/>
+                <country value="D"/>
+              </valueAddress>
+            </extension>
+          </display>
+        </sourceReference>
+        <policyRule>
+          <coding>
+            <system value="http://loinc.org"/>
+            <version value="2.71"/>
+            <code value="57016-8"/>
+            <display value="Patient Consent">
+              <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+                <extension url="content">
+                  <valueString value="Einwilligung"/>
+                </extension>
+              </extension>
+            </display>
+          </coding>
+        </policyRule>
+        <provision>
+          <actor>
+            <role>
+              <coding>
+                <system value="http://terminology.hl7.org/CodeSystem/v3-RoleClass"/>
+                <version value="2018-08-12"/>
+                <code value="AGNT"/>
+                <display value="agent"/>
+              </coding>
+            </role>
+            <reference>
+              <display value="Bernd Müller"/>
+            </reference>
+          </actor>
+        </provision>
+      </Consent>
+    </resource>
+  </entry>
+  <entry>
+    <fullUrl value="urn:uuid:f3f8f8ea-054a-43b8-8442-2c4f84028ad3"/>
+    <resource>
+      <Consent xmlns="http://hl7.org/fhir">
+        <id value="f3f8f8ea-054a-43b8-8442-2c4f84028ad3"/>
+        <meta>
+          <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_DPE_Consent_Personal_Consent|1.0.0"/>
+        </meta>
+        <status value="active"/>
+        <scope>
+          <coding>
+            <system value="http://terminology.hl7.org/CodeSystem/consentscope"/>
+            <version value="4.0.1"/>
+            <code value="patient-privacy"/>
+            <display value="Privacy Consent"/>
+          </coding>
+        </scope>
+        <category>
+          <coding>
+            <system value="http://loinc.org"/>
+            <version value="2.71"/>
+            <code value="59284-0"/>
+            <display value="Consent Document"/>
+          </coding>
+        </category>
+        <patient>
+          <reference value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73"/>
+        </patient>
+        <dateTime value="2009-12-10"/>
+        <sourceReference>
+          <display value="in Geldbörse"/>
+        </sourceReference>
+        <policyRule>
+          <coding>
+            <system value="http://snomed.info/sct"/>
+            <version value="http://snomed.info/sct/900000000000207008/version/20210731"/>
+            <code value="772790007"/>
+            <display value="Organ donor card (record artifact)">
+              <extension url="https://fhir.kbv.de/StructureDefinition/KBV_EX_Base_Terminology_German">
+                <extension url="content">
+                  <valueString value="DPE_Gewebe_Organspendeerklärung"/>
+                </extension>
+              </extension>
+            </display>
+          </coding>
+        </policyRule>
+      </Consent>
+    </resource>
+  </entry>
+  <entry>
+    <fullUrl value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73"/>
+    <resource>
+      <Patient xmlns="http://hl7.org/fhir">
+        <id value="e8610a8a-85dc-4a49-88be-ee8d3ab69f73"/>
+        <meta>
+          <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_DPE_Patient_DPE|1.0.0"/>
+        </meta>
+        <identifier>
+          <!--GKV -->
+          <use value="official"/>
+          <type>
+            <coding>
+              <system value="http://fhir.de/CodeSystem/identifier-type-de-basis"/>
+              <code value="GKV"/>
+              <display value="Gesetzliche Krankenversicherung"/>
+            </coding>
+          </type>
+          <system value="http://fhir.de/NamingSystem/gkv/kvid-10"/>
+          <value value="P234567890"/>
+        </identifier>
+        <name>
+          <use value="official"/>
+          <text value="Prof. Dr. Franz Schneckenröder"/>
+          <family value="Schneckenröder">
+            <extension url="http://hl7.org/fhir/StructureDefinition/humanname-own-name">
+              <valueString value="Schneckenröder"/>
+            </extension>
+          </family>
+          <given value="Franz"/>
+          <prefix value="Prof. Dr.">
+            <extension url="http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier">
+              <valueCode value="AC"/>
+            </extension>
+          </prefix>
+        </name>
+        <gender value="male"/>
+        <birthDate value="1941-11-11"/>
+      </Patient>
+    </resource>
+  </entry>
+</Bundle>

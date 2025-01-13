@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package de.gematik.test.ncp.ps;
 import de.gematik.epa.api.ConfigurationApi;
 import de.gematik.epa.api.DocumentsApi;
 import de.gematik.epa.api.SignatureApi;
+import de.gematik.epa.api.authentication.LoginLogoutApi;
 import de.gematik.epa.api.entitlement.EntitlementApi;
 import de.gematik.epa.api.information.InformationApi;
 import de.gematik.test.ncp.ExternalServerConfig;
@@ -73,6 +74,8 @@ public class PsProvider {
                   GeneralFactory.createJAXRSClientProxy(SignatureApi.class, getEpaPsConfig()))
               .informationProxy(
                   GeneralFactory.createJAXRSClientProxy(InformationApi.class, getEpaPsConfig()))
+              .loginLogoutProxy(
+                  GeneralFactory.createJAXRSClientProxy(LoginLogoutApi.class, getEpaPsConfig()))
               .build()
           : defaultPsImpl.get().get());
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,15 @@ package de.gematik.test.ncp.ps.epaps.data;
 
 import de.gematik.epa.ihe.model.simple.AuthorInstitution;
 import java.util.List;
-import lombok.Builder;
-import lombok.Singular;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.With;
 
-@Builder
+@With
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Author {
 
   private String identifier;
@@ -36,13 +41,13 @@ public class Author {
 
   private String title;
 
-  @Singular private List<AuthorInstitution> authorInstitutions;
+  private List<AuthorInstitution> authorInstitutions;
 
-  @Singular private List<String> authorRoles;
+  private List<String> authorRoles;
 
-  @Singular private List<String> authorSpecialties;
+  private List<String> authorSpecialties;
 
-  @Singular private List<String> authorTelecommunications;
+  private List<String> authorTelecommunications;
 
   public de.gematik.epa.ihe.model.Author toPsAuthor() {
     return new de.gematik.epa.ihe.model.Author(

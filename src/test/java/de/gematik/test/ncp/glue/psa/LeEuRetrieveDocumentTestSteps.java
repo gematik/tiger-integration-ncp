@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,11 @@ package de.gematik.test.ncp.glue.psa;
 import static net.serenitybdd.screenplay.GivenWhenThen.and;
 import static net.serenitybdd.screenplay.GivenWhenThen.then;
 
-import de.gematik.test.ncp.ncpeh.NcpehService;
+import de.gematik.test.ncp.ncpeh.PatientSummaryLevel;
 import de.gematik.test.ncp.screenplay.actions.RetrievePatientSummary;
+import de.gematik.test.ncp.screenplay.questions.GetRegistryErrorCodesFromRegistryResponse;
 import de.gematik.test.ncp.screenplay.questions.GetRetrievedPatientSummaryDocuments;
+import de.gematik.test.ncp.screenplay.questions.IsRetrievedPatientSummaryResponseStatusFailure;
 import de.gematik.test.ncp.screenplay.questions.IsRetrievedPatientSummaryResponseStatusSuccess;
 import de.gematik.test.ncp.screenplay.questions.PdfDocumentBelongsToPatient;
 import de.gematik.test.ncp.screenplay.questions.RetrievedPatientSummaryDocumentsHcidBelongsToNcpeh;
@@ -50,8 +52,7 @@ public class LeEuRetrieveDocumentTestSteps {
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
     and(leEuActor)
-        .attemptsTo(
-            RetrievePatientSummary.fromLevel(NcpehService.PatientSummaryLevel.fromValue(cdaLevel)));
+        .attemptsTo(RetrievePatientSummary.fromLevel(PatientSummaryLevel.fromValue(cdaLevel)));
   }
 
   @Wenn(
@@ -65,16 +66,20 @@ public class LeEuRetrieveDocumentTestSteps {
     and(leEuActor)
         .attemptsTo(
             RetrievePatientSummary.fromLevel(
-                NcpehService.PatientSummaryLevel.LEVEL_1,
-                NcpehService.PatientSummaryLevel.LEVEL_3));
+                PatientSummaryLevel.LEVEL_1, PatientSummaryLevel.LEVEL_3));
   }
 
   @Wenn(
-      "^der LE-EU das Patient Summary Dokument der versicherten Person als CDA Level 3 mit einer falschen RepositoryUniqueId abruft$")
-  public void leEuStartsRetrieveDocumentsWithInvalidRepositoryUniqueId() {
+      "^der LE-EU das Patient Summary Dokument der versicherten Person als CDA Level (\\d) mit einer falschen RepositoryUniqueId abruft$")
+  public void leEuStartsRetrieveDocumentsWithInvalidRepositoryUniqueId(final Integer cdaLevel) {
     // falsificate the known RepositoryUniqueId (UUID) of the preceding successful search result and
     // then
     // call of IHE operation RetrieveDocuments for CDA Level 3 with the false RepositoryUniqueId
+    final var leEuActor = OnStage.theActorInTheSpotlight();
+    and(leEuActor)
+        .attemptsTo(
+            RetrievePatientSummary.fromLevelAndRepositoryUniqueId(
+                "2.16.620.1.101.10.3.29.123456", PatientSummaryLevel.fromValue(cdaLevel)));
   }
 
   @Dann("^erhält der LE-EU beide Patient Summary Dokumente der versicherten Person zurück$")
@@ -172,5 +177,13 @@ public class LeEuRetrieveDocumentTestSteps {
     //   https://webgate.ec.europa.eu/fpfis/wikis/display/EHDSI/Exception+Handling+in+MyHealth@EU
     // * https://profiles.ihe.net/ITI/TF/Volume2/ITI-39.html
     // * https://profiles.ihe.net/ITI/TF/Volume3/ch-4.2.html#4.2.4
+
+    final var leEuActor = OnStage.theActorInTheSpotlight();
+    and(leEuActor)
+        .attemptsTo(Ensure.that(new IsRetrievedPatientSummaryResponseStatusFailure()).isTrue());
+    then(leEuActor)
+        .attemptsTo(
+            Ensure.that(new GetRegistryErrorCodesFromRegistryResponse())
+                .contains(expectedErrorCode));
   }
 }

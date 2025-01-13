@@ -37,7 +37,7 @@ Funktionalität: NCPeH PSA Use Case 2 - Verfügbare Versichertendatensätze des 
     Der NCPeH-FD kann im ePA Aktenkonto nur ein oder kein ePKA-Dokument finden.
 
   Grundlage:
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und in dem Konto befindet sich ein ECC signiertes ePKA-Dokument, in dem Name und Geburtsdatum der versicherten Person enthalten ist
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff dieses EU-Landes auf ihr ePA Konto berechtigt
@@ -74,8 +74,10 @@ Funktionalität: NCPeH PSA Use Case 2 - Verfügbare Versichertendatensätze des 
   @AF-ID:AF_10121
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC2:AdhocQueryResponse_010
   @eHDSI-Szenario:PSA_FindDocuments
   @IOP
+  @CI
   Szenario: NCPeH - PSA UC2 Suche nach den verfügbaren Patient Summary Dokumenten - es wird kein ePKA Dokument gefunden
     Die Identifikation des Patienten wurde vom LE-EU erfolgreich durchgeführt und die Durchführung
     einer Behandlung akzeptiert und der NCPeH Land B hat intern eine Treatment Relationship Confirmation (TRC) erstellt.

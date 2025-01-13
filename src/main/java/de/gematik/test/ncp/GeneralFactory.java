@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
-import de.gematik.test.ncp.util.Utils;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.joda.time.DateTime;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @UtilityClass
 public class GeneralFactory {
@@ -51,9 +51,14 @@ public class GeneralFactory {
   }
 
   public static <T> T createJAXRSClientProxy(
-      @NonNull final Class<T> proxyClass, final ExternalServerConfig config) {
+      @NonNull final Class<T> proxyClass, @NonNull final ExternalServerConfig config) {
     return JAXRSClientFactory.create(
-        Utils.buildUri(config.getHostname(), config.getBasePath()).toString(),
+        UriComponentsBuilder.newInstance()
+            .scheme(config.getScheme())
+            .host(config.getHostname())
+            .path(config.getBasePath())
+            .build()
+            .toUriString(),
         proxyClass,
         List.of(JACKSON_JSON_PROVIDER));
   }

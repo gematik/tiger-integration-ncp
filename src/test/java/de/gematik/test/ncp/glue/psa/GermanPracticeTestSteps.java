@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,14 @@ package de.gematik.test.ncp.glue.psa;
 
 import static de.gematik.test.ncp.glue.psa.ActorsInitializationSteps.LE_DE_ACTOR_NAME;
 import static net.serenitybdd.screenplay.GivenWhenThen.andThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.when;
 
 import de.gematik.test.ncp.data.Testdata;
+import de.gematik.test.ncp.screenplay.actions.AuthorizeEuCountry;
 import de.gematik.test.ncp.screenplay.actions.CreateEpka;
 import de.gematik.test.ncp.screenplay.actions.DeleteEpkaInAktenkonto;
 import de.gematik.test.ncp.screenplay.actions.MakeSignEpkaDefect;
+import de.gematik.test.ncp.screenplay.actions.ProvidePatientAccessDataToLeEu;
 import de.gematik.test.ncp.screenplay.actions.SignEpka;
 import de.gematik.test.ncp.screenplay.actions.StoreEpkaInAktenkonto;
 import de.gematik.test.ncp.screenplay.questions.GetPractitionerData;
@@ -43,6 +46,9 @@ import net.serenitybdd.screenplay.ensure.Ensure;
 @Getter
 public class GermanPracticeTestSteps {
 
+  private static final String DEFECT_011_EPKA_TEMPLATE = "defect011";
+  private static final String DEFECT_012_EPKA_TEMPLATE = "defect012";
+  private static final String DEFECT_020_EPKA_TEMPLATE = "defect020";
   private final Testdata testdata = Testdata.instance();
 
   @Und(
@@ -51,6 +57,7 @@ public class GermanPracticeTestSteps {
     final var leEuActor = OnStage.theActorInTheSpotlight();
     final var country = leEuActor.asksFor(new GetPractitionerData()).country();
     final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+    andThat(patient).attemptsTo(AuthorizeEuCountry.forCountry(country));
     andThat(patient).attemptsTo(Ensure.that(IsAuthorizeEuCountry.forCountry(country)).isTrue());
     // set the leEuActor in the spotlight again
     OnStage.stage().shineSpotlightOn(leEuActor.getName());
@@ -59,10 +66,16 @@ public class GermanPracticeTestSteps {
   @Und("^die versicherte Person hat ihre KVNR und den AccessCode an den LE-EU übergeben$")
   public void handoverKvnrAndAccesscodeToLeEu() {
     // make patient data including accessCode and KVNR available to actor LeEu
-    // TODO Clarify as obsolete? or empty step? the data in ProvidePatientData is already available
     // see: @Und("^die versicherte Person begibt sich in dem EU-Land (.+) bei LE-EU (.+) in
     // Behandlung$")
-    //  public void patientEntersTreatmentInEU(final String euCountry, final String leEuName)
+
+    final var leEuActor = OnStage.theActorInTheSpotlight();
+    final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+
+    andThat(patient).attemptsTo(ProvidePatientAccessDataToLeEu.withLeEu(leEuActor));
+
+    // set the leEuActor in the spotlight again
+    OnStage.stage().shineSpotlightOn(leEuActor.getName());
   }
 
   @Angenommen("^(?:der|die) Versicherte (.+) hat ein ePA Aktenkonto im Status (.+)$")
@@ -101,6 +114,13 @@ public class GermanPracticeTestSteps {
     // search for the document
     // write a new ePKA document (can even be exactly the same - just ensure a new DocumentUniqueId
     // being is generated)
+
+    final var actorInTheSpotlight = OnStage.theActorInTheSpotlight();
+    final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
+
+    when(leDeActor).attemptsTo(StoreEpkaInAktenkonto.instance());
+
+    OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());
   }
 
   @Wenn("von einem LE-DE das ePKA Dokument der versicherten Person gelöscht wird")
@@ -126,20 +146,18 @@ public class GermanPracticeTestSteps {
     // sign the constructed ePKA document with an LE-DE identity
     // store constructed and signed ePKA document in the ePA account of the patient
 
-    /*final var actorInTheSpotlight = OnStage.theActorInTheSpotlight();
+    final var actorInTheSpotlight = OnStage.theActorInTheSpotlight();
     final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
 
     andThat(leDeActor)
         .attemptsTo(
-            SelectConnector.fromTestdataAndConnectorModel(testdata, connectorType)
-            //TODO: implement CreateSchemaDefectiveEpka
-                .then(CreateSchemaDefectiveEpka.fromTestdata(testdata))
+            CreateEpka.fromTestdata(testdata, DEFECT_020_EPKA_TEMPLATE)
                 .then(SignEpka.instance())
                 .then(StoreEpkaInAktenkonto.instance()));
 
     andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isTrue());
 
-    OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());*/
+    OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());
   }
 
   @Und(
@@ -198,20 +216,18 @@ public class GermanPracticeTestSteps {
     // !!! sign the constructed ePKA document with an LE-DE identity
     // store constructed and signed ePKA document in the ePA account of the patient
 
-    /*final var actorInTheSpotlight = OnStage.theActorInTheSpotlight();
+    final var actorInTheSpotlight = OnStage.theActorInTheSpotlight();
     final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
 
     andThat(leDeActor)
         .attemptsTo(
-            SelectConnector.fromTestdataAndConnectorModel(testdata, connectorType)
-            //TODO: implement CreateEpkaWithDpeOnly
-                .then(CreateEpkaWithDpeOnly.fromTestdata(testdata))
+            CreateEpka.fromTestdata(testdata, DEFECT_011_EPKA_TEMPLATE)
                 .then(SignEpka.instance())
                 .then(StoreEpkaInAktenkonto.instance()));
 
     andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isTrue());
 
-    OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());*/
+    OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());
   }
 
   @Angenommen(
@@ -227,5 +243,17 @@ public class GermanPracticeTestSteps {
     // signature of the document is not mandatory
     // store constructed ePKA document in the ePA account of the patient
 
+    final var actorInTheSpotlight = OnStage.theActorInTheSpotlight();
+    final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
+
+    andThat(leDeActor)
+        .attemptsTo(
+            CreateEpka.fromTestdata(testdata, DEFECT_012_EPKA_TEMPLATE)
+                .then(SignEpka.instance())
+                .then(StoreEpkaInAktenkonto.instance()));
+
+    andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isTrue());
+
+    OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,12 @@ package de.gematik.test.ncp.util;
 
 import de.gematik.test.tiger.common.config.TigerConfigurationException;
 import de.gematik.test.tiger.common.config.TigerGlobalConfiguration;
-import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBContext;
 import java.io.ByteArrayInputStream;
-import java.net.URI;
+import java.io.InputStream;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Stream;
 import javax.xml.stream.XMLInputFactory;
 import lombok.Getter;
 import lombok.NonNull;
@@ -34,8 +31,8 @@ import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.net.util.Base64;
 import org.junit.jupiter.api.function.ThrowingSupplier;
+import org.w3c.dom.Document;
 
 /**
  * The space for utility functions. Only place functions here, which have no better place in a more
@@ -54,78 +51,6 @@ public class Utils {
     factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
     return factory;
-  }
-
-  /**
-   * Transform a {@link Function} such, that if it throws the given exception type, the exception
-   * won't be thrown, but instead the given alternative value will be returned.<br>
-   * Exceptions extending the given exception type, will also be catched. Other exception types will
-   * still be thrown.
-   *
-   * @param code {@link Function} to be transformed
-   * @param exceptionType {@link Exception} to be catched, instead of thrown
-   * @param insteadValue the value to be returned in case an exception of the given type was
-   *     catched.
-   * @return the transformed {@link Function}
-   * @param <T> parameter type of the function
-   * @param <R> return type of the function
-   */
-  public static <T, R> Function<T, R> swallowExceptionFunction(
-      @NonNull final Function<T, R> code,
-      @NonNull final Class<? extends Exception> exceptionType,
-      final R insteadValue) {
-    return t -> {
-      try {
-        return code.apply(t);
-      } catch (final Exception e) {
-        if (exceptionType.isAssignableFrom(e.getClass())) {
-          return insteadValue;
-        }
-        throw e;
-      }
-    };
-  }
-
-  /**
-   * Transform a {@link Function} such, that if it throws an exception, the exception won't be
-   * thrown, but instead the given alternative value will be returned.
-   *
-   * @param code {@link Function} to be transformed
-   * @param insteadValue the value to be returned in case an exception was catched.
-   * @return the transformed {@link Function}
-   * @param <T> parameter type of the function
-   * @param <R> return type of the function
-   */
-  public static <T, R> Function<T, R> swallowExceptionFunction(
-      @NonNull final Function<T, R> code, final R insteadValue) {
-    return swallowExceptionFunction(code, Exception.class, insteadValue);
-  }
-
-  /**
-   * Transform a {@link Function} such, that if it throws an exception, the exception won't be
-   * thrown, but instead {@code null} will be returned.
-   *
-   * @param code {@link Function} to be transformed
-   * @return the transformed {@link Function}
-   * @param <T> parameter type of the function
-   * @param <R> return type of the function
-   */
-  public static <T, R> Function<T, R> swallowExceptionFunction(@NonNull final Function<T, R> code) {
-    return swallowExceptionFunction(code, null);
-  }
-
-  /**
-   * Wrapper around the {@link Response#readEntity(Class)} function, which returns null, in case
-   * readEntity was not successful.
-   *
-   * @param response {@link Response} from which to read the entity
-   * @param entityType Class type of the entity
-   * @return the entity read from the response or null, if it couldn't be read
-   * @param <T> type of the entity
-   */
-  public static <T> T readEntityFromResponse(final Response response, final Class<T> entityType) {
-    return swallowExceptionFunction((Function<Response, T>) resp -> resp.readEntity(entityType))
-        .apply(response);
   }
 
   /**
@@ -154,79 +79,6 @@ public class Utils {
     return TigerGlobalConfiguration.instantiateConfigurationBean(configClass, configPath)
         .orElseThrow(
             () -> new TigerConfigurationException("No configuration data found for " + configPath));
-  }
-
-  /**
-   * Build an {@link URI} object from the given data.
-   *
-   * @param scheme {@link String} the scheme, e.g. "http" of the URI. If the given value is "://"
-   *     missing, it will be added to the scheme.
-   * @param hostname {@link String} hostname for the URI. May also be an IP address.
-   * @param port {@link Integer} port number. Optional, null can be used for this parameter, if no
-   *     port number shall be provided
-   * @param paths {@link String}[] Paths of the URI. The are added in the order they are provided.
-   *     Missing "/" will be added.
-   * @return {@link URI} the created URI
-   */
-  public static URI buildUri(
-      @NonNull final String scheme,
-      @NonNull final String hostname,
-      final Integer port,
-      final String... paths) {
-    final var formattedScheme = ensureEndsWith(scheme, "://");
-    final var result =
-        URI.create(
-            formattedScheme
-                .concat(hostname)
-                .concat(Optional.ofNullable(port).map(p -> ":" + p).orElse("")));
-
-    return Stream.of(paths)
-        .filter(Objects::nonNull)
-        .map(path -> ensureStartsWith(path, "/"))
-        .reduce(String::concat)
-        .map(result::resolve)
-        .orElse(result);
-  }
-
-  /**
-   * Same as {@link #buildUri(String, String, Integer, String...)}, but with "http" for the scheme
-   * and no port number
-   *
-   * @param hostname {@link String} hostname for the URI. May also be an IP address.
-   * @param paths {@link String}[] Paths of the URI. The are added in the order they are provided.
-   *     Missing "/" will be added.
-   * @return {@link URI} the created URI
-   */
-  public static URI buildUri(@NonNull final String hostname, final String... paths) {
-    return buildUri("http://", hostname, null, paths);
-  }
-
-  /**
-   * Convenience String function to make sure the given String ends with the given suffix.
-   *
-   * @param string {@link String} the string to check
-   * @param suffix {@link String} the suffix which shall be at the end of the String
-   * @return {@link String} If it already ends with the suffix, the original string is returned, if
-   *     not the suffix is added to the end of the string and the concatenated String is returned
-   */
-  public static String ensureEndsWith(@NonNull final String string, @NonNull final String suffix) {
-    if (!string.endsWith(suffix)) return string.concat(suffix);
-    return string;
-  }
-
-  /**
-   * Convenience String function to make sure the given String starts with the given prefix.
-   *
-   * @param string {@link String} the string to check
-   * @param prefix {@link String} the prefix which shall be at the start of the String
-   * @return {@link String} If it already starts with the prefix, the original string is returned,
-   *     if not the prefix is added at the start of the string and the concatenated String is
-   *     returned
-   */
-  public static String ensureStartsWith(
-      @NonNull final String string, @NonNull final String prefix) {
-    if (!string.startsWith(prefix)) return prefix.concat(string);
-    return string;
   }
 
   /**
@@ -295,31 +147,23 @@ public class Utils {
   @SneakyThrows
   public static <T> T unmarshalXml(
       @NonNull final Class<T> objectType, final byte[] marshalledObject) {
-    final var jaxbUnmarshaller = JAXBContext.newInstance(objectType).createUnmarshaller();
     final var inputStream = new ByteArrayInputStream(marshalledObject);
+    return unmarshalXml(objectType, inputStream);
+  }
+
+  @SneakyThrows
+  public static <T> T unmarshalXml(
+      @NonNull final Class<T> objectType, final InputStream inputStream) {
+    final var jaxbUnmarshaller = JAXBContext.newInstance(objectType).createUnmarshaller();
     return jaxbUnmarshaller
         .unmarshal(xmlInputFactory().createXMLStreamReader(inputStream), objectType)
         .getValue();
   }
 
-  /**
-   * Unmarshal an XML given as Base64 encoded byte array into the corresponding Java object.
-   *
-   * @param objectType class instance of the type of the Java result object
-   * @param xmlEncoded Base64 encoded byte array with the actual XML
-   * @return the Java object created from the XML
-   * @param <T> type of the Java result object
-   */
-  public static <T> T unmarshalBase64EncodedXml(
-      final Class<T> objectType, final byte[] xmlEncoded) {
-
-    byte[] xmlDecoded = xmlEncoded;
-
-    while (Base64.isArrayByteBase64(xmlDecoded)) {
-      xmlDecoded = Base64.decodeBase64(xmlDecoded);
-    }
-
-    return Utils.unmarshalXml(objectType, xmlDecoded);
+  @SneakyThrows
+  public static <T> T unmarshalXml(@NonNull final Class<T> objectType, final Document document) {
+    final var jaxbUnmarshaller = JAXBContext.newInstance(objectType).createUnmarshaller();
+    return jaxbUnmarshaller.unmarshal(document, objectType).getValue();
   }
 
   /**

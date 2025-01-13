@@ -1,9 +1,7 @@
 # ${template.warning}
 # Template file: ${resources.folder}/${templates.folder}/infrastructure.yaml
 epafdv:
-  version: ${epa-fdv.version}
   hostname: fdvSim
-  basePath: services/rs
 
 epaps:
   version: ${epa-ps.version}

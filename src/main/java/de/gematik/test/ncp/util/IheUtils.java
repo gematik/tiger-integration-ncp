@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import de.gematik.epa.conversion.internal.response.RegistryObjectListMapper;
 import de.gematik.epa.ihe.model.document.DocumentMetadata;
 import de.gematik.epa.ihe.model.response.ProxyFindResponse;
 import de.gematik.epa.ihe.model.response.RegistryObjectLists;
-import de.gematik.test.ncp.ncpeh.NcpehService.PatientSummaryLevel;
+import de.gematik.test.ncp.ncpeh.PatientSummaryLevel;
 import jakarta.xml.bind.JAXBElement;
 import java.util.Collection;
 import java.util.Optional;
@@ -36,6 +36,9 @@ public class IheUtils {
 
   public static final String SUCCESS_RESPONSE =
       "urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success";
+
+  public static final String FAILURE_RESPONSE =
+      "urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure";
 
   public static final String STATUS_APPROVED =
       "urn:oasis:names:tc:ebxml-regrep:StatusType:Approved";

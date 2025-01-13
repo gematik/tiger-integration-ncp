@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,19 @@
 
 package de.gematik.test.ncp.ncpeh.client.dataobject;
 
-import static de.gematik.test.ncp.util.Utils.unmarshalBase64EncodedXml;
+import static de.gematik.test.ncp.ncpeh.client.dataobject.SoapUtils.extractBodyAsDocument;
+import static de.gematik.test.ncp.util.Utils.unmarshalXml;
 
 import de.gematik.ncpeh.api.common.WrappedHttpMessage;
 import de.gematik.ncpeh.api.common.WrappedHttpRequest;
 import de.gematik.ncpeh.api.common.WrappedHttpResponse;
 import de.gematik.ncpeh.api.response.SimulatorCommunicationData;
+import de.gematik.test.ncp.data.AcknowledgementDetail;
 import de.gematik.test.ncp.data.Patient;
 import de.gematik.test.ncp.data.PatientImpl;
 import de.gematik.test.ncp.data.PersonName;
 import de.gematik.test.ncp.ncpeh.NcpehService;
-import de.gematik.test.ncp.ncpeh.NcpehService.PatientSummaryLevel;
+import de.gematik.test.ncp.ncpeh.PatientSummaryLevel;
 import de.gematik.test.ncp.util.Utils;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
@@ -45,6 +47,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,10 +65,13 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.net.util.Base64;
 import org.hl7.v3.CD;
 import org.hl7.v3.ClinicalDocument;
+import org.hl7.v3.ED;
 import org.hl7.v3.ENXP;
 import org.hl7.v3.II;
 import org.hl7.v3.MCAIMT900001UV01DetectedIssueEvent;
@@ -81,6 +87,8 @@ import org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01Subject1;
 import org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01Subject2;
 import org.hl7.v3.PRPAMT201310UV02Patient;
 import org.hl7.v3.PRPAMT201310UV02Person;
+import org.hl7.v3.ST;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Pdf;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -95,13 +103,16 @@ public class DataUtils {
   private static final String NAME_PREFIX = "prefix";
   private static final String TESTSUITE_PATH_PART = "tiger-integration-ncp";
 
-  public static final String CODE_SYSTEM_XCPD_ERROR = "1.3.6.1.4.1.19376.1.2.27.3";
+  public static final List<String> CODE_SYSTEM_XCPD_ERRORS =
+      List.of("1.3.6.1.4.1.19376.1.2.27.3", "1.3.6.1.4.1.12559.11.10.1.3.2.2.1");
 
   private static final DateTimeFormatter BASIC_DATE_TIME_FORMAT =
       new DateTimeFormatterBuilder().appendPattern("yyyyMMddHHmmss").toFormatter();
 
   @Getter(lazy = true, value = AccessLevel.PRIVATE)
   private final File testsuiteTempDir = getOrCreateTestsuiteTmpFolder();
+
+  public static final String REPOSITORY_UNIQUE_ID_SLOT_NAME = "repositoryUniqueId";
 
   /**
    * Read the patient data name, KVNR and birth date from the given {@link PRPAIN201306UV02} object.
@@ -113,6 +124,35 @@ public class DataUtils {
   public static Patient readPatientDataFromIdentifyPatientResponse(
       final PRPAIN201306UV02 response) {
     return readPatientDataFromControlActProcess(response.getControlActProcess());
+  }
+
+  /**
+   * Reads the acknowledgement detail from the given PRPAIN201306UV02 response.
+   *
+   * @param response the PRPAIN201306UV02 response object received in an identifyPatient operation
+   *     from the NCPeH FD
+   * @return an AcknowledgementDetail object containing the code, text, and location of the
+   *     acknowledgement detail, or null if no acknowledgement detail is found
+   */
+  public static AcknowledgementDetail readAcknowledgementDetailFromIdentifyPatientResponse(
+      final PRPAIN201306UV02 response) {
+    return response.getAcknowledgement().stream()
+        .flatMap(ack -> ack.getAcknowledgementDetail().stream())
+        .findFirst()
+        .map(
+            ackDetail ->
+                new AcknowledgementDetail(
+                    Optional.ofNullable(ackDetail.getCode()).map(CD::getCode).orElse(null),
+                    Optional.ofNullable(ackDetail.getText())
+                        .map(ED::getContent)
+                        .map(List::getFirst)
+                        .orElse(null),
+                    Optional.ofNullable(ackDetail.getLocation())
+                        .map(List::getFirst)
+                        .map(ST::getContent)
+                        .map(List::getFirst)
+                        .orElse(null)))
+        .orElse(null);
   }
 
   /**
@@ -136,30 +176,29 @@ public class DataUtils {
    * Read the structured patient summary in the CDA3 format ({@link ClinicalDocument}) from an NCPeH
    * retrieveDocument response
    *
-   * @param psdo {@link RetrievePatientSummaryDO} response object of the {@link
-   *     NcpehService#retrievePatientSummary(Patient, String, String, AdhocQueryResponse,
+   * @param response {@link RetrievePatientSummaryDO} response object of the {@link
+   *     NcpehService#retrievePatientSummary(Patient, String, String, AdhocQueryResponse, String,
    *     PatientSummaryLevel...)} operation
    * @return {@link ClinicalDocument} patient summary, or null if non was found
    */
-  public static ClinicalDocument readPatientSummaryLvl3(final RetrievePatientSummaryDO psdo) {
-    return Optional.ofNullable(getPatientSummaryOfLevel(psdo, PatientSummaryLevel.LEVEL_3))
-        .map(dr -> Utils.unmarshalXml(ClinicalDocument.class, dr))
+  public static ClinicalDocument readPatientSummaryLvl3(
+      final RetrieveDocumentSetResponseType response) {
+    return Optional.ofNullable(getPatientSummaryOfLevel(response, PatientSummaryLevel.LEVEL_3))
+        .map(dr -> unmarshalXml(ClinicalDocument.class, dr))
         .orElse(null);
   }
 
   /**
    * Read the patient summary in the CDA1 format (PDF) from an NCPeH retrieveDocument response
    *
-   * @param retrievePatientSummaryDO {@link RetrievePatientSummaryDO} response object of the {@link
-   *     NcpehService#retrievePatientSummary(Patient, String, String, AdhocQueryResponse,
+   * @param response {@link RetrievePatientSummaryDO} response object of the {@link
+   *     NcpehService#retrievePatientSummary(Patient, String, String, AdhocQueryResponse, String,
    *     PatientSummaryLevel...)} operation
    * @return {@link Pdf} patient summary, or null if non was found
    */
-  public static Pdf readPatientSummaryLvl1(
-      final RetrievePatientSummaryDO retrievePatientSummaryDO) {
-    return Optional.ofNullable(
-            getPatientSummaryOfLevel(retrievePatientSummaryDO, PatientSummaryLevel.LEVEL_1))
-        .map(doc -> new Pdf(Base64.encodeBase64String(doc)))
+  public static Pdf readPatientSummaryLvl1(final RetrieveDocumentSetResponseType response) {
+    return Optional.ofNullable(getPatientSummaryOfLevel(response, PatientSummaryLevel.LEVEL_1))
+        .map(doc -> new Pdf(Base64.getEncoder().encodeToString(doc)))
         .orElse(null);
   }
 
@@ -176,9 +215,7 @@ public class DataUtils {
       final Patient patient, final Pdf cda1Document) {
     final var tempFile = createTempFile(".pdf", patient.kvnr(), "Patient_Summary_Level_1");
 
-    var pdfBytes = Base64.decodeBase64(cda1Document.getContent());
-    while (Base64.isArrayByteBase64(pdfBytes)) pdfBytes = Base64.decodeBase64(pdfBytes);
-
+    final var pdfBytes = cda1Document.getContent().getBytes(StandardCharsets.UTF_8);
     FileUtils.writeByteArrayToFile(tempFile, pdfBytes);
 
     return tempFile.getAbsolutePath();
@@ -235,6 +272,7 @@ public class DataUtils {
             simulatorComData.responseReceived(), RetrieveDocumentSetResponseType.class));
   }
 
+  @SuppressWarnings("unchecked")
   public static PersonName createNameFromPNList(final List<PN> nameList) {
     final var names =
         nameList.stream()
@@ -257,6 +295,31 @@ public class DataUtils {
         .titles(names.get(NAME_PREFIX))
         .givenNames(names.get(NAME_GIVEN))
         .lastNames(names.get(NAME_FAMILY));
+  }
+
+  public static AdhocQueryResponse setRepositoryUniqueId(
+      final AdhocQueryResponse psaMetadata, final String repositoryUniqueId) {
+    // Replace repositoryUniqueId for all ExtrinsicObjects
+    psaMetadata.getRegistryObjectList().getIdentifiable().stream()
+        .filter(d -> d.getValue() instanceof ExtrinsicObjectType)
+        .map(JAXBElement::getValue)
+        .map(IdentifiableType::getSlot)
+        .flatMap(Collection::stream)
+        .filter(s -> REPOSITORY_UNIQUE_ID_SLOT_NAME.equals(s.getName()))
+        .forEach(
+            s -> {
+              s.getValueList().getValue().clear();
+              s.getValueList().getValue().add(repositoryUniqueId);
+            });
+
+    return psaMetadata;
+  }
+
+  public static @NotNull Optional<RegistryResponseType> getRegistryResponseType(
+      final RetrievePatientSummaryDO retrievePatientSummaryDO) {
+    return Optional.ofNullable(retrievePatientSummaryDO)
+        .map(NcpehInterfaceResponse::ncpehFdResponseContent)
+        .map(RetrieveDocumentSetResponseType::getRegistryResponse);
   }
 
   // region private
@@ -311,7 +374,7 @@ public class DataUtils {
       throw new IllegalArgumentException(
           "Data to more than one patient were found in the identifyPatient response");
 
-    final var pat = pats.get(0);
+    final var pat = pats.getFirst();
 
     final var patient = new PatientImpl();
 
@@ -336,7 +399,7 @@ public class DataUtils {
         .flatMap(Collection::stream)
         .map(MCAIMT900001UV01SourceOf::getDetectedIssueManagement)
         .map(MCAIMT900001UV01DetectedIssueManagement::getCode)
-        .filter(code -> CODE_SYSTEM_XCPD_ERROR.equals(code.getCodeSystem()))
+        .filter(code -> CODE_SYSTEM_XCPD_ERRORS.contains(code.getCodeSystem()))
         .map(CD::getCode)
         .toList();
   }
@@ -408,13 +471,8 @@ public class DataUtils {
   }
 
   private static byte[] getPatientSummaryOfLevel(
-      @NonNull final RetrievePatientSummaryDO psdo, final PatientSummaryLevel level) {
-    final var retrieveResponse =
-        Objects.requireNonNull(
-            psdo.ncpehFdResponseContent(),
-            "No response of the NCPeH FD is present in the data received from the NCPeH Simulator");
-
-    return retrieveResponse.getDocumentResponse().stream()
+      @NonNull final RetrieveDocumentSetResponseType response, final PatientSummaryLevel level) {
+    return response.getDocumentResponse().stream()
         .filter(dr -> level.documentIsOfLevel(dr.getDocumentUniqueId()))
         .map(DocumentResponse::getDocument)
         .findFirst()
@@ -446,19 +504,13 @@ public class DataUtils {
 
   private static <T> T parseHttpBody(
       final WrappedHttpMessage httpMessage, final Class<T> bodyType) {
-    final var bodyEncoded = httpMessage.httpBody();
-
-    return unmarshalBase64EncodedXml(bodyType, bodyEncoded);
+    final var soapMessage = httpMessage.httpBody();
+    final var doc = extractBodyAsDocument(soapMessage);
+    return unmarshalXml(bodyType, doc);
   }
 
   private static Map<String, String> parseHttpHeaders(final WrappedHttpMessage httpMessage) {
-    byte[] headersDecoded = httpMessage.httpHeader();
-
-    while (Base64.isArrayByteBase64(headersDecoded)) {
-      headersDecoded = Base64.decodeBase64(headersDecoded);
-    }
-
-    var headersAsString = new String(headersDecoded, StandardCharsets.UTF_8);
+    var headersAsString = new String(httpMessage.httpHeader(), StandardCharsets.UTF_8);
     headersAsString = Utils.trimCharacters(headersAsString, "[", "]");
 
     return headersAsString

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,10 @@
 package de.gematik.test.ncp.fdv;
 
 import de.gematik.test.ncp.ExternalServerConfig;
+import de.gematik.test.ncp.GeneralFactory;
+import de.gematik.test.ncp.fdv.impl.FdvServiceImpl;
+import de.gematik.test.ncp.gen.eu.fdv.api.EntitleManagementEuApi;
+import de.gematik.test.ncp.gen.fdv.api.LoginLogoutApi;
 import de.gematik.test.ncp.util.Utils;
 import lombok.Getter;
 
@@ -37,6 +41,13 @@ public class FdvProvider {
       Utils.loadConfig(ExternalServerConfig.class, FDV_SIM_CONFIG_KEY);
 
   @Getter(lazy = true)
-  // Hier wird zwar die FdvInterfaceImpl erstellt, aber letzlich führt diese nichts aus.
-  private final FdvService fdvClient = new FdvServiceImpl(getEpaFdvConfig());
+  private final FdvService fdvClient =
+      FdvServiceImpl.builder()
+          .config(getEpaFdvConfig())
+          .loginLogoutApiProxy(
+              GeneralFactory.createJAXRSClientProxy(LoginLogoutApi.class, getEpaFdvConfig()))
+          .entitleManagementEuApiProxy(
+              GeneralFactory.createJAXRSClientProxy(
+                  EntitleManagementEuApi.class, getEpaFdvConfig()))
+          .build();
 }

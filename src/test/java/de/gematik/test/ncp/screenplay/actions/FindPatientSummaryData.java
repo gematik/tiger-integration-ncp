@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package de.gematik.test.ncp.screenplay.actions;
 
+import de.gematik.test.ncp.glue.psa.UCHeaders;
+import de.gematik.test.ncp.screenplay.abilities.ProvidePatientAccessData;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePractitionerData;
 import de.gematik.test.ncp.screenplay.abilities.TreatPatient;
@@ -30,15 +32,19 @@ public class FindPatientSummaryData implements Performable {
   @Override
   public <T extends Actor> void performAs(final T actor) {
     log.debug("Perform FindPatientSummaryData action");
-    final var patient = actor.usingAbilityTo(TreatPatient.class).getPatient();
-    final var patientData = patient.usingAbilityTo(ProvidePatientData.class);
     final var practitionerData = actor.usingAbilityTo(ProvidePractitionerData.class);
+    final var patientAccessData = actor.usingAbilityTo(ProvidePatientAccessData.class);
 
     final var ncpeh = actor.usingAbilityTo(UseNcpeh.class);
     final var patientSummaryDo =
         ncpeh.findPatientSummary(
-            patientData, practitionerData.profileName(), practitionerData.country());
+            patientAccessData,
+            practitionerData.profileName(),
+            practitionerData.country(),
+            ncpeh.getNcpehMockControlRequestHeaders().get(UCHeaders.UC2));
 
+    final var patient = actor.usingAbilityTo(TreatPatient.class).getPatient();
+    final var patientData = patient.usingAbilityTo(ProvidePatientData.class);
     patientData.setPsaMetadata(patientSummaryDo.ncpehFdResponseContent());
     log.info("Found document meta data: " + patientSummaryDo);
   }

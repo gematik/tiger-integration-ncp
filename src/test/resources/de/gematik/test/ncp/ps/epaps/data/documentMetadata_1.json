@@ -1,0 +1,55 @@
+{
+  "author": [
+    {
+      "identifier": "165746304",
+      "familyName": "Münchhausen-Bohlen",
+      "givenName": "Stefan",
+      "otherName": null,
+      "nameAffix": null,
+      "title": "Dr.",
+      "oid": "1.2.276.0.76.4.16",
+      "authorInstitution": [
+        {
+          "name": "Praxis Münchhausen-BohlenTEST-ONLY",
+          "identifier": "1-SMC-B-Testkarte--883110000163990"
+        }
+      ],
+      "authorRole": [
+        "4^^^&1.3.6.1.4.1.19376.3.276.1.5.13&ISO"
+      ],
+      "authorSpecialty": [
+        "3^^^&1.2.276.0.76.5.492&ISO"
+      ],
+      "authorTelecommunication": []
+    }
+  ],
+  "availabilityStatus": null,
+  "confidentialityCode": [
+    "N"
+  ],
+  "classCode": "AUS",
+  "comments": null,
+  "creationTime": "2024-12-20T12:09:16.431334",
+  "entryUUID": null,
+  "eventCodeList": [
+    "H1"
+  ],
+  "formatCode": "urn:gematik:ig:Notfalldatensatz:r3.1",
+  "hash": null,
+  "healthcareFacilityTypeCode": "PRA",
+  "languageCode": "de-DE",
+  "legalAuthenticator": null,
+  "mimeType": "application/xml",
+  "practiceSettingCode": "ALLG",
+  "referenceIdList": [],
+  "serviceStartTime": "2024-12-20T11:09:16.431334",
+  "serviceStopTime": "2024-12-20T12:09:16.431334",
+  "size": null,
+  "title": "Patientenkurzakte_2024-12-20T15:09:16.431334",
+  "typeCode": "BEFU",
+  "uniqueId": null,
+  "uri": "patientenkurzakte.xml",
+  "repositoryUniqueId": null,
+  "home": null,
+  "patientId": null
+}

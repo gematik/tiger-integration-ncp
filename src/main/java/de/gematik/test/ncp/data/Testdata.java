@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.gematik.test.ncp.util.EpkaProcessor;
 import de.gematik.test.ncp.util.Utils;
-import de.gematik.test.tiger.common.config.TigerConfigurationException;
 import de.gematik.test.tiger.common.config.TigerGlobalConfiguration;
 import java.io.File;
 import java.net.URL;
@@ -29,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -52,6 +52,8 @@ public final class Testdata {
 
   public static final String EU_PRACTITIONERS_KEY = TESTDATA_BASEKEY + ".practitioners.eu";
 
+  public static final String PRACTICE_DE_KEY = TESTDATA_BASEKEY + ".practice.de";
+
   public static final String EPKA_TEMPLATES_CONFIG_PATH = TESTDATA_BASEKEY + ".epka.templates";
 
   public static final String NCPEHSIM_TESTDATA_PROFILES_KEY = TESTDATA_BASEKEY + ".profiles";
@@ -66,15 +68,15 @@ public final class Testdata {
 
   public static final String RECORD_SYSTEMS_CONFIG_KEY = TESTDATA_BASEKEY + ".recordsystems";
 
-  public static final String CONNECTOR_ADDRESSES_CONFIG_KEY = TESTDATA_BASEKEY + ".konnektor";
-
   public static final String DO_NOT_FAIL_CONFIG_KEY = CONFIG_BASEKEY + ".doNotFail";
 
-  // TODO: Remove once a proper FdV integration has been implemented
-  public static final String HARD_CODED_ACCESS_CODE = "ABC123";
+  public static final String TESTDATA_FOLDER = "testdata";
+  public static final String SEPARATOR = "/";
 
   @Getter(lazy = true)
   private static final Testdata instance = new Testdata();
+
+  public static final String DEFAULT_EPKA_KEY_NAME = "default";
 
   @Getter(lazy = true)
   private final Patients patientsTestdata = Utils.loadConfig(Patients.class, PATIENTS_DATA_KEY);
@@ -82,6 +84,9 @@ public final class Testdata {
   @Getter(lazy = true)
   private final Practitioners euPractitioners =
       Utils.loadConfig(Practitioners.class, EU_PRACTITIONERS_KEY);
+
+  @Getter(lazy = true)
+  private final Practice practice = Utils.loadConfig(Practices.class, PRACTICE_DE_KEY).getFirst();
 
   @Getter(lazy = true)
   private final ArrayList<String> knownTitles =
@@ -105,10 +110,6 @@ public final class Testdata {
   @Getter(lazy = true)
   private final RecordSystems recordSystems =
       Utils.loadConfig(RecordSystems.class, RECORD_SYSTEMS_CONFIG_KEY);
-
-  @Getter(lazy = true)
-  private final ConnectorAddresses connectorAddresses =
-      Utils.loadConfig(ConnectorAddresses.class, CONNECTOR_ADDRESSES_CONFIG_KEY);
 
   @Getter(lazy = true)
   private final Boolean doNotFail = Utils.loadConfig(Boolean.class, DO_NOT_FAIL_CONFIG_KEY);
@@ -135,30 +136,22 @@ public final class Testdata {
     return ResourceUtils.getFile(filePath);
   }
 
+  @SneakyThrows
+  public static <T> T loadClassFromJson(final Class<T> clazz, final String name) {
+    return TigerGlobalConfiguration.getObjectMapper()
+        .readValue(
+            Testdata.class.getClassLoader().getResourceAsStream(TESTDATA_FOLDER + SEPARATOR + name),
+            clazz);
+  }
+
   /**
    * Get the path of the default ePKA template.<br>
-   * It's simply the path from the first ePKA template config found, which is probably the top one.
+   * It's the path from the default ePKA template config.
    *
    * @return {@link String} path to the ePKA template
    */
   public String getDefaultEpkaTemplatePath() {
-    return epkaTemplates().values().stream()
-        .findFirst()
-        .orElseThrow(
-            () ->
-                new TigerConfigurationException(
-                    "No path to an ePKA template configured in the testdata configuration"));
-  }
-
-  /**
-   * Create the ePKA for the given patient, using the default ePKA template
-   *
-   * @param patient {@link Patient} the patient for which to create the ePKA
-   * @return {@code byte[]} the create ePKA as byte array
-   */
-  @SneakyThrows
-  public byte[] createEpkaFromTemplate(final Patient patient) {
-    return createEpkaFromTemplateFile(patient, ResourceUtils.getURL(getDefaultEpkaTemplatePath()));
+    return epkaTemplates().get(DEFAULT_EPKA_KEY_NAME);
   }
 
   /**
@@ -172,9 +165,15 @@ public final class Testdata {
    * @return {@code byte[]} the create ePKA as byte array
    */
   @SneakyThrows
-  public byte[] createEpkaFromTemplate(
-      final Patient patient, @NonNull final String epkaTemplateName) {
-    final var templateFile = ResourceUtils.getURL(epkaTemplates().get(epkaTemplateName));
+  public byte[] createEpkaFromTemplate(final Patient patient, final String epkaTemplateName) {
+    final var templateFile =
+        ResourceUtils.getURL(
+            Optional.ofNullable(epkaTemplateName)
+                .map(name -> epkaTemplates().get(name))
+                .orElse(getDefaultEpkaTemplatePath()));
+
+    log.info(
+        "Creating ePKA for patient {} using template {}", patient.name().toString(), templateFile);
 
     return createEpkaFromTemplateFile(patient, templateFile);
   }

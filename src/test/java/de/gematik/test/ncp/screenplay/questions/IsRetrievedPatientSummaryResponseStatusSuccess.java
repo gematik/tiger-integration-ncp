@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 
 package de.gematik.test.ncp.screenplay.questions;
 
-import de.gematik.test.ncp.ncpeh.client.dataobject.NcpehInterfaceResponse;
+import de.gematik.test.ncp.ncpeh.client.dataobject.DataUtils;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
 import de.gematik.test.ncp.screenplay.abilities.TreatPatient;
 import de.gematik.test.ncp.util.IheUtils;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-import java.util.Optional;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Question;
 
@@ -31,9 +29,7 @@ public class IsRetrievedPatientSummaryResponseStatusSuccess implements Question<
   public Boolean answeredBy(final Actor actor) {
     final var patient = actor.usingAbilityTo(TreatPatient.class).getPatient();
     final var patientData = patient.usingAbilityTo(ProvidePatientData.class);
-    return Optional.ofNullable(patientData.getPatientSummaryDO())
-        .map(NcpehInterfaceResponse::ncpehFdResponseContent)
-        .map(RetrieveDocumentSetResponseType::getRegistryResponse)
+    return DataUtils.getRegistryResponseType(patientData.getPatientSummaryDO())
         .filter(rr -> IheUtils.SUCCESS_RESPONSE.equals(rr.getStatus()))
         .isPresent();
   }

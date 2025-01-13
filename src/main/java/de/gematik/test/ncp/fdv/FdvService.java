@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package de.gematik.test.ncp.fdv;
 
+import de.gematik.test.ncp.gen.eu.fdv.model.GetEntitlementNcpehResponseDTO;
+import de.gematik.test.ncp.gen.eu.fdv.model.PutEntitlementNcpehResponseDTO;
+import java.util.Optional;
+
 public interface FdvService {
 
   /**
@@ -26,12 +30,42 @@ public interface FdvService {
   boolean isUpAndRunning();
 
   /**
+   * Login to the FdV with the given KVNR
+   *
+   * @param kvnr identifier of the Aktenkonto
+   * @return the fqdn of the FdV
+   */
+  Optional<String> login(String kvnr);
+
+  /**
+   * Logout from the FdV with the given FQDN
+   *
+   * @param fqdn fqdn of the FdV
+   */
+  void logout(String fqdn);
+
+  /**
+   * Get the entitlements of the given Aktenkonto
+   *
+   * @param kvnr identifier of the Aktenkonto
+   * @return Optional<GetEntitlementNcpehResponseDTO> the entitlement for ncpeh
+   */
+  Optional<GetEntitlementNcpehResponseDTO> getEntitlementNcpeh(String kvnr);
+
+  /**
    * Authorize the NCPeH of another EU country for the given Aktenkonto
    *
    * @param kvnr identifier of the Aktenkonto
    * @param euCountry name of the country whose NCPeH is to be authorized
-   * @return the access code created for access to the patients Aktenkonto by a practitioner in the
-   *     given country
+   * @return the Optional<PutEntitlementNcpehResponseDTO> for the patients Aktenkonto by a
+   *     practitioner in the given country
    */
-  String authorizeEuCountry(String kvnr, String euCountry);
+  Optional<PutEntitlementNcpehResponseDTO> authorizeEuCountry(String kvnr, String euCountry);
+
+  /**
+   * Delete the entitlement for the given Aktenkonto
+   *
+   * @param kvnr identifier of the Aktenkonto
+   */
+  void deleteEntitlementNcpeh(String kvnr);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public interface PrimarySystemService {
    *
    * @param kvnr the patient identification number, a.k.a. KVNR
    */
-  void authorizeLeForKvnr(String kvnr);
+  void authorizeLeForKvnr(String telematikId, String kvnr);
 
   /**
    * Upload an ePKA document for the patient, identified by the given KVNR.
