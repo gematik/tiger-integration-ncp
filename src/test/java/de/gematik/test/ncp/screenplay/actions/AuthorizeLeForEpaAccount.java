@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,17 @@ package de.gematik.test.ncp.screenplay.actions;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
 import de.gematik.test.ncp.screenplay.abilities.TreatPatient;
 import de.gematik.test.ncp.screenplay.abilities.UsePrimarySystem;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.core.steps.Instrumented;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
 
-@NoArgsConstructor
+@AllArgsConstructor
 @Slf4j
 public class AuthorizeLeForEpaAccount implements Performable {
+
+  private final String telematikId;
 
   @Override
   public <T extends Actor> void performAs(final T actor) {
@@ -35,16 +37,18 @@ public class AuthorizeLeForEpaAccount implements Performable {
     final var patientData = patient.usingAbilityTo(ProvidePatientData.class);
     final var ps = actor.usingAbilityTo(UsePrimarySystem.class);
     try {
-      ps.authorizeLeForKvnr(patientData.kvnr());
+      ps.authorizeLeForKvnr(telematikId, patientData.kvnr());
     } catch (final RuntimeException e) {
       log.error(
           String.format(
-              "Authorizing the Leistungserbringer for the Aktenkonto of %s failed", patientData),
+              "Authorizing the Leistungserbringer for the Aktenkonto of %s failed",
+              patientData.kvnr()),
           e);
+      throw e;
     }
   }
 
-  public static AuthorizeLeForEpaAccount instance() {
-    return Instrumented.instanceOf(AuthorizeLeForEpaAccount.class).newInstance();
+  public static AuthorizeLeForEpaAccount forTelematikId(final String telematikId) {
+    return Instrumented.instanceOf(AuthorizeLeForEpaAccount.class).withProperties(telematikId);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import static de.gematik.test.ncp.util.Utils.supplyOrThrowSneaky;
 
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.Objects;
+import java.util.Optional;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -41,21 +43,19 @@ import org.xml.sax.InputSource;
  *
  * @param <T> Actual class extending this class
  */
-public abstract class XmlProcessor<T extends XmlProcessor<?>> {
+public class XmlProcessor<T extends XmlProcessor<T>> {
   // The Sonar warning can be ignored, as the created Getter method serializes all calls
   //  and therefore is thread safe.
   @lombok.Generated private static final Object $LOCK = new Object[0];
   private static final java.util.concurrent.atomic.AtomicReference<Object> documentBuilder =
-      new java.util.concurrent.atomic.AtomicReference<Object>();
+      new java.util.concurrent.atomic.AtomicReference<>();
   private static final java.util.concurrent.atomic.AtomicReference<Object> xpathProcessor =
-      new java.util.concurrent.atomic.AtomicReference<Object>();
+      new java.util.concurrent.atomic.AtomicReference<>();
   private static final java.util.concurrent.atomic.AtomicReference<Object> transformer =
-      new java.util.concurrent.atomic.AtomicReference<Object>();
+      new java.util.concurrent.atomic.AtomicReference<>();
   private final URL xmlFileUrl;
   private final java.util.concurrent.atomic.AtomicReference<Object> xmlDocument =
-      new java.util.concurrent.atomic.AtomicReference<Object>();
-
-  protected abstract T that();
+      new java.util.concurrent.atomic.AtomicReference<>();
 
   public Node retrieveNode(@NonNull final XPathExpression xpath) {
     try {
@@ -65,9 +65,10 @@ public abstract class XmlProcessor<T extends XmlProcessor<?>> {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public T updateNode(@NonNull final XPathExpression xpath, @NonNull final String newValue) {
-    retrieveNode(xpath).setNodeValue(newValue);
-    return that();
+    Optional.ofNullable(retrieveNode(xpath)).ifPresent(node -> node.setNodeValue(newValue));
+    return (T) this;
   }
 
   /**
@@ -78,32 +79,12 @@ public abstract class XmlProcessor<T extends XmlProcessor<?>> {
   public String toXmlString() {
     try {
       final var writer = new StringWriter();
-      transformer().transform(new DOMSource(xmlDocument()), new StreamResult(writer));
+      Objects.requireNonNull(transformer())
+          .transform(new DOMSource(xmlDocument()), new StreamResult(writer));
       return writer.toString();
     } catch (final java.lang.Throwable $ex) {
       throw lombok.Lombok.sneakyThrow($ex);
     }
-  }
-
-  private static class XmlProcessorImpl extends XmlProcessor<XmlProcessorImpl> {
-    XmlProcessorImpl(final URL xmlFileUrl) {
-      super(xmlFileUrl);
-    }
-
-    @Override
-    protected XmlProcessorImpl that() {
-      return this;
-    }
-  }
-
-  /**
-   * Get a default implementation of {@link XmlProcessor}
-   *
-   * @param xmlFileUrl
-   * @return
-   */
-  public static XmlProcessor<XmlProcessorImpl> instance(@NonNull final URL xmlFileUrl) {
-    return new XmlProcessorImpl(xmlFileUrl);
   }
 
   @lombok.Generated
@@ -164,11 +145,6 @@ public abstract class XmlProcessor<T extends XmlProcessor<?>> {
   }
 
   @lombok.Generated
-  public URL xmlFileUrl() {
-    return this.xmlFileUrl;
-  }
-
-  @lombok.Generated
   public Document xmlDocument() {
     Object value = this.xmlDocument.get();
     if (value == null) {
@@ -177,7 +153,9 @@ public abstract class XmlProcessor<T extends XmlProcessor<?>> {
         if (value == null) {
           final Document actualValue =
               supplyOrThrowSneaky(
-                  () -> documentBuilder().parse(new InputSource(new XmlStreamReader(xmlFileUrl))));
+                  () ->
+                      Objects.requireNonNull(documentBuilder())
+                          .parse(new InputSource(new XmlStreamReader(xmlFileUrl))));
           value = actualValue == null ? this.xmlDocument : actualValue;
           this.xmlDocument.set(value);
         }

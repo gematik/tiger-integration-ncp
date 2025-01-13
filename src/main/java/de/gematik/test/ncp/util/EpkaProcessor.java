@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,11 +74,6 @@ public class EpkaProcessor extends XmlProcessor<EpkaProcessor> {
 
   public EpkaProcessor(@NonNull final URL epkaFileUrl) {
     super(epkaFileUrl);
-  }
-
-  @Override
-  protected EpkaProcessor that() {
-    return this;
   }
 
   @SneakyThrows

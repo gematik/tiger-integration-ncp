@@ -31,15 +31,15 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
   Entsprechende Interoperabilitätsszenarien sind zu testen.
   Nicht betrachtet wird die Transformation und Transkodierung der medizinischen Daten des ePKA-Dokumentes.
 
-  # unzureichende Implementierung (Patientendaten werden nicht zurückgeliefert), deshalb ist das Szenario noch im Build zu ignorieren
-  @Ignore
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_EPA_010
   @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ @TESTSTUFE:3
   @AF-ID:AF_10107
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC1:PRPA_IN201306UV02_44
   @eHDSI-Szenario:PSA_PatIdentification
   @IOP
+  @CI
   Szenario: NCPeH - PSA ePA-IOP UC1 Identifikation eines Versicherten - KVNR UNKNOWN
     Der LE-EU ruft über den NCPeH die persönlichen Informationen der Versicherten aus der ePKA ab, wobei
     er eine falsche KVNR angibt und diese in keinem ePA Aktensystem gefunden wird.
@@ -65,13 +65,12 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
       Alternativ muss für alle Aktensysteme gemeinsam eine KVNR reserviert werden, die nicht als Konto
       angelegt werden darf.
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und in dem Konto befindet sich ein ECC signiertes ePKA-Dokument, in dem Name und Geburtsdatum der versicherten Person enthalten ist
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff dieses EU-Landes auf ihr ePA Konto berechtigt
     Wenn die versicherte Person die falsche KVNR Z999999999 und ihren AccessCode an den LE-EU übergibt
     Und der LE-EU mit KVNR und AccessCode der versicherten Person die Identifikation aufruft
-    #TODO: Same issue like in NCP1_E2E_PSA_UC1_010
     Dann erhält der LE-EU ein Identifikationsergebnis ohne Versichertendaten zurück
     Und das Identifikationsergebnis enthält Reason Encoding AnswerNotAvailable
     Und das Identifikationsergebnis enthält im acknowledgementDetail den Fehlercode ERROR_PI_NO_MATCH
@@ -195,8 +194,11 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
   @AF-ID:AF_10107
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC1:PRPA_IN201306UV02_45
+  @FDV-RESPONSE:,FAILURE-RESPONSE
   @eHDSI-Szenario:PSA_PatIdentification
   @IOP
+  @CI
   Szenario: NCPeH - PSA ePA-IOP UC1 Befugnis für EU Mitgliedsstaat für das ePA Konto fehlt bei Start der Patient Identification
     Es wird geprüft, dass der NCPeH mit dem Fehlen einer Zugriffsberechtigung für ein bestimmten
     EU Mitgliedsstaat im ePA Konto umgeht.
@@ -215,7 +217,7 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
     - Der NCPeH-FD beantwortet nach TUC_NCPeH_013 den XCPD-Request mit einem Fehler mit ReasonEncoding "InsufficientRights" und
       einem AcknowledgementDetail "ERROR_PI_GENERIC" (entsprechend Fehlerkorrektur im Change C_11967 zum NCPeH-FD v2.0).
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und in dem Konto befindet sich ein ECC signiertes ePKA-Dokument, in dem Name und Geburtsdatum der versicherten Person enthalten ist
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff dieses EU-Landes auf ihr ePA Konto NICHT befugt
@@ -233,8 +235,11 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
   @AF-ID:AF_10107 @AF-ID:AF_10121
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @NCPEH-RESPONSE-UC2:AdhocQueryResponse_031
+  @FDV-RESPONSE:,,FAILURE-RESPONSE
   @eHDSI-Szenario:PSA_FindDocuments
   @IOP @LongRunning
+  @CI
   Szenario: NCPeH - PSA ePA-IOP UC2 Befugnis für EU Mitgliedsstaat fehlt bei FindDocuments
     Es wird geprüft, dass der NCPeH mit dem Fehlen einer Zugriffsbefugnis für einen bestimmten
     EU Mitgliedsstaat im ePA Konto umgeht, nachdem bereits erfolgreich eine Patient Identification und
@@ -254,7 +259,7 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
     - Der NCPeH-FD beantwortet nach TUC_NCPeH_013 den XCA-Request mit einem Fehler "ERROR_NO_CONSENT".
       (entsprechend Fehlerkorrektur im Change C_11967 zum NCPeH-FD v2.0)
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und in dem Konto befindet sich ein ECC signiertes ePKA-Dokument, in dem Name und Geburtsdatum der versicherten Person enthalten ist
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff dieses EU-Landes auf ihr ePA Konto befugt
@@ -271,8 +276,11 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
   @AF-ID:AF_10107 @AF-ID:AF_10121
   @DESCRIPTION
   # Weitere Tags, team-intern
+  @FDV-RESPONSE:,,FAILURE-RESPONSE
+  @NCPEH-RESPONSE-UC34:RetrieveDocumentSetResponse_032
   @eHDSI-Szenario:PSA_RetrieveDocumentCDA3
   @IOP @LongRunning
+  @CI
   Szenario: NCPeH - PSA ePA-IOP UC3 Befugnis für EU Mitgliedsstaat fehlt bei RetrieveDocuments
     Es wird geprüft, dass der NCPeH mit dem Fehlen einer Zugriffsbefugnis für einen bestimmten
     EU Mitgliedsstaat im ePA Konto umgeht, nachdem bereits erfolgreich eine Patient Identification (UC 1)
@@ -293,7 +301,7 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
     - Der NCPeH-FD beantwortet nach TUC_NCPeH_014 den XCA-Request mit einem Fehler "ERROR_NO_CONSENT".
       (entsprechend Fehlerkorrektur im Change C_11967 zum NCPeH-FD v2.0)
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und in dem Konto befindet sich ein ECC signiertes ePKA-Dokument, in dem Name und Geburtsdatum der versicherten Person enthalten ist
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und die versicherte Person hat den NCPeH Fachdienst für den Zugriff dieses EU-Landes auf ihr ePA Konto befugt
@@ -329,7 +337,7 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
       Prinzipiell muss eine Folge-UC mit 20 Minuten Abstand zum vorausgehenden UC aber erfolgreich sein.
       Die Priorität des Testfalls wurde deshalb vorerst auf 3 gesetzt.
 
-    Angenommen die Versicherte Prof. Dr. Felicitas Anna Julia ÐoriaTEST-ONLY hat ein aktives ePA Konto
+    Angenommen die Versicherte Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY hat ein aktives ePA Konto
     Und in dem Konto befindet sich ein ECC signiertes ePKA-Dokument, in dem Name und Geburtsdatum der versicherten Person enthalten ist
     Und die versicherte Person begibt sich in dem EU-Land NETHERLANDS bei LE-EU van der Meer in Behandlung
     Und der NCPeH Fachdienst ist für den Zugriff dieses EU-Landes auf das Konto der versicherten Person noch für mindestens 30 Minuten berechtigt

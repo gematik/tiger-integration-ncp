@@ -1,0 +1,35 @@
+{
+  "baseParameter": {
+    "euCountryCode": "BG",
+    "idaAssertionProfile": {
+      "assertionProperties": {
+        "profileName": "ida",
+        "invalidSignature": null,
+        "deltaNotBefore": null,
+        "deltaNotAfter": null,
+        "purposeOfUse": null
+      },
+      "permissions": null,
+      "attributeStatements": null
+    }
+  },
+  "trcAssertionProfile": {
+    "assertionProperties": {
+      "profileName": "Trc",
+      "invalidSignature": null,
+      "deltaNotBefore": null,
+      "deltaNotAfter": null,
+      "purposeOfUse": null
+    },
+    "patientId": null
+  },
+  "patientId": {
+    "kvnr": "X124250984",
+    "kvnrAssigningAuthority": "1.2.276.0.76.3.1.580.147"
+  },
+  "accessCode": "ABC123",
+  "repositoryUniqueId": "312.6.23.90.3.0",
+  "documentUniqueId": "1.34.56.356.5464.8",
+  "additionalDocumentUniqueId": "1.34.56.356.5464.9",
+  "homeCommunityId": "urn:oid:1.2.276.0.76.4.291"
+}

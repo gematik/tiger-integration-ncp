@@ -1,52 +1,84 @@
 <img align="right" width="200" height="37" src="Gematik_Logo_Flag.png" alt="Gematik Logo"/> <br/>
 
-# Release notes Tiger-Integration-NCP
+# Release Notes: Tiger-Integration-NCP
 
-## Release 1.6.0 (2024-10-23)
+## Release 1.6.1 (2025-01-10)
 
-This release version is intended as know-how transfer from gematik test to the implementors and testers of the german
-NCPeH service to provide a better understanding of the intended gematik tests.
-The versioning of the test suite is synchronized to the published specification of NCPeH-FD in respect to the major and
-minor version number of the test suite (
+This release aims to facilitate knowledge transfer from gematik test to the implementers and testers
+of the German NCPeH service, providing a better understanding of the intended gematik tests. The
+versioning of the test suite aligns with the published specification of the NCPeH-FD, maintaining
+synchronization with the major and minor version numbers of the test suite (
 see [gemSpec_NCPeH_FD_V1.6.0](https://gemspec.gematik.de/docs/gemSpec/gemSpec_NCPeH_FD/gemSpec_NCPeH_FD_V1.6.0/)).
 
-This release provides the update of the test scenarios based on the latest specification of NCPeH service in version
-1.6.0 (
+This release includes updates to the test scenarios based on the latest NCPeH service specification,
+version 1.6.0 (
 see [gemSpec_NCPeH_FD_V1.6.0](https://gemspec.gematik.de/docs/gemSpec/gemSpec_NCPeH_FD/gemSpec_NCPeH_FD_V1.6.0/)).
 
 ### added
 
-* some new testcases have been added to fit the updated specification of the NCPeH
+- New negative test cases have been implemented to align with the updated NCPeH specification.
+- A mock implementation for the ePA FdV test driver interface has been added.
 
 ### changed
 
-* assignment of testcase IDs has been updated
-* some testcases became invalid and have been deleted
-* negative test cases dealing with signature of ePKA documents did change to positive scenarios, as signature check has
-  been removed from NCPeH functionality in version 1.6.0
-* most testcases checking negative scenarios got updated in respect to expected error results.
-* screenplay pattern implementation has been refined
+- Updated KVNRs to comply with ePA 3.0.
+- Added support for SOAP envelopes in NCPeH responses.
 
 ### restrictions
 
-* execution of test suite is currently not possible, because the latest version of ePA PSSim to suite ePA release 3.0 is
-  not yet available as public release
-* test driver interface for ePA FdV (the app to access ePA for the insurant) is not yet integrated (
-  see [openapi for FdV test driver interface](https://github.com/gematik/api-ePA-Testtreiber/tree/epa3.1/src/openapi))
-* test suite validation with real products was not possible yet (no integration with ePA v3.0 (the health record
-  system), german NCPeH, IDP, FdV and the simulator of NCPeH country B)
+- **Execution of the test suite is currently not possible** because the latest version of the ePA
+  PSSim, required for ePA release 3.0, has not yet been made publicly available.
+- Test suite validation with real products has not been performed due to the lack of integration
+  with ePA v3.0 (the health record system), German NCPeH, IDP, FdV, and the simulator for NCPeH
+  country B.
+
+## Release 1.6.0 (2024-10-23)
+
+This release aims to facilitate knowledge transfer from gematik test to the implementers and testers
+of the German NCPeH service, providing a better understanding of the intended gematik tests. The
+versioning of the test suite aligns with the published specification of the NCPeH-FD, maintaining
+synchronization with the major and minor version numbers of the test suite (
+see [gemSpec_NCPeH_FD_V1.6.0](https://gemspec.gematik.de/docs/gemSpec/gemSpec_NCPeH_FD/gemSpec_NCPeH_FD_V1.6.0/)).
+
+This release includes updates to the test scenarios based on the latest NCPeH service specification,
+version 1.6.0 (
+see [gemSpec_NCPeH_FD_V1.6.0](https://gemspec.gematik.de/docs/gemSpec/gemSpec_NCPeH_FD/gemSpec_NCPeH_FD_V1.6.0/)).
+
+### added
+
+- Several new test cases were introduced to align with the updated NCPeH specification.
+
+### changed
+
+- Test case IDs have been reassigned for better organization.
+- Invalid test cases have been removed.
+- Negative test cases related to the signature of ePKA documents have been converted to positive
+  scenarios, as signature checks were removed from NCPeH functionality in version 1.6.0.
+- Most negative test cases have been updated to reflect expected error results.
+- The screenplay pattern implementation has been refined.
+
+### restrictions
+
+- **Execution of the test suite is currently not possible** because the latest version of the ePA
+  PSSim, required for ePA release 3.0, has not yet been made publicly available.
+- The test driver interface for ePA FdV (the app used by the insured to access ePA) is not yet
+  integrated (
+  see [openapi for FdV test driver interface](https://github.com/gematik/api-ePA-Testtreiber/tree/epa3.1/src/openapi)).
+- Test suite validation with real products has not been conducted due to the lack of integration
+  with ePA v3.0 (the health record system), German NCPeH, IDP, FdV, and the NCPeH simulator for
+  country B.
 
 ## Release 0.2.0 (2023-09-25)
 
 ### new
 
-This is a pre-release of the gematik test suite to test interoperability between german NCPeH service and components of
-national telematik infrastructure.
-This release is informative for the implementors of the german NCPeH service to provide a better understanding of the
-intended gematik tests.
+This is a pre-release of the gematik test suite designed to test interoperability between the German
+NCPeH service and components of the national telematics infrastructure.
 
-The test suite is based on the specification of NCPeH service version 1.5 (
-see https://fachportal.gematik.de/hersteller-anbieter/komponenten-dienste/ncpeh)
+This release is intended for implementers of the German NCPeH service, providing insights into the
+intended gematik tests. The test suite is based on the NCPeH service specification version 1.5 (
+see https://fachportal.gematik.de/hersteller-anbieter/komponenten-dienste/ncpeh).
 
-A few test cases tagged with "@CI" can be run using mocked counterparts. Please start tests with maven, i. e. 'mvn
-verify' or 'mvn clean verify'. Please see README.md for getting started with the test setup. 
+A few test cases tagged with `@CI` can be executed using mocked counterparts. To run tests, use
+Maven commands such as `mvn verify` or `mvn clean verify`. Please refer to
+the [README.md](README.md) for instructions on setting up the test environment.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,17 @@ package de.gematik.test.ncp.ps.epaps;
 import static java.net.HttpURLConnection.HTTP_BAD_GATEWAY;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import de.gematik.epa.api.ConfigurationApi;
 import de.gematik.epa.api.DocumentsApi;
 import de.gematik.epa.api.SignatureApi;
+import de.gematik.epa.api.authentication.LoginLogoutApi;
+import de.gematik.epa.api.authentication.dto.LoginResponseDTO;
 import de.gematik.epa.api.entitlement.EntitlementApi;
 import de.gematik.epa.api.entitlement.dto.PostEntitlementResponseDTO;
 import de.gematik.epa.api.information.InformationApi;
@@ -45,7 +49,7 @@ import de.gematik.test.ncp.ExternalServerConfig;
 import de.gematik.test.ncp.ps.PsException;
 import de.gematik.test.ncp.ps.PsProvider;
 import de.gematik.test.ncp.ps.epaps.data.PsTestdata;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.IllegalFormatException;
 import java.util.List;
@@ -60,6 +64,7 @@ class EpaPrimarySystemServiceImplTest {
 
   private final ExternalServerConfig config = PsProvider.getInstance().getEpaPsConfig();
   private static final String KVNR = "X110987654";
+  private static final String TELEMATIK_ID = "123456";
   private static final String SUCCESS_STATUS_MSG = "All went well!";
   private static final ResponseDTO STD_RESPONSE = new ResponseDTO(Boolean.TRUE, SUCCESS_STATUS_MSG);
   public static final de.gematik.test.ncp.ps.epaps.data.DocumentMetadata DOCUMENT_METADATA =
@@ -112,31 +117,39 @@ class EpaPrimarySystemServiceImplTest {
   @Test
   void testAuthorizeLeForKvnr() {
     // Arrange
+    final var loginLogoutApi = Mockito.mock(LoginLogoutApi.class);
+    when(loginLogoutApi.login(eq(TELEMATIK_ID), any(), any()))
+        .thenReturn(new LoginResponseDTO().success(true));
     final var entitlementApi = Mockito.mock(EntitlementApi.class);
-    when(entitlementApi.postEntitlement(Mockito.any()))
+    when(entitlementApi.postEntitlement(any()))
         .thenReturn(new PostEntitlementResponseDTO().success(true));
     final var service =
         EpaPrimarySystemServiceImpl.builder()
             .config(config)
+            .loginLogoutProxy(loginLogoutApi)
             .entitlementProxy(entitlementApi)
             .build();
 
     // Act
     // Assert
     assertDoesNotThrow(
-        () -> service.authorizeLeForKvnr(KVNR),
+        () -> service.authorizeLeForKvnr(TELEMATIK_ID, KVNR),
         "Method EpaPsInterfaceImpl.authorizeLeForKvnr threw an exception");
   }
 
   @Test
   void testAuthorizeLeForKvnrSuccessIsFalse() {
     // Arrange
+    final var loginLogoutApi = Mockito.mock(LoginLogoutApi.class);
+    when(loginLogoutApi.login(eq(TELEMATIK_ID), any(), any()))
+        .thenReturn(new LoginResponseDTO().success(true));
     final var entitlementApi = Mockito.mock(EntitlementApi.class);
-    when(entitlementApi.postEntitlement(Mockito.any()))
+    when(entitlementApi.postEntitlement(any()))
         .thenReturn(new PostEntitlementResponseDTO().success(false));
     final var service =
         EpaPrimarySystemServiceImpl.builder()
             .config(config)
+            .loginLogoutProxy(loginLogoutApi)
             .entitlementProxy(entitlementApi)
             .build();
 
@@ -144,18 +157,22 @@ class EpaPrimarySystemServiceImplTest {
     // Assert
     assertThrows(
         PsException.class,
-        () -> service.authorizeLeForKvnr(KVNR),
+        () -> service.authorizeLeForKvnr(TELEMATIK_ID, KVNR),
         "Method EpaPsInterfaceImpl.authorizeLeForKvnr did not throw an exception");
   }
 
   @Test
   void testAuthorizeLeForKvnrThrows() {
     // Arrange
+    final var loginLogoutApi = Mockito.mock(LoginLogoutApi.class);
+    when(loginLogoutApi.login(eq(TELEMATIK_ID), any(), any()))
+        .thenReturn(new LoginResponseDTO().success(true));
     final var entitlementApi = Mockito.mock(EntitlementApi.class);
-    when(entitlementApi.postEntitlement(Mockito.any())).thenThrow(IllegalFormatException.class);
+    when(entitlementApi.postEntitlement(any())).thenThrow(IllegalFormatException.class);
     final var service =
         EpaPrimarySystemServiceImpl.builder()
             .config(config)
+            .loginLogoutProxy(loginLogoutApi)
             .entitlementProxy(entitlementApi)
             .build();
 
@@ -163,7 +180,47 @@ class EpaPrimarySystemServiceImplTest {
     // Assert
     assertThrows(
         IllegalFormatException.class,
-        () -> service.authorizeLeForKvnr(KVNR),
+        () -> service.authorizeLeForKvnr(TELEMATIK_ID, KVNR),
+        "Method EpaPsInterfaceImpl.authorizeLeForKvnr did not throw an exception");
+  }
+
+  @Test
+  void testAuthorizeLeForKvnrLoginIsFalse() {
+    // Arrange
+    final var loginLogoutApi = Mockito.mock(LoginLogoutApi.class);
+    when(loginLogoutApi.login(eq(TELEMATIK_ID), any(), any()))
+        .thenReturn(new LoginResponseDTO().success(false));
+    final var service =
+        EpaPrimarySystemServiceImpl.builder()
+            .config(config)
+            .loginLogoutProxy(loginLogoutApi)
+            .build();
+
+    // Act
+    // Assert
+    assertThrows(
+        PsException.class,
+        () -> service.authorizeLeForKvnr(TELEMATIK_ID, KVNR),
+        "Method EpaPsInterfaceImpl.authorizeLeForKvnr did not throw an exception");
+  }
+
+  @Test
+  void testAuthorizeLeForKvnrLoginThrows() {
+    // Arrange
+    final var loginLogoutApi = Mockito.mock(LoginLogoutApi.class);
+    when(loginLogoutApi.login(eq(TELEMATIK_ID), any(), any()))
+        .thenThrow(IllegalFormatException.class);
+    final var service =
+        EpaPrimarySystemServiceImpl.builder()
+            .config(config)
+            .loginLogoutProxy(loginLogoutApi)
+            .build();
+
+    // Act
+    // Assert
+    assertThrows(
+        IllegalFormatException.class,
+        () -> service.authorizeLeForKvnr(TELEMATIK_ID, KVNR),
         "Method EpaPsInterfaceImpl.authorizeLeForKvnr did not throw an exception");
   }
 
@@ -172,7 +229,7 @@ class EpaPrimarySystemServiceImplTest {
     // Arrange
     final var documentsApi = Mockito.mock(DocumentsApi.class);
     final AtomicReference<PutDocumentsRequestDTO> capturedRequest = new AtomicReference<>();
-    when(documentsApi.putDocuments(anyString(), Mockito.any(PutDocumentsRequestDTO.class)))
+    when(documentsApi.putDocuments(anyString(), any(PutDocumentsRequestDTO.class)))
         .thenAnswer(
             invocation -> {
               capturedRequest.set(invocation.getArgument(1));
@@ -191,7 +248,7 @@ class EpaPrimarySystemServiceImplTest {
     assertNotNull(testResult, "Return value is null");
     assertEquals(
         testResult,
-        capturedRequest.get().documentSets().get(0).documentMetadata().title(),
+        capturedRequest.get().documentSets().getFirst().documentMetadata().title(),
         "Document title does not have the expected value");
   }
 
@@ -199,7 +256,7 @@ class EpaPrimarySystemServiceImplTest {
   void testPutDocumentFail() {
     // Arrange
     final var documentsApi = Mockito.mock(DocumentsApi.class);
-    when(documentsApi.putDocuments(anyString(), Mockito.any(PutDocumentsRequestDTO.class)))
+    when(documentsApi.putDocuments(anyString(), any(PutDocumentsRequestDTO.class)))
         .thenReturn(new ResponseDTO(false, "This was not right"));
     final var service =
         EpaPrimarySystemServiceImpl.builder().config(config).documentsProxy(documentsApi).build();
@@ -274,7 +331,7 @@ class EpaPrimarySystemServiceImplTest {
   void testFindEpka() {
     // Arrange
     final var documentsApi = Mockito.mock(DocumentsApi.class);
-    when(documentsApi.find(anyString(), Mockito.any(FindRequestDTO.class)))
+    when(documentsApi.find(anyString(), any(FindRequestDTO.class)))
         .thenReturn(
             new FindObjectsResponseDTO(
                 Boolean.TRUE,
@@ -298,7 +355,7 @@ class EpaPrimarySystemServiceImplTest {
   void testDeleteExistingDocuments() {
     // Arrange
     final var documentsApi = Mockito.mock(DocumentsApi.class);
-    when(documentsApi.deleteObjects(anyString(), Mockito.any(DeleteObjectsRequestDTO.class)))
+    when(documentsApi.deleteObjects(anyString(), any(DeleteObjectsRequestDTO.class)))
         .thenReturn(STD_RESPONSE);
     final var service =
         EpaPrimarySystemServiceImpl.builder().config(config).documentsProxy(documentsApi).build();
@@ -313,7 +370,7 @@ class EpaPrimarySystemServiceImplTest {
   void testSignDocument() {
     // Arrange
     final var signatureApi = Mockito.mock(SignatureApi.class);
-    when(signatureApi.signDocument(Mockito.any()))
+    when(signatureApi.signDocument(any()))
         .thenReturn(
             new SignDocumentResponse(
                 true,
@@ -335,7 +392,7 @@ class EpaPrimarySystemServiceImplTest {
   void testSignDocumentWithParameters() {
     // Arrange
     final var signatureApi = Mockito.mock(SignatureApi.class);
-    when(signatureApi.signDocument(Mockito.any()))
+    when(signatureApi.signDocument(any()))
         .thenReturn(
             new SignDocumentResponse(
                 true,
@@ -360,13 +417,14 @@ class EpaPrimarySystemServiceImplTest {
   void testConfigureKonnektor() {
     // Arrange
     final var configurationApi = Mockito.mock(ConfigurationApi.class);
-    when(configurationApi.configureKonnektor(Mockito.any())).thenReturn(STD_RESPONSE);
+    when(configurationApi.configureKonnektor(any())).thenReturn(STD_RESPONSE);
     final var service =
         EpaPrimarySystemServiceImpl.builder()
             .config(config)
             .configurationProxy(configurationApi)
             .build();
-    final var addressUrl = new URL("https", "testKonnektor", 8080, "services");
+    final var addressUrl =
+        new URI("https", null, "testKonnektor", 8080, "/services", null, null).toURL();
 
     // Act
     // Assert
@@ -379,14 +437,14 @@ class EpaPrimarySystemServiceImplTest {
     // Arrange
     final var failureMsg = "I'm the expected failure message";
     final var configurationApi = Mockito.mock(ConfigurationApi.class);
-    when(configurationApi.configureKonnektor(Mockito.any()))
-        .thenReturn(new ResponseDTO(false, failureMsg));
+    when(configurationApi.configureKonnektor(any())).thenReturn(new ResponseDTO(false, failureMsg));
     final var service =
         EpaPrimarySystemServiceImpl.builder()
             .config(config)
             .configurationProxy(configurationApi)
             .build();
-    final var addressUrl = new URL("https", "testKonnektor", 8080, "services");
+    final var addressUrl =
+        new URI("https", null, "testKonnektor", 8080, "/services", null, null).toURL();
 
     // Act
     final var exception =
@@ -400,7 +458,7 @@ class EpaPrimarySystemServiceImplTest {
   void testSignDocumentNoSignature() {
     // Arrange
     final var signatureApi = Mockito.mock(SignatureApi.class);
-    when(signatureApi.signDocument(Mockito.any()))
+    when(signatureApi.signDocument(any()))
         .thenReturn(
             new SignDocumentResponse(Boolean.TRUE, SUCCESS_STATUS_MSG, (ByteArray) null, null));
     final var service =
@@ -416,7 +474,7 @@ class EpaPrimarySystemServiceImplTest {
   void testSignDocumentFail() {
     // Arrange
     final var signatureApi = Mockito.mock(SignatureApi.class);
-    when(signatureApi.signDocument(Mockito.any()))
+    when(signatureApi.signDocument(any()))
         .thenReturn(new SignDocumentResponse(Boolean.FALSE, "Big mistake", (ByteArray) null, null));
     final var service =
         EpaPrimarySystemServiceImpl.builder().config(config).signatureProxy(signatureApi).build();

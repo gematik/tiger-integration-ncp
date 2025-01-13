@@ -1,47 +1,22 @@
 epka:
   templates:
     default: classpath:testdata/epka_mio_default.xml
+    defect011: classpath:testdata/epka_defect_011.xml
+    defect012: classpath:testdata/epka_defect_012.xml
+    defect020: classpath:testdata/epka_defect_020.xml
 patients:
   - name:
-      titles: Freifrau
-      givenNames: Andrea
-      lastNames: von Unbedeutend
-    kvnr: X102944013
-    birthDate: "1973-11-13"
-  - name:
-      titles: Graf
-      givenNames: Günther Julian Franz
-      lastNames: BruserTEST-ONLY
-    kvnr: X110462177
+      titles: Prof. Dr.
+      givenNames: Archibald T. K.
+      lastNames: PopówitschTEST-ONLY
+    kvnr: X110503481
     birthDate: "1949-04-17"
   - name:
-      titles: Prof. Dr.
-      givenNames: Felicitas Anna Julia
-      lastNames: ÐoriaTEST-ONLY
-    kvnr: X110405394
+      titles: Gräfin
+      givenNames: Maude Adelheid Lilo Johanna
+      lastNames: GõdofskýTEST-ONLY
+    kvnr: X110571344
     birthDate: "1967-06-30"
-  - name:
-      titles: Dr.
-      givenNames: Elisabeth Leonie-Marie
-      lastNames: DômbrowskiTEST-ONLY
-    kvnr: X110425143
-    birthDate: "1989-11-21"
-  - name:
-      givenNames: Aphrodite Freifrau
-      lastNames: Stauffenbëërg-KleinschmidtTEST-ONLY
-    kvnr: X110400595
-    birthDate: "1943-01-05"
-  - name:
-      titles: Prof. Dr.
-      givenNames: Dörthe Tanja S. L.
-      lastNames: Gräfin ØrstedTEST-ONLY
-    kvnr: X110487636
-    birthDate: "1943-01-05"
-  - name:
-      givenNames: Heide Franziska Heike D.-M.
-      lastNames: Freifrau WärkelsheimTEST-ONLY
-    kvnr: X110426931
-    birthDate: "1963-10-14"
   - name:
       givenNames: Petra
       lastNames: Rot
@@ -73,22 +48,21 @@ practitioners:
     - name: Prof. Chevalier
       country: France
       profileName: default
+
+practice:
+  de:
+    - name: Praxis Münchhausen-BohlenTEST-ONLY
+      telematikId: 1-SMC-B-Testkarte--883110000163990
+      practitioners:
+        - titles: Dr.
+          givenNames: Stefan
+          lastNames: Münchhausen-Bohlen
+
 recordsystems:
   ibm:
-    - X110405394
+    - X110571344
   rise:
-    - X110462177
-    - X110426931
-  xtension:
-    - X110400595
-    - X110425143
-konnektor:
-  Koco:
-    - https://ksp.ltuzd.telematik-test/kon18/
-  Rise:
-    - https://ksp.ltuzd.telematik-test/kon16/
-  Secunet:
-    - https://ksp.ltuzd.telematik-test/kon17/
+    - X110503481
 
 profiles:
   default:

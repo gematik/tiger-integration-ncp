@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,22 @@ package de.gematik.test.ncp.ps.epaps.data;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Builder;
-import lombok.Singular;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.With;
 
-@Builder
 @With
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class DocumentMetadata {
 
-  @Singular private List<Author> authors;
+  private List<Author> authors;
 
   private String availabilityStatus;
 
-  @Singular private List<String> confidentialityCodes;
+  private List<String> confidentialityCodes;
 
   private String classCode;
 
@@ -40,7 +43,7 @@ public class DocumentMetadata {
 
   private String entryUUID;
 
-  @Singular private List<String> eventCodes;
+  private List<String> eventCodes;
 
   private String formatCode;
 
@@ -56,7 +59,7 @@ public class DocumentMetadata {
 
   private String practiceSettingCode;
 
-  @Singular private List<String> referenceIds;
+  private List<String> referenceIds;
 
   private LocalDateTime serviceStartTime;
 

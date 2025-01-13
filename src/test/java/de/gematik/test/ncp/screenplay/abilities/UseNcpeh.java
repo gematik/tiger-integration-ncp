@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 package de.gematik.test.ncp.screenplay.abilities;
 
+import de.gematik.test.ncp.glue.psa.UCHeaders;
 import de.gematik.test.ncp.ncpeh.NcpehProvider;
 import de.gematik.test.ncp.ncpeh.NcpehService;
+import java.util.Map;
+import lombok.Getter;
 import lombok.experimental.Delegate;
 import net.serenitybdd.screenplay.Ability;
 
@@ -26,11 +29,19 @@ public class UseNcpeh implements Ability {
   @Delegate // lombok.experimental kann aber auch von Hand implementiert werden
   private final NcpehService service;
 
+  @Getter private final Map<UCHeaders, String> ncpehMockControlRequestHeaders;
+
   public UseNcpeh() {
-    this(NcpehProvider.getNcpehService());
+    this(null);
   }
 
-  public UseNcpeh(final NcpehService service) {
+  public UseNcpeh(final Map<UCHeaders, String> ncpehMockControlRequestHeaders) {
+    this(NcpehProvider.getNcpehService(), ncpehMockControlRequestHeaders);
+  }
+
+  public UseNcpeh(
+      final NcpehService service, final Map<UCHeaders, String> ncpehMockControlRequestHeaders) {
     this.service = service;
+    this.ncpehMockControlRequestHeaders = ncpehMockControlRequestHeaders;
   }
 }

@@ -1,0 +1,77 @@
+/*
+ * Copyright (c) 2024-2025 gematik GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package de.gematik.test.ncp.data;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import de.gematik.test.tiger.common.config.TigerConfigurationException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class PractitionersTest {
+
+  private static final String NAME = "Dr. Dude Mate";
+  private static final String COUNTRY = "DE";
+
+  private static final Practitioner PRACTITIONER = new PractitionerImpl(NAME, COUNTRY, "profile");
+
+  private final Practitioners tstObj = new Practitioners();
+
+  @BeforeEach
+  void setUp() {
+    tstObj.clear();
+    tstObj.add(PRACTITIONER);
+  }
+
+  @Test
+  void testFindByName() {
+    // Arrange
+    // Act
+    final var tstResult = assertDoesNotThrow(() -> tstObj.findByName(NAME));
+
+    // Assert
+    assertNotNull(tstResult);
+    assertEquals(PRACTITIONER, tstResult);
+  }
+
+  @Test
+  void testFindByNameFail() {
+    // Arrange
+    // Act
+    // Assert
+    assertThrows(TigerConfigurationException.class, () -> tstObj.findByName("NONAME"));
+  }
+
+  @Test
+  void testFindByCountry() {
+    // Arrange
+    // Act
+    final var tstResult = assertDoesNotThrow(() -> tstObj.findByCountry(COUNTRY));
+
+    // Assert
+    assertNotNull(tstResult);
+    assertEquals(PRACTITIONER, tstResult);
+  }
+
+  @Test
+  void testFindByCountryFail() {
+    // Arrange
+    // Act
+    // Assert
+    assertThrows(TigerConfigurationException.class, () -> tstObj.findByCountry("CA"));
+  }
+}

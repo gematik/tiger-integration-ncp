@@ -7,6 +7,8 @@ additionalYamls:
     baseKey: infrastructure
   - filename: testdata.yaml
     baseKey: testdata
+  - filename: epaFdvZion.yaml
+    baseKey: tiger
 
 management:
   endpoints:
@@ -48,35 +50,6 @@ tigerProxy:
 #      to: http://localhost:8082/rest
 
 servers:
-  #  tigerRemoteProxy:
-  #    type: tigerProxy
-  #
-  #    tigerProxyCfg:
-  #      adminPort:
-  #      proxyPort:
-  #      proxiedServerProtocol: http
-  #      proxyRoutes:
-  #        - from:
-  #          to:
-  #
-  epaFdvJar:
-    type: externalJar
-    active: "!{not ${tiger.servers.epaFdVUrl.active}}"
-    hostname: ${infrastructure.epafdv.hostname}
-    startupTimeoutSec: 60
-    source:
-      - local:${workplace.epafdv.jarPath}/epa-fdv-${infrastructure.epafdv.version}.jar
-    healthcheckUrl: http://localhost:${tiger.ports.epaFdV}
-    externalJarOptions:
-      options:
-        - -Dfile.encoding=UTF-8
-      arguments:
-        - --server.port=${tiger.ports.epaFdV}
-        - --server.ssl.enabled=false
-        - --spring.profiles.active=instance2local,noevents
-        - --config.path=${workplace.epafdv.configDir}
-        - --logging.level.org.apache.cxf.services=INFO
-
   epaFdVUrl:
     type: externalUrl
     active: ${workplace.epafdv.isStarted}

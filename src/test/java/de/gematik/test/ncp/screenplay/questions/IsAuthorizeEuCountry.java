@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 package de.gematik.test.ncp.screenplay.questions;
 
+import de.gematik.test.ncp.gen.eu.fdv.model.GetEntitlementNcpehResponseDTO;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
 import de.gematik.test.ncp.screenplay.abilities.UseFdv;
+import java.time.Instant;
+import java.util.Date;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Question;
 
@@ -34,9 +37,13 @@ public class IsAuthorizeEuCountry implements Question<Boolean> {
     final var patientData = actor.usingAbilityTo(ProvidePatientData.class);
     final var fdv = actor.usingAbilityTo(UseFdv.class);
 
-    final var ac = fdv.authorizeEuCountry(patientData.kvnr(), country);
-    patientData.accessCode(ac);
-    return ac != null && !ac.isBlank() ? Boolean.TRUE : Boolean.FALSE;
+    return fdv.getEntitlementNcpeh(patientData.kvnr())
+        .map(GetEntitlementNcpehResponseDTO::getEntitlement)
+        .filter(
+            entitlement ->
+                country.equalsIgnoreCase(entitlement.getCountryName())
+                    && Date.from(Instant.now()).before(entitlement.getValidTo()))
+        .isPresent();
   }
 
   public static IsAuthorizeEuCountry forCountry(final String country) {

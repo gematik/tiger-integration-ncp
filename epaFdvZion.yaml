@@ -1,0 +1,160 @@
+servers:
+  epaFdvZion:
+    type: zion
+    active: "!{not ${tiger.servers.epaFdVUrl.active}}"
+    hostname: ${infrastructure.epafdv.hostname}
+    zionConfiguration:
+      # define the server port.
+      # In a real setup you would leave this empty (then a random port will be used)
+      serverPort: ${tiger.ports.epaFdV}
+      mockResponses:
+        # a map with all the responses
+        login:
+          # the name is arbitrary. It can be used to alter the response later on
+          requestCriterions:
+            # This is a list of JEXL expressions. Only when all expressions are met is this response considered
+            - message.method == 'GET'
+            - message.path == '/epa/testdriver/api/v1/login'
+          response:
+            statusCode: 200
+            body: '
+            {
+              "success": true,
+              "statusMessage": "string",
+              "insurantId": "?{$.path.insurantId.value}",
+              "fqdn": "string"
+            }'
+            headers:
+              Content-Type: "application/json; charset=utf-8"
+              Access-Control-Allow-Origin: "*"
+              Origin: "http://localhost:${tiger.ports.epaFdV}"
+
+        logout:
+          # the name is arbitrary. It can be used to alter the response later on
+          requestCriterions:
+            # This is a list of JEXL expressions. Only when all expressions are met is this response considered
+            - message.method == 'GET'
+            - message.path == '/epa/testdriver/api/v1/logout'
+          response:
+            statusCode: 200
+            body: '
+            {
+              "success": true,
+              "statusMessage": "string"
+            }'
+            headers:
+              Content-Type: "application/json; charset=utf-8"
+              Access-Control-Allow-Origin: "*"
+              Origin: "http://localhost:${tiger.ports.epaFdV}"
+
+        # a map with all the responses
+        ncpehGetEntitlement:
+          # the name is arbitrary. It can be used to alter the response later on
+          requestCriterions:
+            # This is a list of JEXL expressions. Only when all expressions are met is this response considered
+            - message.method == 'GET'
+            - message.path == '/epa/testdriver/api/v1/ncpeh/entitlement'
+            - "'${fdVMockResponse|}' == ''"
+          response:
+            statusCode: 200
+            body: '
+            {
+              "success": true,
+              "statusMessage": "string",
+              "entitlement": {
+                "countryName": "Netherlands",
+                "validTo": "${currentTimestampPlusOneHour|}",
+                "kvnr": "?{$.path.recordId.value}"
+              },
+              "accesscode": "ABC123"
+            }'
+            headers:
+              Content-Type: "application/json; charset=utf-8"
+              Access-Control-Allow-Origin: "*"
+              Origin: "http://localhost:${tiger.ports.epaFdV}"
+
+        ncpehGetEntitlementFailure:
+          # the name is arbitrary. It can be used to alter the response later on
+          requestCriterions:
+            # This is a list of JEXL expressions. Only when all expressions are met is this response considered
+            - message.method == 'GET'
+            - message.path == '/epa/testdriver/api/v1/ncpeh/entitlement'
+            - "'${fdVMockResponse|}' == 'FAILURE-RESPONSE'"
+          response:
+            statusCode: 200
+            body: '
+            {
+              "success": false,
+              "statusMessage": "string"
+            }'
+            headers:
+              Content-Type: "application/json; charset=utf-8"
+              Access-Control-Allow-Origin: "*"
+              Origin: "http://localhost:${tiger.ports.epaFdV}"
+
+
+
+        ncpehPutEntitlement:
+          # the name is arbitrary. It can be used to alter the response later on
+          requestCriterions:
+            # This is a list of JEXL expressions. Only when all expressions are met is this response considered
+            - message.method == 'PUT'
+            - message.path == '/epa/testdriver/api/v1/ncpeh/entitlement'
+          response:
+            statusCode: 200
+            body: '
+            {
+              "success": true,
+              "statusMessage": "string",
+              "entitlement": {
+                "countryName": "?{$.body.countryName}",
+                "validTo": "${currentTimestampPlusOneHour|}",
+                "kvnr": "?{$.body.recordId}"
+              },
+              "accesscode": "ABC123",
+              "tid": "9-883110000035981"
+            }'
+            headers:
+              Content-Type: "application/json; charset=utf-8"
+              Access-Control-Allow-Origin: "*"
+              Access-Control-Allow-Methods: "GET, POST, PUT, DELETE, OPTIONS"
+              Access-Control-Allow-Headers: "Content-Type, Origin"
+              Vary: "Accept-Encoding, Origin"
+              Origin: "http://localhost:${tiger.ports.epaFdV}"
+
+        ncpehDeleteEntitlement:
+          # the name is arbitrary. It can be used to alter the response later on
+          requestCriterions:
+            # This is a list of JEXL expressions. Only when all expressions are met is this response considered
+            - message.method == 'DELETE'
+            - message.path == '/epa/testdriver/api/v1/ncpeh/entitlement'
+          response:
+            statusCode: 200
+            body: '
+            {
+              "success": true,
+              "statusMessage": "string"
+            }'
+            headers:
+              Content-Type: "application/json; charset=utf-8"
+              Access-Control-Allow-Origin: "*"
+              Access-Control-Allow-Methods: "GET, POST, PUT, DELETE, OPTIONS"
+              Access-Control-Allow-Headers: "Content-Type, Origin"
+              Vary: "Accept-Encoding, Origin"
+              Origin: "http://localhost:${tiger.ports.epaFdV}"
+
+        ncpehOptionsEntitlement:
+          # the name is arbitrary. It can be used to alter the response later on
+          requestCriterions:
+            # This is a list of JEXL expressions. Only when all expressions are met is this response considered
+            - message.method == 'OPTIONS'
+            - message.path == '/epa/testdriver/api/v1/ncpeh/entitlement'
+          response:
+            statusCode: 200
+            headers:
+              Content-Type: "application/json; charset=utf-8"
+              Access-Control-Allow-Origin: "*"
+              Access-Control-Allow-Methods: "GET, POST, PUT, DELETE, OPTIONS"
+              Access-Control-Allow-Headers: "Content-Type, Origin"
+              Vary: "Accept-Encoding, Origin"
+              Origin: "http://localhost:${tiger.ports.epaFdV}"

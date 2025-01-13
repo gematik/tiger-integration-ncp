@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,13 @@ import static net.serenitybdd.screenplay.GivenWhenThen.andThat;
 import static net.serenitybdd.screenplay.GivenWhenThen.then;
 import static net.serenitybdd.screenplay.GivenWhenThen.when;
 
-import de.gematik.test.ncp.data.Testdata;
 import de.gematik.test.ncp.screenplay.actions.IdentifyPatient;
+import de.gematik.test.ncp.screenplay.actions.MakeAccessCodeDefect;
+import de.gematik.test.ncp.screenplay.actions.ProvidePatientAccessDataToLeEu;
+import de.gematik.test.ncp.screenplay.actions.UnauthorizeEuCountry;
+import de.gematik.test.ncp.screenplay.questions.GetAcknowledgementDetailErrorcodeFromIdentifyPatientResponse;
+import de.gematik.test.ncp.screenplay.questions.GetAcknowledgementDetailErrortextFromIdentifyPatientResponse;
+import de.gematik.test.ncp.screenplay.questions.GetAcknowledgementDetailLocationtextFromIdentifyPatientResponse;
 import de.gematik.test.ncp.screenplay.questions.GetPractitionerData;
 import de.gematik.test.ncp.screenplay.questions.GetReasonEncodingFromIdentifyPatientResponse;
 import de.gematik.test.ncp.screenplay.questions.IsAuthorizeEuCountry;
@@ -38,8 +43,6 @@ import net.serenitybdd.screenplay.ensure.Ensure;
 
 @CucumberOptions(monochrome = true)
 public class LeEuPatientIdentificationTestSteps {
-
-  private final Testdata testdata = Testdata.instance();
 
   // TODO: Diese Funktion ist eigentlich ein PatientTestStep -> move & adapt?
   // TODO: Klären, ob die Möglichkeit einer zeitlichen Steuerung vom Team Patient zu Verfügung
@@ -71,6 +74,8 @@ public class LeEuPatientIdentificationTestSteps {
     final var leEuActor = OnStage.theActorInTheSpotlight();
     final var country = leEuActor.asksFor(new GetPractitionerData()).country();
     final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+
+    andThat(patient).attemptsTo(UnauthorizeEuCountry.forCountry(country));
     andThat(patient).attemptsTo(Ensure.that(IsAuthorizeEuCountry.forCountry(country)).isFalse());
     // set the leEuActor in the spotlight again
     OnStage.stage().shineSpotlightOn(leEuActor.getName());
@@ -78,7 +83,7 @@ public class LeEuPatientIdentificationTestSteps {
 
   @Wenn("^die versicherte Person ihre KVNR und einen falschen AccessCode an den LE-EU übergibt$")
   public void handoverKvnrAndInvalidAccesscodeToLeEu() {
-    // ToDo: generate invalid accessCode
+    // generate invalid accessCode
     //   * if available from FdV, then falsificate it (i.e. change the first or last character of
     // the string)
     //   * if NOT available from FdV, generate any code matching the accessCode pattern:
@@ -86,14 +91,28 @@ public class LeEuPatientIdentificationTestSteps {
 
     // bring actor LeEu on stage
     // make patient data including invalid accessCode and KVNR available to actor LeEu
+
+    final var leEuActor = OnStage.theActorInTheSpotlight();
+    final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+    when(patient).attemptsTo(MakeAccessCodeDefect.instance());
+    and(patient).attemptsTo(ProvidePatientAccessDataToLeEu.withLeEu(leEuActor));
+
+    // set the leEuActor in the spotlight again
+    OnStage.stage().shineSpotlightOn(leEuActor.getName());
   }
 
   @Wenn("^die versicherte Person die falsche KVNR (.+) und ihren AccessCode an den LE-EU übergibt$")
   public void handoverInvalidKvnrAndAccesscodeToLeEu(final String otherKvnr) {
-    // ToDo: get Accesscode for initial, valid KVNR
-
     // bring actor LeEu on stage
     // make patient data including accessCode and invalid KVNR available to actor LeEu
+
+    final var leEuActor = OnStage.theActorInTheSpotlight();
+    final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+
+    when(patient).attemptsTo(ProvidePatientAccessDataToLeEu.withKvnrAndLeEu(otherKvnr, leEuActor));
+
+    // set the leEuActor in the spotlight again
+    OnStage.stage().shineSpotlightOn(leEuActor.getName());
   }
 
   @Und(
@@ -160,6 +179,11 @@ public class LeEuPatientIdentificationTestSteps {
     // * eHealth DSI Error Codes,
     //   https://webgate.ec.europa.eu/fpfis/wikis/display/EHDSI/Exception+Handling+in+MyHealth@EU
 
+    final var leEuActor = OnStage.theActorInTheSpotlight();
+    and(leEuActor)
+        .attemptsTo(
+            Ensure.that(new GetAcknowledgementDetailErrorcodeFromIdentifyPatientResponse())
+                .contains(expectedErrorcode));
   }
 
   @Und("^das Identifikationsergebnis enthält im acknowledgementDetail den Fehlertext \"(.+)\"$")
@@ -170,6 +194,11 @@ public class LeEuPatientIdentificationTestSteps {
     // more information about the structure acknowledgementDetail please see
     // * eHDSI_XCPD_Profile#2.3.3 eResponse Message if No Patient ID was Discovered
 
+    final var leEuActor = OnStage.theActorInTheSpotlight();
+    and(leEuActor)
+        .attemptsTo(
+            Ensure.that(new GetAcknowledgementDetailErrortextFromIdentifyPatientResponse())
+                .contains(expectedErrortext));
   }
 
   @Und("^das Identifikationsergebnis enthält im acknowledgementDetail den Locationtext \"(.+)\"$")
@@ -182,5 +211,10 @@ public class LeEuPatientIdentificationTestSteps {
     // * eHealth DSI Error Codes,
     //   https://webgate.ec.europa.eu/fpfis/wikis/display/EHDSI/Exception+Handling+in+MyHealth@EU
 
+    final var leEuActor = OnStage.theActorInTheSpotlight();
+    and(leEuActor)
+        .attemptsTo(
+            Ensure.that(new GetAcknowledgementDetailLocationtextFromIdentifyPatientResponse())
+                .contains(expectedLocationtext));
   }
 }

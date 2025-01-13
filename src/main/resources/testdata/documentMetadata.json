@@ -1,0 +1,54 @@
+{
+  "authors": [
+    {
+      "identifier": "165746304",
+      "familyName": "Urlaub",
+      "givenName": "Warin",
+      "otherName": null,
+      "nameAffix": null,
+      "title": "Prof",
+      "authorInstitutions": [
+        {
+          "name": "Arztpraxis Prof. Warin Urlaub",
+          "identifier": "1-SMC-B-Testkarte-883110000092399"
+        }
+      ],
+      "authorRoles": [
+        "4^^^&1.3.6.1.4.1.19376.3.276.1.5.13&ISO"
+      ],
+      "authorSpecialties": [
+        "3^^^&1.2.276.0.76.5.492&ISO"
+      ],
+      "authorTelecommunications": []
+    }
+  ],
+  "availabilityStatus": null,
+  "confidentialityCodes": [
+    "N"
+  ],
+  "classCode": "AUS",
+  "comments": null,
+  "creationTime": "2024-12-20T06:46:31.3438968",
+  "entryUUID": null,
+  "eventCodes": [
+    "H1"
+  ],
+  "formatCode": "urn:gematik:ig:Notfalldatensatz:r3.1",
+  "hash": null,
+  "healthcareFacilityTypeCode": "PRA",
+  "languageCode": "de-DE",
+  "legalAuthenticator": null,
+  "mimeType": "application/xml",
+  "practiceSettingCode": "ALLG",
+  "referenceIds": [],
+  "serviceStartTime": "2024-12-20T05:46:31.3468951",
+  "serviceStopTime": "2024-12-20T06:46:31.3468951",
+  "size": null,
+  "title": "Patientenkurzakte_2024-12-20T09:46:31.343896800",
+  "typeCode": "BEFU",
+  "uniqueId": null,
+  "uri": "patientenkurzakte.xml",
+  "repositoryUniqueId": null,
+  "home": null,
+  "patientId": null
+}

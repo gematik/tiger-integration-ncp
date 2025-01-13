@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "statusMessage": "string",
+  "entitlement": {
+    "countryName": "Spain (ES)",
+    "validTo": "2025-01-01T18:00:00Z",
+    "kvnr": "Z123456789"
+  },
+  "accesscode": "A2C4E6",
+  "tid": "9-883110000035981"
+}

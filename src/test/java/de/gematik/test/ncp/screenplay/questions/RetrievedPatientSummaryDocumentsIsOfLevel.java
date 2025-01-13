@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package de.gematik.test.ncp.screenplay.questions;
 
-import de.gematik.test.ncp.ncpeh.NcpehService;
+import de.gematik.test.ncp.ncpeh.PatientSummaryLevel;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Question;
@@ -35,9 +35,7 @@ public class RetrievedPatientSummaryDocumentsIsOfLevel implements Question<Boole
     final var documents = new GetRetrievedPatientSummaryDocuments().answeredBy(actor);
     return documents.stream()
         .anyMatch(
-            dr ->
-                NcpehService.PatientSummaryLevel.fromValue(level)
-                    .documentIsOfLevel(dr.getDocumentUniqueId()));
+            dr -> PatientSummaryLevel.fromValue(level).documentIsOfLevel(dr.getDocumentUniqueId()));
   }
 
   public static RetrievedPatientSummaryDocumentsIsOfLevel ofLevel(final Integer level) {

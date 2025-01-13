@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "statusMessage": "string",
+  "entitlement": {
+    "countryName": "Frankreich (FR)",
+    "validTo": "2025-01-01T18:00:00Z",
+    "kvnr": "Z123456789"
+  },
+  "accesscode": "A2C4E6"
+}

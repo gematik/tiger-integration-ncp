@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,10 @@
 
 package de.gematik.test.ncp.ncpeh;
 
-import de.gematik.test.ncp.data.Patient;
+import de.gematik.test.ncp.data.PatientAccessData;
 import de.gematik.test.ncp.ncpeh.client.dataobject.FindPatientSummaryDO;
 import de.gematik.test.ncp.ncpeh.client.dataobject.IdentifyPatientDO;
 import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryDO;
-import java.util.Arrays;
-import java.util.Objects;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 /**
@@ -44,15 +38,22 @@ public interface NcpehService {
   Boolean ncpehIsUpAndRunning();
 
   /**
-   * Retrieve the patient information necessary for identification purposes.<br>
+   * Retrieve the patientAccessData information necessary for identification purposes.<br>
    * Note: This operation will likely be subject to non-backward compatible changes in the future
    *
-   * @param patient The health insurance identification number of the patient (a.k.a. KVNR)
+   * @param patientAccessData The health insurance identification number of the patientAccessData
+   *     (a.k.a. KVNR)
    * @param testdataProfileName key of the testdata profile configured in the testdata.yaml to use
    * @param leiCountry name of the country, where the EU-Lei is situated
-   * @return {@link IdentifyPatientDO} the patient information necessary for identification purposes
+   * @param ncpehMockControlRequestHeader control header for the NCPeH-Simulation-Mock response
+   * @return {@link IdentifyPatientDO} the patientAccessData information necessary for
+   *     identification purposes
    */
-  IdentifyPatientDO identifyPatient(Patient patient, String testdataProfileName, String leiCountry);
+  IdentifyPatientDO identifyPatient(
+      PatientAccessData patientAccessData,
+      String testdataProfileName,
+      String leiCountry,
+      String ncpehMockControlRequestHeader);
 
   /**
    * Find the patients ePKA and return its metadata. Note: This operation will likely be subject to
@@ -61,60 +62,24 @@ public interface NcpehService {
    * @return The return type here is not yet defined and will likely change in the future
    */
   FindPatientSummaryDO findPatientSummary(
-      Patient patient, String testdataProfileName, String leiCountry);
+      PatientAccessData patientAccessData,
+      String testdataProfileName,
+      String leiCountry,
+      String ncpehMockControlRequestHeader);
 
   /**
    * Retrieve the patients ePKA. Note: This operation will likely be subject to non-backward
    * compatible changes in the future
    *
    * @param metadata the metadata of the ePKA as returned by the {@link
-   *     NcpehService#findPatientSummary(Patient, String, String)} operation
+   *     NcpehService#findPatientSummary(PatientAccessData, String, String, String)} operation
    * @return The return type here is not yet defined and will likely change in the future
    */
   RetrievePatientSummaryDO retrievePatientSummary(
-      Patient patient,
+      PatientAccessData patientAccessData,
       String testdataProfileName,
       String leiCountry,
       AdhocQueryResponse metadata,
+      String ncpehMockControlRequestHeader,
       PatientSummaryLevel... patientSummaryLevels);
-
-  @RequiredArgsConstructor
-  @Getter
-  @Accessors(fluent = true)
-  enum PatientSummaryLevel {
-    LEVEL_1(1, "^PS.PDF"),
-    LEVEL_3(3, "^PS.XML");
-
-    private final Integer level;
-
-    private final String idMarker;
-
-    public boolean documentIsOfLevel(final String documentUniqueId) {
-      return documentUniqueId.endsWith(idMarker());
-    }
-
-    public static PatientSummaryLevel fromDocumentUniqueId(@NonNull final String documentUniqueId) {
-      return Arrays.stream(PatientSummaryLevel.values())
-          .filter(psl -> psl.documentIsOfLevel(documentUniqueId))
-          .findFirst()
-          .orElseThrow(
-              () ->
-                  new IllegalArgumentException(
-                      "DocumentUniqueId "
-                          + documentUniqueId
-                          + " is of no known PatientSummaryLevel"));
-    }
-
-    public static PatientSummaryLevel fromValue(final Integer value) {
-      return Arrays.stream(PatientSummaryLevel.values())
-          .filter(psl -> psl.level.equals(value))
-          .findFirst()
-          .orElseThrow(
-              () ->
-                  new IllegalArgumentException(
-                      "Value "
-                          + Objects.toString(value, "null")
-                          + " is no known PatientSummaryLevel"));
-    }
-  }
 }

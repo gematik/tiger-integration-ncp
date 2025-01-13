@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package de.gematik.test.ncp.ncpeh;
 
-import static de.gematik.test.ncp.util.Utils.*;
-
 import de.gematik.ncpeh.api.response.ErrorInformation;
 import jakarta.ws.rs.core.Response;
+import java.io.Serial;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -30,11 +30,14 @@ import org.springframework.http.HttpStatus;
  * that something went wrong with either the processing of the client data submitted or in the
  * communication between NCPeH Simulation and NCPeH FD.
  */
+@Slf4j
+@Getter
 public class NcpehException extends RuntimeException {
 
-  @Getter private final Integer responseStatusCode;
+  @Serial private static final long serialVersionUID = 1167757667761509869L;
+  private final Integer responseStatusCode;
 
-  @Getter private final String additionalErrorInfo;
+  private final String additionalErrorInfo;
 
   public NcpehException(final String message) {
     super(message);
@@ -55,10 +58,15 @@ public class NcpehException extends RuntimeException {
   }
 
   private String retrieveAdditionalErrorInfo(final Response response) {
-    return Optional.ofNullable(response)
-        .map(swallowExceptionFunction(resp -> resp.readEntity(ErrorInformation.class)))
-        .map(ErrorInformation::errorMessage)
-        .orElse(null);
+    try {
+      return Optional.ofNullable(response)
+          .map(resp -> resp.readEntity(ErrorInformation.class))
+          .map(ErrorInformation::errorMessage)
+          .orElse(null);
+    } catch (final Exception e) {
+      log.warn("Failed to retrieve additional error information from response", e);
+      return null;
+    }
   }
 
   @Override

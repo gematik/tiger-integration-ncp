@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. gematik GmbH
+ * Copyright (c) 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,11 @@ public class ExternalServerConfig {
 
   @JsonProperty private String version;
 
+  @JsonProperty(defaultValue = "http")
+  private String scheme = "http";
+
   @JsonProperty(required = true)
   private String hostname;
 
-  @JsonProperty(defaultValue = "")
-  private String basePath;
+  @JsonProperty private String basePath;
 }
