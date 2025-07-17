@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.data;
@@ -31,13 +35,5 @@ public class Practitioners extends ArrayList<Practitioner> {
         .findFirst()
         .orElseThrow(
             () -> new TigerConfigurationException("No practitioner found with name " + name));
-  }
-
-  public Practitioner findByCountry(@NonNull final String euCountry) {
-    return this.stream()
-        .filter(practitioner -> euCountry.equals(practitioner.country()))
-        .findFirst()
-        .orElseThrow(
-            () -> new TigerConfigurationException("No practitioner found by country " + euCountry));
   }
 }

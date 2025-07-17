@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp;
@@ -21,7 +25,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import de.gematik.ncpeh.api.NcpehSimulatorApi;
+import de.gematik.test.ncp.reporting.NcpehContext;
+import de.gematik.test.ncp.reporting.NcpehTimeLoggingHandler;
 import jakarta.ws.rs.core.MediaType;
+import java.lang.reflect.Proxy;
 import java.util.List;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
@@ -32,8 +40,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 @UtilityClass
 public class GeneralFactory {
 
+  /** A Jackson JSON provider configured with custom serialization and deserialization settings. */
   public static final JacksonJsonProvider JACKSON_JSON_PROVIDER = createJacksonJsonProvider();
 
+  /**
+   * Creates and configures a JacksonJsonProvider with specific settings for serialization and
+   * deserialization.
+   *
+   * @return a configured JacksonJsonProvider instance
+   */
   private static JacksonJsonProvider createJacksonJsonProvider() {
     final var provider =
         new JacksonJsonProvider()
@@ -44,12 +59,19 @@ public class GeneralFactory {
     provider
         .locateMapper(DateTime.class, MediaType.APPLICATION_JSON_TYPE)
         .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-        //        .registerModule(new JodaModule())
         .registerModule(new JavaTimeModule());
 
     return provider;
   }
 
+  /**
+   * Creates a JAX-RS client proxy for the specified proxy class and server configuration.
+   *
+   * @param <T> the type of the proxy class
+   * @param proxyClass the class of the proxy to create
+   * @param config the server configuration
+   * @return a JAX-RS client proxy instance
+   */
   public static <T> T createJAXRSClientProxy(
       @NonNull final Class<T> proxyClass, @NonNull final ExternalServerConfig config) {
     return JAXRSClientFactory.create(
@@ -61,5 +83,24 @@ public class GeneralFactory {
             .toUriString(),
         proxyClass,
         List.of(JACKSON_JSON_PROVIDER));
+  }
+
+  /**
+   * Creates a dynamic proxy that logs the execution time of methods for the specified target
+   * object.
+   *
+   * @param target the target object to proxy
+   * @param interfaces the interfaces that the proxy should implement
+   * @return a proxy instance that logs method execution times
+   */
+  public static NcpehSimulatorApi createNcpehTimeLoggingProxy(
+      final NcpehSimulatorApi target,
+      final NcpehContext ncpehContext,
+      final Class<?>... interfaces) {
+    return (NcpehSimulatorApi)
+        Proxy.newProxyInstance(
+            target.getClass().getClassLoader(),
+            interfaces,
+            new NcpehTimeLoggingHandler(target, ncpehContext));
   }
 }

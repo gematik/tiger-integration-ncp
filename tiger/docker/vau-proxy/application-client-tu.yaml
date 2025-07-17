@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+vau-proxy-server:
+  pu: false
+  direct-redirects:
+    # information-service
+    '[/information/api/v1]': /information/api/v1
+    '[/information/api/v1/ehr]': /information/api/v1/ehr
+    '[/information/api/v1/ehr/consentdecisions]': /information/api/v1/ehr/consentdecisions
+  cid-redirects:
+
+    - /VAU-Status
+
+    #authorization-service
+    - /epa/authz/v1/getNonce
+    - /epa/authz/v1/send_authorization_request_sc
+    - /epa/authz/v1/send_authcode_sc
+    # medication-service
+    - /epa/medication/api/v1/fhir/*
+    # medication-render-service
+    - /epa/medication/render/v1/eml/xhtml
+    - /epa/medication/render/v1/eml/pdf
+    - /epa/medication/api/v1/fhir/$medication-list
+
+    # entitlement-service
+    - /epa/basic/api/v1/ps/entitlements
+    # document-service
+    - /epa/xds-document/api/I_Document_Management
+
+    # Workaround - RISE - xds-document-service
+    - /epa/I_Document_Management
+
+# Logging vau-proxy-client (trace - zeigt sehr viel...)
+logging:
+  level:
+    root: info

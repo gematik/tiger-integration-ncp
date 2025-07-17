@@ -1,0 +1,32 @@
+[
+  {
+    "bu": "TU",
+    "timestamp": "2025-02-14T17:39:49.855Z",
+    "duration": 16,
+    "usecase": "NCPeH.UC_1",
+    "statuscode": "200",
+    "reqc": "NL",
+    "err": null,
+    "bkdur": 15
+  },
+  {
+    "bu": "TU",
+    "timestamp": "2025-02-14T17:39:50.120Z",
+    "duration": 21,
+    "usecase": "NCPeH.UC_2",
+    "statuscode": "200",
+    "reqc": "NL",
+    "err": null,
+    "bkdur": 20
+  },
+  {
+    "bu": "TU",
+    "timestamp": "2025-02-14T17:39:50.344Z",
+    "duration": 119,
+    "usecase": "NCPeH.UC_3",
+    "statuscode": "200",
+    "reqc": "NL",
+    "err": null,
+    "bkdur": 118
+  }
+]

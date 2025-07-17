@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,10 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.client;
 
+import static de.gematik.test.ncp.ncpeh.client.NcpehClientImpl.REQUEST_HEADER_X_NCPEHMOCK_PATIENT;
 import static de.gematik.test.ncp.ncpeh.client.NcpehClientImpl.REQUEST_HEADER_X_NCPEHMOCK_RESPONSE;
 import static de.gematik.test.ncp.ncpeh.client.dataobject.DataUtils.readPatientDataFromIdentifyPatientResponse;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import de.gematik.ncpeh.api.NcpehSimulatorApi;
 import de.gematik.ncpeh.api.common.EuCountryCode;
 import de.gematik.ncpeh.api.response.ErrorInformation;
@@ -37,10 +43,13 @@ import de.gematik.test.ncp.data.PersonName;
 import de.gematik.test.ncp.ncpeh.NcpehException;
 import de.gematik.test.ncp.ncpeh.NcpehProvider;
 import de.gematik.test.ncp.utils.TestUtils;
+import de.gematik.test.tiger.common.config.TigerGlobalConfiguration;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import org.apache.cxf.jaxrs.client.Client;
@@ -69,6 +78,17 @@ class NcpehClientImplTest {
           PersonName.fromString("Gräfin Maude Adelheid Lilo Johanna GõdofskýTEST-ONLY"),
           KVNR,
           LocalDate.of(1967, 6, 30));
+
+  private static final String PATIENT_JSON;
+
+  static {
+    try {
+      // Use Tiger object mapper, because it is configured to handle json attributes lowercase
+      PATIENT_JSON = TigerGlobalConfiguration.getObjectMapper().writeValueAsString(PATIENT);
+    } catch (final JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   private static final String COUNTRY = EuCountryCode.DENMARK.name();
   private static final String IDENTIFY_PATIENT_RESPONSE_FILE_NAME = "identifyPatientResponse.json";
@@ -115,8 +135,9 @@ class NcpehClientImplTest {
 
     assertNotNull(patient);
     assertTrue(PATIENT.samePerson(patient));
+    headers.put(REQUEST_HEADER_X_NCPEHMOCK_PATIENT, List.of(""));
     headers.put(REQUEST_HEADER_X_NCPEHMOCK_RESPONSE, List.of(NCPEH_HEADER_VALUE));
-    verify((Client) clientProxy).headers(headers);
+    verify((Client) clientProxy).headers(any());
   }
 
   @Test
@@ -151,6 +172,7 @@ class NcpehClientImplTest {
     assertTrue(PATIENT.samePerson(patient));
 
     headers.put(REQUEST_HEADER_X_NCPEHMOCK_RESPONSE, List.of(""));
+    headers.put(REQUEST_HEADER_X_NCPEHMOCK_PATIENT, List.of(""));
     verify((Client) clientProxy).headers(headers);
   }
 
@@ -204,6 +226,7 @@ class NcpehClientImplTest {
     assertEquals(HttpStatus.OK, result.ncpehResponseStatus());
 
     headers.put(REQUEST_HEADER_X_NCPEHMOCK_RESPONSE, List.of(NCPEH_HEADER_VALUE));
+    headers.put(REQUEST_HEADER_X_NCPEHMOCK_PATIENT, List.of(""));
     verify((Client) clientProxy).headers(headers);
   }
 
@@ -234,6 +257,7 @@ class NcpehClientImplTest {
     assertEquals(HttpStatus.OK, result.ncpehResponseStatus());
 
     headers.put(REQUEST_HEADER_X_NCPEHMOCK_RESPONSE, List.of(""));
+    headers.put(REQUEST_HEADER_X_NCPEHMOCK_PATIENT, List.of(""));
     verify((Client) clientProxy).headers(headers);
   }
 
@@ -281,12 +305,15 @@ class NcpehClientImplTest {
         assertDoesNotThrow(
             () ->
                 client.retrievePatientSummary(
-                    PATIENT_ACCESS_DATA, "default", COUNTRY, metadata, NCPEH_HEADER_VALUE),
+                    PATIENT_ACCESS_DATA, PATIENT, "default", COUNTRY, metadata, NCPEH_HEADER_VALUE),
             "method retrievePatientSummary threw exception");
 
     // Assert
     assertNotNull(result, "method retrievePatientSummary returned null");
     assertEquals(HttpStatus.OK, result.ncpehResponseStatus());
+    headers.put(
+        REQUEST_HEADER_X_NCPEHMOCK_PATIENT,
+        List.of(Base64.getEncoder().encodeToString(PATIENT_JSON.getBytes(StandardCharsets.UTF_8))));
     headers.put(REQUEST_HEADER_X_NCPEHMOCK_RESPONSE, List.of(NCPEH_HEADER_VALUE));
     verify((Client) clientProxy).headers(headers);
   }
@@ -315,13 +342,16 @@ class NcpehClientImplTest {
         assertDoesNotThrow(
             () ->
                 client.retrievePatientSummary(
-                    PATIENT_ACCESS_DATA, "default", COUNTRY, metadata, null),
+                    PATIENT_ACCESS_DATA, PATIENT, "default", COUNTRY, metadata, null),
             "method retrievePatientSummary threw exception");
 
     // Assert
     assertNotNull(result, "method retrievePatientSummary returned null");
     assertEquals(HttpStatus.OK, result.ncpehResponseStatus());
     headers.put(REQUEST_HEADER_X_NCPEHMOCK_RESPONSE, List.of(""));
+    headers.put(
+        REQUEST_HEADER_X_NCPEHMOCK_PATIENT,
+        List.of(Base64.getEncoder().encodeToString(PATIENT_JSON.getBytes(StandardCharsets.UTF_8))));
     verify((Client) clientProxy).headers(headers);
   }
 
@@ -345,7 +375,8 @@ class NcpehClientImplTest {
     assertThrows(
         NcpehException.class,
         () ->
-            client.retrievePatientSummary(PATIENT_ACCESS_DATA, "default", COUNTRY, metadata, null),
+            client.retrievePatientSummary(
+                PATIENT_ACCESS_DATA, PATIENT, "default", COUNTRY, metadata, null),
         "method retrievePatientSummary did not throw exception");
   }
 }

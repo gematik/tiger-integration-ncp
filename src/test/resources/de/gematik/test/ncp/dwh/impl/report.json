@@ -1,0 +1,34 @@
+{
+  "entries": [
+    {
+      "timestamp": 1739554789859,
+      "duration": 16,
+      "operation": "NCPeH.UC_1",
+      "status": "200",
+      "message": {
+        "reqc": "NL",
+        "bkdur": 15
+      }
+    },
+    {
+      "timestamp": 1739554790124,
+      "duration": 21,
+      "operation": "NCPeH.UC_2",
+      "status": "200",
+      "message": {
+        "reqc": "NL",
+        "bkdur": 20
+      }
+    },
+    {
+      "timestamp": 1739554790348,
+      "duration": 119,
+      "operation": "NCPeH.UC_3",
+      "status": "200",
+      "message": {
+        "reqc": "NL",
+        "bkdur": 118
+      }
+    }
+  ]
+}

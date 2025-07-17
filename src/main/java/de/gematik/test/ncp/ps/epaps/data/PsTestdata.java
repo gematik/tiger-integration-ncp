@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,15 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ps.epaps.data;
 
 import de.gematik.epa.conversion.internal.enumerated.CodeInterface;
-import de.gematik.epa.dto.request.PutDocumentsRequestDTO;
-import de.gematik.epa.ihe.model.document.Document;
-import de.gematik.epa.ihe.model.simple.AuthorInstitution;
+import de.gematik.test.ncp.data.Practice;
 import de.gematik.test.ncp.data.Testdata;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.AuthorInstitution;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.Document;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.DocumentMetadata;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.PutDocumentsRequestDTO;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -38,13 +44,19 @@ public final class PsTestdata {
    * Create a PutDocumentsRequestDTO with a document containing the given epka
    *
    * @param kvnr {@link String} kvnr of the patient
+   * @param practice {@link Practice} german practice
    * @param epka {@link byte[]} epka to be put into the request
    * @return the created PutDocumentsRequestDTO
    */
   public static PutDocumentsRequestDTO createPutDocumentRequestForEPKA(
-      final String kvnr, final byte[] epka) {
-    return new PutDocumentsRequestDTO(
-        kvnr, List.of(new Document(epka, createDocumentMetadata().toPsDocumentMetadata(), null)));
+      final String kvnr, final Practice practice, final byte[] epka) {
+    return new PutDocumentsRequestDTO()
+        .kvnr(kvnr)
+        .documentSets(
+            List.of(
+                new Document()
+                    .documentData(epka)
+                    .documentMetadata(createDocumentMetadata(practice))));
   }
 
   /**
@@ -75,23 +87,27 @@ public final class PsTestdata {
         + ")";
   }
 
-  public static DocumentMetadata createDocumentMetadata() {
-    final var practice = Testdata.instance().practice();
-    final var practitioner = practice.practitioners().getFirst();
+  public static DocumentMetadata createDocumentMetadata(final Practice practice) {
+    final var smbInfo = practice.getSmbCard();
+    final var practitioner = practice.getPractitioners().getFirst();
     final var meta =
         Testdata.loadClassFromJson(DocumentMetadata.class, DOCUMENT_METADATA_TEMPLATE_FILE_NAME);
-    return meta.withTitle("Patientenkurzakte_".concat(LocalDateTime.now().toString()))
-        .withCreationTime(LocalDateTime.now().minusHours(3))
-        .withServiceStartTime(LocalDateTime.now().minusHours(4))
-        .withServiceStopTime(LocalDateTime.now().minusHours(3))
-        .withAuthors(
+
+    return meta.title("Patientenkurzakte_".concat(LocalDateTime.now().toString()))
+        .creationTime(LocalDateTime.now().minusHours(3))
+        .serviceStartTime(LocalDateTime.now().minusHours(4))
+        .serviceStopTime(LocalDateTime.now().minusHours(3))
+        .author(
             List.of(
-                meta.getAuthors()
+                meta.getAuthor()
                     .getFirst()
-                    .withTitle(practitioner.titles())
-                    .withFamilyName(practitioner.lastNames())
-                    .withGivenName(practitioner.givenNames())
-                    .withAuthorInstitutions(
-                        List.of(new AuthorInstitution(practice.name(), practice.telematikId())))));
+                    .title(practitioner.titles())
+                    .familyName(practitioner.lastNames())
+                    .givenName(practitioner.givenNames())
+                    .authorInstitution(
+                        List.of(
+                            new AuthorInstitution()
+                                .name(smbInfo.name())
+                                .identifier(smbInfo.telematikId())))));
   }
 }

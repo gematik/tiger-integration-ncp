@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.fdv;
@@ -27,7 +31,7 @@ import lombok.Getter;
 public class FdvProvider {
 
   public static final String FDV_SIM_CONFIG_KEY =
-      ExternalServerConfig.INFRASTRUCTURE_KEY + ".epafdv";
+      ExternalServerConfig.EXTERNAL_SERVER_CONFIG_TIGER_KEY + ".epafdv";
 
   @Getter(lazy = true)
   private static final FdvProvider instance = new FdvProvider();

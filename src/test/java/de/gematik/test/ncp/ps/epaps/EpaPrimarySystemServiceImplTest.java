@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,51 +12,57 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ps.epaps;
 
-import static java.net.HttpURLConnection.HTTP_BAD_GATEWAY;
-import static java.net.HttpURLConnection.HTTP_OK;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import de.gematik.epa.api.ConfigurationApi;
-import de.gematik.epa.api.DocumentsApi;
-import de.gematik.epa.api.SignatureApi;
-import de.gematik.epa.api.authentication.LoginLogoutApi;
-import de.gematik.epa.api.authentication.dto.LoginResponseDTO;
-import de.gematik.epa.api.entitlement.EntitlementApi;
-import de.gematik.epa.api.entitlement.dto.PostEntitlementResponseDTO;
-import de.gematik.epa.api.information.InformationApi;
-import de.gematik.epa.api.information.dto.GetRecordStatusResponseDTO;
-import de.gematik.epa.dto.request.DeleteObjectsRequestDTO;
-import de.gematik.epa.dto.request.FindRequestDTO;
-import de.gematik.epa.dto.request.PutDocumentsRequestDTO;
-import de.gematik.epa.dto.request.SignDocumentRequest.SignatureAlgorithm;
-import de.gematik.epa.dto.response.FindObjectsResponseDTO;
-import de.gematik.epa.dto.response.ResponseDTO;
-import de.gematik.epa.dto.response.SignDocumentResponse;
-import de.gematik.epa.dto.response.SignDocumentResponse.SignatureForm;
-import de.gematik.epa.ihe.model.document.DocumentMetadata;
-import de.gematik.epa.ihe.model.response.RegistryObjectLists;
-import de.gematik.epa.ihe.model.simple.ByteArray;
 import de.gematik.test.ncp.ExternalServerConfig;
+import de.gematik.test.ncp.data.Practice;
+import de.gematik.test.ncp.data.PracticeImpl;
+import de.gematik.test.ncp.gen.epa.api.authentication.LoginLogoutApi;
+import de.gematik.test.ncp.gen.epa.api.authentication.dto.LoginResponseDTO;
+import de.gematik.test.ncp.gen.epa.api.card.CardApi;
+import de.gematik.test.ncp.gen.epa.api.card.dto.GetCardsInfoResponseDTO;
+import de.gematik.test.ncp.gen.epa.api.card.dto.SmbInformationDTO;
+import de.gematik.test.ncp.gen.epa.api.documents.DocumentsApi;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.DeleteObjectsRequestDTO;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.DocumentMetadata;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.FindObjectsResponseDTO;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.FindRequestDTO;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.PutDocumentsRequestDTO;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.RegistryObjectLists;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.ResponseDTO;
+import de.gematik.test.ncp.gen.epa.api.entitlement.EntitlementApi;
+import de.gematik.test.ncp.gen.epa.api.entitlement.dto.PostEntitlementResponseDTO;
+import de.gematik.test.ncp.gen.epa.api.information.InformationApi;
+import de.gematik.test.ncp.gen.epa.api.information.dto.GetRecordStatusResponseDTO;
+import de.gematik.test.ncp.gen.epa.api.signature.SignatureApi;
+import de.gematik.test.ncp.gen.epa.api.signature.dto.SignDocumentRequest;
+import de.gematik.test.ncp.gen.epa.api.signature.dto.SignDocumentResponse;
 import de.gematik.test.ncp.ps.PsException;
 import de.gematik.test.ncp.ps.PsProvider;
 import de.gematik.test.ncp.ps.epaps.data.PsTestdata;
-import java.net.URI;
+import de.gematik.test.ncp.utils.TestUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.SneakyThrows;
-import net.serenitybdd.rest.stubs.ResponseStub;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -66,53 +72,16 @@ class EpaPrimarySystemServiceImplTest {
   private static final String KVNR = "X110987654";
   private static final String TELEMATIK_ID = "123456";
   private static final String SUCCESS_STATUS_MSG = "All went well!";
-  private static final ResponseDTO STD_RESPONSE = new ResponseDTO(Boolean.TRUE, SUCCESS_STATUS_MSG);
-  public static final de.gematik.test.ncp.ps.epaps.data.DocumentMetadata DOCUMENT_METADATA =
-      PsTestdata.createDocumentMetadata();
+  private static final ResponseDTO STD_DOCUMENT_RESPONSE =
+      new ResponseDTO().success(true).statusMessage(SUCCESS_STATUS_MSG);
+
+  public static final Practice PRACTICE =
+      TestUtils.loadFromJsonResource(
+          PracticeImpl.class, EpaPrimarySystemServiceImplTest.class, "practice.json");
+  public static final DocumentMetadata DOCUMENT_METADATA =
+      PsTestdata.createDocumentMetadata(PRACTICE);
   private static final DocumentMetadata FIND_RESPONSE_DOCUMENT_DATA =
-      DOCUMENT_METADATA.withEntryUUID("urn:uuid:2305gnwo8rh2").toPsDocumentMetadata();
-
-  @Test
-  void testPsIsUpAndRunning() {
-    // Arrange
-    final var service = EpaPrimarySystemServiceImpl.builder().config(config).build();
-    final var spyService = spy(service);
-    when(spyService.restAssuredGet(Mockito.anyString()))
-        .thenReturn(
-            new ResponseStub() {
-              @Override
-              public int statusCode() {
-                return HTTP_OK;
-              }
-            });
-
-    // Act
-    final var isUpAndRunning = assertDoesNotThrow(spyService::psIsUpAndRunning);
-
-    // Assert
-    assertTrue(isUpAndRunning);
-  }
-
-  @Test
-  void testPsIsUpAndRunningException() {
-    // Arrange
-    final var service = EpaPrimarySystemServiceImpl.builder().config(config).build();
-    final var spyService = spy(service);
-    when(spyService.restAssuredGet(Mockito.anyString()))
-        .thenReturn(
-            new ResponseStub() {
-              @Override
-              public int statusCode() {
-                return HTTP_BAD_GATEWAY;
-              }
-            });
-
-    // Act
-    final var isUpAndRunning = assertDoesNotThrow(spyService::psIsUpAndRunning);
-
-    // Assert
-    assertFalse(isUpAndRunning);
-  }
+      DOCUMENT_METADATA.entryUUID("urn:uuid:2305gnwo8rh2");
 
   @Test
   void testAuthorizeLeForKvnr() {
@@ -121,7 +90,7 @@ class EpaPrimarySystemServiceImplTest {
     when(loginLogoutApi.login(eq(TELEMATIK_ID), any(), any()))
         .thenReturn(new LoginResponseDTO().success(true));
     final var entitlementApi = Mockito.mock(EntitlementApi.class);
-    when(entitlementApi.postEntitlement(any()))
+    when(entitlementApi.postEntitlement(any(), any()))
         .thenReturn(new PostEntitlementResponseDTO().success(true));
     final var service =
         EpaPrimarySystemServiceImpl.builder()
@@ -144,7 +113,7 @@ class EpaPrimarySystemServiceImplTest {
     when(loginLogoutApi.login(eq(TELEMATIK_ID), any(), any()))
         .thenReturn(new LoginResponseDTO().success(true));
     final var entitlementApi = Mockito.mock(EntitlementApi.class);
-    when(entitlementApi.postEntitlement(any()))
+    when(entitlementApi.postEntitlement(any(), any()))
         .thenReturn(new PostEntitlementResponseDTO().success(false));
     final var service =
         EpaPrimarySystemServiceImpl.builder()
@@ -168,7 +137,7 @@ class EpaPrimarySystemServiceImplTest {
     when(loginLogoutApi.login(eq(TELEMATIK_ID), any(), any()))
         .thenReturn(new LoginResponseDTO().success(true));
     final var entitlementApi = Mockito.mock(EntitlementApi.class);
-    when(entitlementApi.postEntitlement(any())).thenThrow(IllegalFormatException.class);
+    when(entitlementApi.postEntitlement(any(), any())).thenThrow(IllegalFormatException.class);
     final var service =
         EpaPrimarySystemServiceImpl.builder()
             .config(config)
@@ -233,7 +202,7 @@ class EpaPrimarySystemServiceImplTest {
         .thenAnswer(
             invocation -> {
               capturedRequest.set(invocation.getArgument(1));
-              return STD_RESPONSE;
+              return STD_DOCUMENT_RESPONSE;
             });
     final var service =
         EpaPrimarySystemServiceImpl.builder().config(config).documentsProxy(documentsApi).build();
@@ -241,14 +210,14 @@ class EpaPrimarySystemServiceImplTest {
     // Act
     final var testResult =
         assertDoesNotThrow(
-            () -> service.putDocument(KVNR, "epka".getBytes(StandardCharsets.UTF_8)),
+            () -> service.putDocument(KVNR, PRACTICE, "epka".getBytes(StandardCharsets.UTF_8)),
             "Method EpaPsInterfaceImpl.putDocument threw an exception");
 
     // Assert
     assertNotNull(testResult, "Return value is null");
     assertEquals(
         testResult,
-        capturedRequest.get().documentSets().getFirst().documentMetadata().title(),
+        capturedRequest.get().getDocumentSets().getFirst().getDocumentMetadata().getTitle(),
         "Document title does not have the expected value");
   }
 
@@ -257,7 +226,7 @@ class EpaPrimarySystemServiceImplTest {
     // Arrange
     final var documentsApi = Mockito.mock(DocumentsApi.class);
     when(documentsApi.putDocuments(anyString(), any(PutDocumentsRequestDTO.class)))
-        .thenReturn(new ResponseDTO(false, "This was not right"));
+        .thenReturn(new ResponseDTO().success(false).statusMessage("This was not right"));
     final var service =
         EpaPrimarySystemServiceImpl.builder().config(config).documentsProxy(documentsApi).build();
     final var epka = "epka".getBytes(StandardCharsets.UTF_8);
@@ -266,8 +235,55 @@ class EpaPrimarySystemServiceImplTest {
     // Assert
     assertThrows(
         PsException.class,
-        () -> service.putDocument(KVNR, epka),
+        () -> service.putDocument(KVNR, PRACTICE, epka),
         "Method EpaPsInterfaceImpl.putDocument did not throw an exception");
+  }
+
+  @Test
+  void testReplaceDocumentNotFound() {
+    // Arrange
+    final var service = EpaPrimarySystemServiceImpl.builder().config(config).build();
+    final var spyService = spy(service);
+    doReturn(List.of()).when(spyService).findEpka(KVNR);
+    final var epka = "epka".getBytes(StandardCharsets.UTF_8);
+    final var title = "title";
+    doReturn(title).when(spyService).putDocument(KVNR, PRACTICE, epka);
+
+    // Act
+    final var testResult =
+        assertDoesNotThrow(
+            () -> spyService.replaceDocument(KVNR, PRACTICE, epka),
+            "Method EpaPsInterfaceImpl.replaceDocument threw an exception");
+
+    // Assert
+    assertEquals(title, testResult);
+    verify(spyService).findEpka(KVNR);
+    verify(spyService).putDocument(KVNR, PRACTICE, epka);
+  }
+
+  @Test
+  void testReplaceDocument() {
+    // Arrange
+    final var service = EpaPrimarySystemServiceImpl.builder().config(config).build();
+    final var spyService = spy(service);
+    final var uuids = List.of("123546");
+    doReturn(uuids).when(spyService).findEpka(KVNR);
+    doNothing().when(spyService).deleteExistingDocuments(KVNR, uuids);
+    final var epka = "epka".getBytes(StandardCharsets.UTF_8);
+    final var title = "title";
+    doReturn(title).when(spyService).putDocument(KVNR, PRACTICE, epka);
+
+    // Act
+    final var testResult =
+        assertDoesNotThrow(
+            () -> spyService.replaceDocument(KVNR, PRACTICE, epka),
+            "Method EpaPsInterfaceImpl.replaceDocument threw an exception");
+
+    // Assert
+    assertEquals(title, testResult);
+    verify(spyService).findEpka(KVNR);
+    verify(spyService).deleteExistingDocuments(KVNR, uuids);
+    verify(spyService).putDocument(KVNR, PRACTICE, epka);
   }
 
   @Test
@@ -333,10 +349,13 @@ class EpaPrimarySystemServiceImplTest {
     final var documentsApi = Mockito.mock(DocumentsApi.class);
     when(documentsApi.find(anyString(), any(FindRequestDTO.class)))
         .thenReturn(
-            new FindObjectsResponseDTO(
-                Boolean.TRUE,
-                SUCCESS_STATUS_MSG,
-                new RegistryObjectLists(null, List.of(FIND_RESPONSE_DOCUMENT_DATA), null, null)));
+            new FindObjectsResponseDTO()
+                .success(true)
+                .statusMessage(SUCCESS_STATUS_MSG)
+                .registryObjectLists(
+                    new RegistryObjectLists()
+                        .documentsMetadata(List.of(FIND_RESPONSE_DOCUMENT_DATA))));
+
     final var service =
         EpaPrimarySystemServiceImpl.builder().config(config).documentsProxy(documentsApi).build();
 
@@ -348,7 +367,34 @@ class EpaPrimarySystemServiceImplTest {
     assertEquals(1, testResult.size());
     assertTrue(
         testResult.stream()
-            .allMatch(entryUUID -> entryUUID.equals(FIND_RESPONSE_DOCUMENT_DATA.entryUUID())));
+            .allMatch(entryUUID -> entryUUID.equals(FIND_RESPONSE_DOCUMENT_DATA.getEntryUUID())));
+  }
+
+  @Test
+  void testFindAllDocuments() {
+    // Arrange
+    final var documentsApi = Mockito.mock(DocumentsApi.class);
+    when(documentsApi.find(anyString(), any(FindRequestDTO.class)))
+        .thenReturn(
+            new FindObjectsResponseDTO()
+                .success(true)
+                .statusMessage(SUCCESS_STATUS_MSG)
+                .registryObjectLists(
+                    new RegistryObjectLists()
+                        .documentsMetadata(List.of(FIND_RESPONSE_DOCUMENT_DATA))));
+
+    final var service =
+        EpaPrimarySystemServiceImpl.builder().config(config).documentsProxy(documentsApi).build();
+
+    // Act
+    final var testResult = assertDoesNotThrow(() -> service.findAllDocuments(KVNR));
+
+    // Assert
+    assertNotNull(testResult);
+    assertEquals(1, testResult.size());
+    assertTrue(
+        testResult.stream()
+            .allMatch(entryUUID -> entryUUID.equals(FIND_RESPONSE_DOCUMENT_DATA.getEntryUUID())));
   }
 
   @Test
@@ -356,7 +402,7 @@ class EpaPrimarySystemServiceImplTest {
     // Arrange
     final var documentsApi = Mockito.mock(DocumentsApi.class);
     when(documentsApi.deleteObjects(anyString(), any(DeleteObjectsRequestDTO.class)))
-        .thenReturn(STD_RESPONSE);
+        .thenReturn(STD_DOCUMENT_RESPONSE);
     final var service =
         EpaPrimarySystemServiceImpl.builder().config(config).documentsProxy(documentsApi).build();
 
@@ -372,11 +418,10 @@ class EpaPrimarySystemServiceImplTest {
     final var signatureApi = Mockito.mock(SignatureApi.class);
     when(signatureApi.signDocument(any()))
         .thenReturn(
-            new SignDocumentResponse(
-                true,
-                null,
-                "I am signed".getBytes(StandardCharsets.UTF_8),
-                SignatureForm.DOCUMENT_WITH_SIGNATURE));
+            new SignDocumentResponse()
+                .success(true)
+                .signatureObject("I am signed".getBytes(StandardCharsets.UTF_8))
+                .signatureForm(SignDocumentResponse.SignatureFormEnum.DOCUMENT_WITH_SIGNATURE));
     final var service =
         EpaPrimarySystemServiceImpl.builder().config(config).signatureProxy(signatureApi).build();
     final var document = "I'm a test document".getBytes(StandardCharsets.UTF_8);
@@ -394,11 +439,10 @@ class EpaPrimarySystemServiceImplTest {
     final var signatureApi = Mockito.mock(SignatureApi.class);
     when(signatureApi.signDocument(any()))
         .thenReturn(
-            new SignDocumentResponse(
-                true,
-                null,
-                "I am signed".getBytes(StandardCharsets.UTF_8),
-                SignatureForm.DOCUMENT_WITH_SIGNATURE));
+            new SignDocumentResponse()
+                .success(true)
+                .signatureObject("I am signed".getBytes(StandardCharsets.UTF_8))
+                .signatureForm(SignDocumentResponse.SignatureFormEnum.DOCUMENT_WITH_SIGNATURE));
     final var service =
         EpaPrimarySystemServiceImpl.builder().config(config).signatureProxy(signatureApi).build();
     final var document = "I'm a test document".getBytes(StandardCharsets.UTF_8);
@@ -406,52 +450,12 @@ class EpaPrimarySystemServiceImplTest {
     // Act
     final var tstResult =
         assertDoesNotThrow(
-            () -> service.signDocument(document, false, SignatureAlgorithm.ECC.name()));
+            () ->
+                service.signDocument(
+                    document, false, SignDocumentRequest.SignatureAlgorithmEnum.ECC.value()));
 
     // Assert
     assertNotNull(tstResult);
-  }
-
-  @SneakyThrows
-  @Test
-  void testConfigureKonnektor() {
-    // Arrange
-    final var configurationApi = Mockito.mock(ConfigurationApi.class);
-    when(configurationApi.configureKonnektor(any())).thenReturn(STD_RESPONSE);
-    final var service =
-        EpaPrimarySystemServiceImpl.builder()
-            .config(config)
-            .configurationProxy(configurationApi)
-            .build();
-    final var addressUrl =
-        new URI("https", null, "testKonnektor", 8080, "/services", null, null).toURL();
-
-    // Act
-    // Assert
-    assertDoesNotThrow(() -> service.configureKonnektor(addressUrl));
-  }
-
-  @SneakyThrows
-  @Test
-  void testConfigureKonnektorException() {
-    // Arrange
-    final var failureMsg = "I'm the expected failure message";
-    final var configurationApi = Mockito.mock(ConfigurationApi.class);
-    when(configurationApi.configureKonnektor(any())).thenReturn(new ResponseDTO(false, failureMsg));
-    final var service =
-        EpaPrimarySystemServiceImpl.builder()
-            .config(config)
-            .configurationProxy(configurationApi)
-            .build();
-    final var addressUrl =
-        new URI("https", null, "testKonnektor", 8080, "/services", null, null).toURL();
-
-    // Act
-    final var exception =
-        assertThrows(PsException.class, () -> service.configureKonnektor(addressUrl));
-
-    // Assert
-    assertTrue(exception.getMessage().contains(failureMsg));
   }
 
   @Test
@@ -459,8 +463,7 @@ class EpaPrimarySystemServiceImplTest {
     // Arrange
     final var signatureApi = Mockito.mock(SignatureApi.class);
     when(signatureApi.signDocument(any()))
-        .thenReturn(
-            new SignDocumentResponse(Boolean.TRUE, SUCCESS_STATUS_MSG, (ByteArray) null, null));
+        .thenReturn(new SignDocumentResponse().success(true).statusMessage(SUCCESS_STATUS_MSG));
     final var service =
         EpaPrimarySystemServiceImpl.builder().config(config).signatureProxy(signatureApi).build();
     final var document = "I'm a test document".getBytes(StandardCharsets.UTF_8);
@@ -475,7 +478,7 @@ class EpaPrimarySystemServiceImplTest {
     // Arrange
     final var signatureApi = Mockito.mock(SignatureApi.class);
     when(signatureApi.signDocument(any()))
-        .thenReturn(new SignDocumentResponse(Boolean.FALSE, "Big mistake", (ByteArray) null, null));
+        .thenReturn(new SignDocumentResponse().success(false).statusMessage("Big mistake"));
     final var service =
         EpaPrimarySystemServiceImpl.builder().config(config).signatureProxy(signatureApi).build();
     final var document = "I'm a test document".getBytes(StandardCharsets.UTF_8);
@@ -483,5 +486,65 @@ class EpaPrimarySystemServiceImplTest {
     // Act
     // Assert
     assertThrows(PsException.class, () -> service.signDocument(document));
+  }
+
+  @SneakyThrows
+  @Test
+  void getSmbCardReturnsSmbCard() {
+    // Arrange
+    final var cardApi = Mockito.mock(CardApi.class);
+    when(cardApi.getCardsInfo())
+        .thenReturn(
+            new GetCardsInfoResponseDTO()
+                .success(true)
+                .smbInfo(
+                    List.of(
+                        new SmbInformationDTO()
+                            .cardHolderName("Dr. Smith")
+                            .telematikId("123456"))));
+    final var service =
+        EpaPrimarySystemServiceImpl.builder().config(config).cardApiProxy(cardApi).build();
+
+    // Act
+    final var testee = assertDoesNotThrow(service::getSmbCard);
+
+    // Assert
+    assertNotNull(testee);
+    assertEquals("Dr. Smith", testee.name());
+    assertEquals("123456", testee.telematikId());
+  }
+
+  @SneakyThrows
+  @Test
+  void getSmbCardThrowsPsExceptionWhenResponseNotSuccessful() {
+    // Arrange
+    final var cardApi = Mockito.mock(CardApi.class);
+    when(cardApi.getCardsInfo())
+        .thenReturn(new GetCardsInfoResponseDTO().success(false).statusMessage("Error"));
+    final var service =
+        EpaPrimarySystemServiceImpl.builder().config(config).cardApiProxy(cardApi).build();
+
+    // Act
+    final var exeption = assertThrows(PsException.class, service::getSmbCard);
+
+    // Assert
+    assertEquals("Operation getPractice, Message: Error", exeption.getMessage());
+  }
+
+  @SneakyThrows
+  @Test
+  void getSmbCardThrowsPsExceptionWhenNoSmbInfoFound() {
+    // Arrange
+    final var cardApi = Mockito.mock(CardApi.class);
+    when(cardApi.getCardsInfo())
+        .thenReturn(new GetCardsInfoResponseDTO().success(true).smbInfo(List.of()));
+    final var service =
+        EpaPrimarySystemServiceImpl.builder().config(config).cardApiProxy(cardApi).build();
+
+    // Act
+    final var exeption = assertThrows(PsException.class, service::getSmbCard);
+
+    // Assert
+    assertEquals("Operation getPractice, Message: No practice found", exeption.getMessage());
   }
 }

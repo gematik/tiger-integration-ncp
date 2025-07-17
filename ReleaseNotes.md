@@ -2,6 +2,15 @@
 
 # Release Notes: Tiger-Integration-NCP
 
+## Release 1.6.2 (2025-07-17)
+
+### changed
+
+- Moved project to groupId de.gematik.test.ncp
+- Updated and improved README
+- Updated LICENSE and Copyright Notice
+- Updated dependency `ncpeh-simulation-api` to version 2.0.2
+
 ## Release 1.6.1 (2025-01-10)
 
 This release aims to facilitate knowledge transfer from gematik test to the implementers and testers

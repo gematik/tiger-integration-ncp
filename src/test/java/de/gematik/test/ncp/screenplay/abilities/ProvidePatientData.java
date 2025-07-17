@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.screenplay.abilities;
@@ -20,8 +24,8 @@ import de.gematik.test.ncp.data.Patient;
 import de.gematik.test.ncp.data.PatientImpl;
 import de.gematik.test.ncp.data.PatientInfo;
 import de.gematik.test.ncp.data.PersonName;
-import de.gematik.test.ncp.ncpeh.client.dataobject.IdentifyPatientDO;
-import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryDO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.IdentifyPatientResponseDO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryResponseDO;
 import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,7 +33,6 @@ import lombok.ToString;
 import net.serenitybdd.screenplay.Ability;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import org.hl7.v3.ClinicalDocument;
-import org.openqa.selenium.Pdf;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -43,11 +46,11 @@ public class ProvidePatientData extends PatientImpl implements PatientInfo, Abil
   private Boolean hasAktenkonto;
 
   private AdhocQueryResponse psaMetadata;
-  private RetrievePatientSummaryDO patientSummaryDO;
+  private RetrievePatientSummaryResponseDO patientSummaryDO;
   private ClinicalDocument patientSummaryLvl3;
-  private Pdf patientSummaryLvl1;
+  private byte[] patientSummaryLvl1;
 
-  private IdentifyPatientDO identifyPatientDataResponse;
+  private IdentifyPatientResponseDO identifyPatientDataResponse;
   private Patient identifyPatientData;
 
   public ProvidePatientData(final PersonName name, final String kvnr, final LocalDate birthDate) {

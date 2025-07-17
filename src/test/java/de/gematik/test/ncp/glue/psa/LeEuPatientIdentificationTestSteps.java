@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.glue.psa;
@@ -25,12 +29,12 @@ import de.gematik.test.ncp.screenplay.actions.IdentifyPatient;
 import de.gematik.test.ncp.screenplay.actions.MakeAccessCodeDefect;
 import de.gematik.test.ncp.screenplay.actions.ProvidePatientAccessDataToLeEu;
 import de.gematik.test.ncp.screenplay.actions.UnauthorizeEuCountry;
+import de.gematik.test.ncp.screenplay.questions.AuthorizationIsActive;
 import de.gematik.test.ncp.screenplay.questions.GetAcknowledgementDetailErrorcodeFromIdentifyPatientResponse;
 import de.gematik.test.ncp.screenplay.questions.GetAcknowledgementDetailErrortextFromIdentifyPatientResponse;
 import de.gematik.test.ncp.screenplay.questions.GetAcknowledgementDetailLocationtextFromIdentifyPatientResponse;
 import de.gematik.test.ncp.screenplay.questions.GetPractitionerData;
 import de.gematik.test.ncp.screenplay.questions.GetReasonEncodingFromIdentifyPatientResponse;
-import de.gematik.test.ncp.screenplay.questions.IsAuthorizeEuCountry;
 import de.gematik.test.ncp.screenplay.questions.IsIdentifyPatientDataCorrect;
 import de.gematik.test.ncp.screenplay.questions.IsNoIdentifyPatientData;
 import de.gematik.test.ncp.screenplay.questions.WhoIsTreatedPatient;
@@ -43,17 +47,6 @@ import net.serenitybdd.screenplay.ensure.Ensure;
 
 @CucumberOptions(monochrome = true)
 public class LeEuPatientIdentificationTestSteps {
-
-  // TODO: Diese Funktion ist eigentlich ein PatientTestStep -> move & adapt?
-  // TODO: Klären, ob die Möglichkeit einer zeitlichen Steuerung vom Team Patient zu Verfügung
-  // gestellt wird
-  @Und(
-      "^der NCPeH Fachdienst ist für den Zugriff dieses EU-Landes auf das Konto der versicherten Person noch für mindestens ([1-9][0-9]*) Minuten berechtigt$")
-  public void assignAuthorizationForEuCountryWithTimeLimit(final int minutes) {
-    // check and if necessary grant fresh access rights to the ePA account of the active patient for
-    // the active EU-country
-    // take into account, that a fresh access right will last fix 1h
-  }
 
   @Wenn("die versicherte Person die Berechtigung des EU-Landes erneuert")
   public void reassignAuthorizationForEuCountry() {
@@ -76,7 +69,7 @@ public class LeEuPatientIdentificationTestSteps {
     final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
 
     andThat(patient).attemptsTo(UnauthorizeEuCountry.forCountry(country));
-    andThat(patient).attemptsTo(Ensure.that(IsAuthorizeEuCountry.forCountry(country)).isFalse());
+    andThat(patient).attemptsTo(Ensure.that(AuthorizationIsActive.forCountry(country)).isFalse());
     // set the leEuActor in the spotlight again
     OnStage.stage().shineSpotlightOn(leEuActor.getName());
   }
@@ -117,15 +110,16 @@ public class LeEuPatientIdentificationTestSteps {
 
   @Und(
       "^der LE-EU hat erfolgreich die Patient Identification der versicherten Person durchgeführt$")
-  public void leEuGetsSuccessfulPatientIdentification() {
+  @Wenn("der LE-EU erfolgreich die Patient Identification der versicherten Person durchführt")
+  public void leEuSuccessfullyPerformsPatientIdentification() {
     // possible alternative: do nothing here, as both resulting assertions will be constructed in
     // subsequent steps by simulator anyhow.
     // But what would this alternative mean for NCPeH internally? Could it result in different
     // behaviour?
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
-    andThat(leEuActor).attemptsTo(IdentifyPatient.instance());
-    andThat(leEuActor).attemptsTo(Ensure.that(new IsIdentifyPatientDataCorrect()).isTrue());
+    leEuActor.attemptsTo(
+        IdentifyPatient.instance().then(Ensure.that(new IsIdentifyPatientDataCorrect()).isTrue()));
   }
 
   @Wenn("^der LE-EU mit KVNR und AccessCode der versicherten Person die Identifikation aufruft$")
@@ -216,5 +210,14 @@ public class LeEuPatientIdentificationTestSteps {
         .attemptsTo(
             Ensure.that(new GetAcknowledgementDetailLocationtextFromIdentifyPatientResponse())
                 .contains(expectedLocationtext));
+  }
+
+  @Wenn("die versicherte Person den LE-EU ohne Behandlung verlässt")
+  public void patientLeavesEUpracticeWithoutTreatment() {
+    // no need to do anything here except for moving the patient into the spotlight for the next
+    // step
+    final var leEuActor = OnStage.theActorInTheSpotlight();
+    final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+    OnStage.stage().shineSpotlightOn(patient.getName());
   }
 }

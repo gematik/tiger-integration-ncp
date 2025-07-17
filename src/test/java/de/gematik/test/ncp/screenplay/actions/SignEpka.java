@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.screenplay.actions;
@@ -29,8 +33,9 @@ public class SignEpka implements Performable {
     final var patient = actor.usingAbilityTo(TreatPatient.class).getPatient();
     final var patientData = patient.usingAbilityTo(ProvidePatientData.class);
     final var ps = actor.usingAbilityTo(UsePrimarySystem.class);
-    final var signedEpka = ps.signDocument(patientData.getEpka());
-    patientData.setSignedEpka(signedEpka);
+    // Remove comment for ePA 3.1, currently is not possible save signed ePKA in ePA 3.0
+    // final var signedEpka = ps.signDocument(patientData.getEpka());
+    // patientData.setSignedEpka(signedEpka);
   }
 
   public static SignEpka instance() {

@@ -1,0 +1,26 @@
+servers:
+
+  ncpehSimUrl:
+    type: externalUrl
+    active: false
+    hostname: ${infrastructure.ncpehSim.hostname}
+    startupTimeoutSec: 1
+    source:
+      - http://localhost:8082/
+    healthcheckUrl: http://localhost:8082
+
+  ncpehSimMockJar:
+    type: externalJar
+    active: "!{not ${tiger.servers.ncpehSimUrl.active}}"
+    hostname: ${infrastructure.ncpehSim.hostname}
+    startupTimeoutSec: 60
+    source:
+      - local:target/externalJars/ncpeh-simulation-mock-${infrastructure.ncpehSim.version}.jar
+    healthcheckUrl: http://localhost:${tiger.ports.ncpehSim}
+    externalJarOptions:
+      options:
+        - -Dfile.encoding=UTF-8
+      arguments:
+        - --server.port=${tiger.ports.ncpehSim}
+        - --cxf.path=${infrastructure.ncpehSim.basePath}
+        - --logging.level.org.apache.cxf.services=INFO

@@ -1,0 +1,194 @@
+openapi: 3.0.1
+info:
+  title: ePA SIM Configuration API
+  description: Configuration of the Konnektor with which to communicate
+  version: 1.0.0
+  contact:
+    name: gematik GmbH
+    email: software-development@gematik.de
+    url: 'https://www.gematik.de'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
+tags:
+  - name: Configuration
+
+paths:
+  /configuration/configureKonnektor:
+    post:
+      tags:
+        - Configuration
+      summary: Operation um die Konfigurationsdaten zum verwendeten Konnektor zur
+        Laufzeit zu ändern
+      description: "Soll zur Laufzeit des epa-ps der verwendete Konnektor geändert\
+        \ werden oder einzelne Konfigurationsdaten für den Konnektor geändert werden,\
+        \ kann das mittels dieser Operation erfolgen."
+      operationId: configureKonnektor
+      requestBody:
+        description: Konfigurationsdaten für den Konnektor
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KonnektorConfigurationRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: "Statusinformation, ob die Operation erfolgreich ausgeführt\
+            \ werden konnte."
+          content:
+            application/json:
+              schema:
+                $ref: "shared.yaml#/components/schemas/ResponseDTO"
+
+components:
+  schemas:
+    KonnektorConfigurationRequestDTO:
+      type: object
+      description: Request um die Konnektor spezifische Konfiguration des epa-ps-sim zu ändern
+      properties:
+        connection:
+          $ref: "#/components/schemas/KonnektorConnectionConfigurationDTO"
+          description: Konfigurationsdaten bzgl. der Verbindung zum Konnektor
+        context:
+          $ref: "#/components/schemas/Context"
+          description: Context wie er für Aufrufe von Konnektor-Operationen verwendet werden soll
+        asUpdate:
+          type: boolean
+          description: "Schalter, ob die übergebenen Daten die bereits vorhandenen\
+            \ aktualisieren (true) oder überschreiben (false) sollen. Der Unterschied\
+            \ besteht darin, dass Felder, die nicht übergeben werden (null), beim\
+            \ Aktualisieren ignoriert werden, sprich bereits gesetzte Werte bleiben\
+            \ erhalten, beim Überschreiben den bisherigen Wert überschreiben, sprich\
+            \ bereits gesetzte Werte werden durch null überschrieben. Dies gilt nur\
+            \ für die Elemente der gleichen Ebene. Subelemente eines gesetzten Elements\
+            \ werden immer übernommen auch wenn das Subelement nicht gesetzt ist (also\
+            \ den Wert null hat) und der Schalter auf true steht."
+    KonnektorConnectionConfigurationDTO:
+      type: object
+      description: Konfigurationsinformationen um die Verbindung zum Konnektor zu
+        konfigurieren
+      properties:
+        address:
+          $ref: "#/components/schemas/AddressConfig"
+          description: Daten der Konnektor-Adresse
+        tlsConfig:
+          $ref: "#/components/schemas/TlsConfig"
+          description: Daten zur Herstellung einer TLS Verbindung zwischen epa-ps-sim
+            und Konnektor
+        proxyAddress:
+          $ref: "#/components/schemas/ProxyAddressConfig"
+          description: "Adressdaten eines Proxies, der sich ggf. zwischen epa-ps-sim\
+            \ und Konnektor befindet"
+        basicAuthentication:
+          $ref: "#/components/schemas/BasicAuthenticationConfig"
+          description: Authentifizierungsdaten für eine Basic Authentication gegenüber
+            dem Konnektor
+        asUpdate:
+          type: boolean
+          description: "Schalter, ob die übergebenen Daten die bereits vorhandenen\
+            \ aktualisieren (true) oder überschreiben (false) sollen. Der Unterschied\
+            \ besteht darin, dass Felder, die nicht übergeben werden (null), beim\
+            \ Aktualisieren ignoriert werden, sprich bereits gesetzte Werte bleiben\
+            \ erhalten, beim Überschreiben den bisherigen Wert überschreiben, sprich\
+            \ bereits gesetzte Werte werden durch null überschrieben. Dies gilt nur\
+            \ für die Elemente der gleichen Ebene. Subelemente eines gesetzten Elements\
+            \ werden immer übernommen auch wenn das Subelement nicht gesetzt ist (also\
+            \ den Wert null hat) und der Schalter auf true steht."
+    ProxyAddressConfig:
+      type: object
+      description: Konfiguration einer Proxy-Adresse
+      properties:
+        address:
+          type: string
+          description: Hostname oder IP des Proxies
+        port:
+          type: integer
+          format: int32
+          description: Port des Proxies
+        enabled:
+          type: boolean
+          description: Schalter ob ein Proxy verwendet werden soll (true) oder nicht
+            (false)
+    TlsConfig:
+      type: object
+      description: Konfigurationsdaten für eine TLS Verbindung
+      properties:
+        keystorefile:
+          $ref: "#/components/schemas/FileInfo"
+          description: Keystore mit dem privaten Schlüsselmaterial für das epa-ps-sim.
+            Kan entweder als Dateipfad (auf den das epa-ps-sim dann natürlich Zugriff
+            haben muss) oder als Keystore übergeben werden.
+        keystorepassword:
+          type: string
+        keystoretype:
+          type: string
+          description: "Art des Keystores, z.B. PKCS12"
+          example: PKCS12
+        ciphersuites:
+          type: array
+          description: Liste der zulässigen Ciphersuiten
+          example: "['TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256',\
+            \ 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256',\
+            \ 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA']"
+          items:
+            type: string
+    Context:
+      type: object
+      description: Werte für den Aufrufkontext in der Kommunikation mit dem Konnektor
+      properties:
+        mandantId:
+          type: string
+        clientSystemId:
+          type: string
+        workplaceId:
+          type: string
+        userId:
+          type: string
+    FileInfo:
+      type: object
+      description: "Datei, repräsentiert entweder als Dateipfad oder direkt durch\
+        \ ihren Inhalt"
+      properties:
+        filePath:
+          type: string
+        fileContent:
+          type: string
+          format: byte
+    AddressConfig:
+      type: object
+      description: Daten um die Address-URL eines Konnektors zu konfigurieren
+      properties:
+        host:
+          type: string
+          description: Hostname oder IP des Konnektors
+        port:
+          type: integer
+          format: int32
+          description: Portnummer des Ports unter dem die Dienste des Konnektors erreichbar
+            sind
+        protocol:
+          type: string
+          description: Schema bzw. Protocol das zur Kommunikation mit dem Konnektor
+            verwendet werden soll. Z.B. http oder https
+        path:
+          type: string
+          description: "Pfad unter dem die Konnektordienste, bei der gegebenen Adresse\
+            \ zu erreichen sind. Kann weggelassen werden, wenn kein Pfad benötigt\
+            \ wird"
+      required:
+        - host
+    BasicAuthenticationConfig:
+      type: object
+      description: Authentifizierungsinformationen wie sie z.B. für HTTP basic authentication
+        verwendet werden können
+      properties:
+        username:
+          type: string
+          description: Benutzername für die Authentifizierung
+        password:
+          type: string
+          description: Passwort für die Authentifizierung
+        enabled:
+          type: boolean
+          description: Schalter ob eine Authentifizierung erfolgen soll (true) oder
+            nicht (false)

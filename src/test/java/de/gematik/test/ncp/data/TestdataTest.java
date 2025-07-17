@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.data;
@@ -127,7 +131,7 @@ class TestdataTest {
 
     final var practitioner = assertDoesNotThrow(() -> testee.stream().findFirst().orElseThrow());
     assertNotNull(practitioner.name());
-    assertNotNull(practitioner.country());
+    assertNull(practitioner.country());
     assertNotNull(practitioner.profileName());
   }
 
@@ -176,13 +180,13 @@ class TestdataTest {
 
   @SneakyThrows
   @Test
-  void testPractice() {
+  void testDePractitioners() {
     // Arrange
     final var expected =
-        TestUtils.loadFromJsonResource(Practice.class, this.getClass(), "practice.json");
+        TestUtils.loadFromJsonResource(Persons.class, this.getClass(), "dePractitioners.json");
 
     // Act
-    final var testee = assertDoesNotThrow(testdata::practice);
+    final var testee = assertDoesNotThrow(testdata::dePractitioners);
 
     log.info(mapper.writeValueAsString(testee));
 

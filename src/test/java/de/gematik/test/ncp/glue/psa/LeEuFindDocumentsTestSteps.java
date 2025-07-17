@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.glue.psa;
@@ -20,10 +24,11 @@ import static net.serenitybdd.screenplay.GivenWhenThen.and;
 import static net.serenitybdd.screenplay.GivenWhenThen.then;
 import static net.serenitybdd.screenplay.GivenWhenThen.when;
 
+import de.gematik.test.ncp.screenplay.actions.ConfirmThatSearchForPatientSummaryFails;
 import de.gematik.test.ncp.screenplay.actions.FindPatientSummaryData;
+import de.gematik.test.ncp.screenplay.questions.FoundPatientSummaryDocument;
 import de.gematik.test.ncp.screenplay.questions.GetNumberOfPatientSummaryDocuments;
 import de.gematik.test.ncp.screenplay.questions.GetRegistryErrorCodesFromAdhocQueryResponse;
-import de.gematik.test.ncp.screenplay.questions.IsDocumentFoundOfLevel;
 import de.gematik.test.ncp.screenplay.questions.IsFindPatientSummaryResponseStatusFailure;
 import de.gematik.test.ncp.screenplay.questions.IsSourcePatientIdCorrectForDocument;
 import io.cucumber.java.de.Dann;
@@ -39,18 +44,34 @@ import net.serenitybdd.screenplay.ensure.Ensure;
 @Slf4j
 public class LeEuFindDocumentsTestSteps {
 
+  private static final String ERROR_NO_CONSENT = "ERROR_NO_CONSENT";
+
   @Und(
       "der LE-EU hat erfolgreich eine Suche des Patient Summary der versicherten Person durchgeführt")
   @Und(
       "der LE-EU führt danach erfolgreich eine Suche des Patient Summary der versicherten Person durch")
-  public void leEuGetsSuccessfulTwoDocumentReferences() {
+  public void leEuFindsTwoDocumentReferencesForPatientSummary() {
     // kompletter Positiv-Ablauf von FindDocuments und den Prüfungen
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
-    and(leEuActor).attemptsTo(FindPatientSummaryData.instance());
+    leEuActor.attemptsTo(FindPatientSummaryData.instance());
     and(leEuActor).attemptsTo(Ensure.that(new GetNumberOfPatientSummaryDocuments()).isEqualTo(2L));
-    and(leEuActor).attemptsTo(Ensure.that(IsDocumentFoundOfLevel.ofLevel(1)).isTrue());
-    and(leEuActor).attemptsTo(Ensure.that(IsDocumentFoundOfLevel.ofLevel(3)).isTrue());
+    and(leEuActor).attemptsTo(Ensure.that(FoundPatientSummaryDocument.ofCdaLevel(1)).isTrue());
+    and(leEuActor).attemptsTo(Ensure.that(FoundPatientSummaryDocument.ofCdaLevel(3)).isTrue());
+  }
+
+  @Dann(
+      "^kann der LE-EU (.+) aus dem EU-Land (.+) keine erfolgreiche Suche nach dem Patient Summary der versicherten Person durchführen$")
+  public void leEuFailsToGetDocumentReferences(final String leEuName, final String euCountry) {
+    // First LE-EU actor with outdated accesscode tries to search for Patient summary of the patient
+    // The FindDocument operation of the given LE-EU must fail
+    // expected error: IHE Registry Error with errorCode "ERROR_NO_CONSENT"
+    //   see "der LE-EU erhält einen FindDocuments RegistryError mit errorCode ERROR_NO_CONSENT"
+
+    final var leEuActor = OnStage.theActorCalled(leEuName);
+    leEuActor.attemptsTo(FindPatientSummaryData.instance());
+    and(leEuActor)
+        .attemptsTo(ConfirmThatSearchForPatientSummaryFails.withErrorCode(ERROR_NO_CONSENT));
   }
 
   @Wenn("^der LE-EU die Suche nach den Patient Summary Dokumenten der versicherten Person aufruft$")
@@ -75,7 +96,8 @@ public class LeEuFindDocumentsTestSteps {
     // of
     // the patient
     // * the second part of the documents uniqueId marks the given CDA level
-    and(leEuActor).attemptsTo(Ensure.that(IsDocumentFoundOfLevel.ofLevel(cdaLevel)).isTrue());
+    and(leEuActor)
+        .attemptsTo(Ensure.that(FoundPatientSummaryDocument.ofCdaLevel(cdaLevel)).isTrue());
     and(leEuActor)
         .attemptsTo(Ensure.that(IsSourcePatientIdCorrectForDocument.ofLevel(cdaLevel)).isTrue());
 

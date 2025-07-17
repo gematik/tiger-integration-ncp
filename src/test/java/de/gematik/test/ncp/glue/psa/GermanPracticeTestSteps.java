@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,25 +12,32 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.glue.psa;
 
 import static de.gematik.test.ncp.glue.psa.ActorsInitializationSteps.LE_DE_ACTOR_NAME;
 import static net.serenitybdd.screenplay.GivenWhenThen.andThat;
+import static net.serenitybdd.screenplay.GivenWhenThen.then;
 import static net.serenitybdd.screenplay.GivenWhenThen.when;
 
 import de.gematik.test.ncp.data.Testdata;
+import de.gematik.test.ncp.screenplay.abilities.KnowCurrentPractitioner;
 import de.gematik.test.ncp.screenplay.actions.AuthorizeEuCountry;
 import de.gematik.test.ncp.screenplay.actions.CreateEpka;
 import de.gematik.test.ncp.screenplay.actions.DeleteEpkaInAktenkonto;
 import de.gematik.test.ncp.screenplay.actions.MakeSignEpkaDefect;
 import de.gematik.test.ncp.screenplay.actions.ProvidePatientAccessDataToLeEu;
+import de.gematik.test.ncp.screenplay.actions.ReplaceEpkaInAktenkonto;
 import de.gematik.test.ncp.screenplay.actions.SignEpka;
 import de.gematik.test.ncp.screenplay.actions.StoreEpkaInAktenkonto;
+import de.gematik.test.ncp.screenplay.questions.AuthorizationIsActive;
+import de.gematik.test.ncp.screenplay.questions.EpkaCanBeFoundInAktenkonto;
 import de.gematik.test.ncp.screenplay.questions.GetPractitionerData;
-import de.gematik.test.ncp.screenplay.questions.IsAuthorizeEuCountry;
-import de.gematik.test.ncp.screenplay.questions.IsEpkaCanBeFoundInAktenkonto;
 import de.gematik.test.ncp.screenplay.questions.WhoIsTreatedPatient;
 import io.cucumber.java.de.Angenommen;
 import io.cucumber.java.de.Und;
@@ -57,8 +64,9 @@ public class GermanPracticeTestSteps {
     final var leEuActor = OnStage.theActorInTheSpotlight();
     final var country = leEuActor.asksFor(new GetPractitionerData()).country();
     final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
-    andThat(patient).attemptsTo(AuthorizeEuCountry.forCountry(country));
-    andThat(patient).attemptsTo(Ensure.that(IsAuthorizeEuCountry.forCountry(country)).isTrue());
+    patient.attemptsTo(
+        AuthorizeEuCountry.forCountry(country)
+            .then(Ensure.that(AuthorizationIsActive.forCountry(country)).isTrue()));
     // set the leEuActor in the spotlight again
     OnStage.stage().shineSpotlightOn(leEuActor.getName());
   }
@@ -72,10 +80,22 @@ public class GermanPracticeTestSteps {
     final var leEuActor = OnStage.theActorInTheSpotlight();
     final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
 
-    andThat(patient).attemptsTo(ProvidePatientAccessDataToLeEu.withLeEu(leEuActor));
+    patient.attemptsTo(ProvidePatientAccessDataToLeEu.withLeEu(leEuActor));
 
     // set the leEuActor in the spotlight again
     OnStage.stage().shineSpotlightOn(leEuActor.getName());
+  }
+
+  @Wenn(
+      "die versicherte Person ihre KVNR und den neuen AccessCode an den LE-EU des weiteren EU-Landes übergibt")
+  public void handoverKvnrAndAccesscodeToSecondLeEu() {
+    // the second initialized LE-EU needs to get KVNR and the actual accesscode
+    final var leEuActor1 = OnStage.theActorInTheSpotlight();
+    final var patient = leEuActor1.asksFor(new WhoIsTreatedPatient());
+    final var leEuActor2 =
+        patient.usingAbilityTo(KnowCurrentPractitioner.class).getCurrentPractitioner();
+    patient.attemptsTo(ProvidePatientAccessDataToLeEu.withLeEu(leEuActor2));
+    OnStage.stage().shineSpotlightOn(leEuActor2.getName());
   }
 
   @Angenommen("^(?:der|die) Versicherte (.+) hat ein ePA Aktenkonto im Status (.+)$")
@@ -97,13 +117,12 @@ public class GermanPracticeTestSteps {
     final var actorInTheSpotlight = OnStage.theActorInTheSpotlight();
     final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
 
-    andThat(leDeActor)
-        .attemptsTo(
-            CreateEpka.fromTestdata(testdata)
-                .then(SignEpka.instance())
-                .then(StoreEpkaInAktenkonto.instance()));
+    leDeActor.attemptsTo(
+        CreateEpka.fromTestdata(testdata)
+            .then(SignEpka.instance())
+            .then(StoreEpkaInAktenkonto.instance()));
 
-    andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isTrue());
+    then(leDeActor).attemptsTo(Ensure.that(new EpkaCanBeFoundInAktenkonto()).isTrue());
 
     OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());
   }
@@ -118,7 +137,7 @@ public class GermanPracticeTestSteps {
     final var actorInTheSpotlight = OnStage.theActorInTheSpotlight();
     final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
 
-    when(leDeActor).attemptsTo(StoreEpkaInAktenkonto.instance());
+    when(leDeActor).attemptsTo(ReplaceEpkaInAktenkonto.instance());
 
     OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());
   }
@@ -131,14 +150,12 @@ public class GermanPracticeTestSteps {
     final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
 
     andThat(leDeActor).attemptsTo(DeleteEpkaInAktenkonto.instance());
-    andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isFalse());
+    andThat(leDeActor).attemptsTo(Ensure.that(new EpkaCanBeFoundInAktenkonto()).isFalse());
 
     OnStage.stage().shineSpotlightOn(leEuActor.getName());
   }
 
   @Und("das ePKA Dokument der versicherten Person ist nicht konform zum FHIR Schema des ePKA MIO")
-  @Wenn(
-      "das ePKA Dokument der versicherten Person von einem LE-DE ersetzt wird, dass nicht konform zum FHIR Schema des ePKA MIO ist")
   public void prepareSchemaDefectiveEpkaDocumentAndPutDocument() {
     // take data from patient being on stage
     // fill a schema-defect ePKA document template (missing mandatory element gender) with KVNR,
@@ -155,7 +172,30 @@ public class GermanPracticeTestSteps {
                 .then(SignEpka.instance())
                 .then(StoreEpkaInAktenkonto.instance()));
 
-    andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isTrue());
+    andThat(leDeActor).attemptsTo(Ensure.that(new EpkaCanBeFoundInAktenkonto()).isTrue());
+
+    OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());
+  }
+
+  @Wenn(
+      "das ePKA Dokument der versicherten Person von einem LE-DE ersetzt wird, dass nicht konform zum FHIR Schema des ePKA MIO ist")
+  public void prepareSchemaDefectiveEpkaDocumentAndReplaceDocument() {
+    // take data from patient being on stage
+    // fill a schema-defect ePKA document template (missing mandatory element gender) with KVNR,
+    // name and birthdate of the patient
+    // sign the constructed ePKA document with an LE-DE identity
+    // store constructed and signed ePKA document in the ePA account of the patient
+
+    final var actorInTheSpotlight = OnStage.theActorInTheSpotlight();
+    final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
+
+    andThat(leDeActor)
+        .attemptsTo(
+            CreateEpka.fromTestdata(testdata, DEFECT_020_EPKA_TEMPLATE)
+                .then(SignEpka.instance())
+                .then(ReplaceEpkaInAktenkonto.instance()));
+
+    andThat(leDeActor).attemptsTo(Ensure.that(new EpkaCanBeFoundInAktenkonto()).isTrue());
 
     OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());
   }
@@ -172,7 +212,7 @@ public class GermanPracticeTestSteps {
     final var leEuActor = OnStage.theActorInTheSpotlight();
     final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
 
-    andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isFalse());
+    andThat(leDeActor).attemptsTo(Ensure.that(new EpkaCanBeFoundInAktenkonto()).isFalse());
     andThat(leDeActor)
         .attemptsTo(
             CreateEpka.fromTestdata(this.testdata)
@@ -180,7 +220,7 @@ public class GermanPracticeTestSteps {
                 .then(MakeSignEpkaDefect.instance())
                 .then(StoreEpkaInAktenkonto.instance()));
 
-    andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isTrue());
+    andThat(leDeActor).attemptsTo(Ensure.that(new EpkaCanBeFoundInAktenkonto()).isTrue());
 
     OnStage.stage().shineSpotlightOn(leEuActor.getName());
   }
@@ -195,17 +235,15 @@ public class GermanPracticeTestSteps {
     final var leEuActor = OnStage.theActorInTheSpotlight();
     final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
 
-    andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isFalse());
+    andThat(leDeActor).attemptsTo(Ensure.that(new EpkaCanBeFoundInAktenkonto()).isFalse());
     andThat(leDeActor)
         .attemptsTo(CreateEpka.fromTestdata(this.testdata).then(StoreEpkaInAktenkonto.instance()));
 
-    andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isTrue());
+    andThat(leDeActor).attemptsTo(Ensure.that(new EpkaCanBeFoundInAktenkonto()).isTrue());
 
     OnStage.stage().shineSpotlightOn(leEuActor.getName());
   }
 
-  @Wenn(
-      "das ePKA Dokument der versicherten Person von einem LE-DE ersetzt wird, in dem keine NFD Composition enthalten ist")
   @Und(
       "^in dem Konto befindet sich ein valides ePKA-Dokument, in dem nur eine DPE Composition enthalten ist$")
   public void prepareAndPutEpkaDocumentWithoutNfdComposition() {
@@ -225,7 +263,31 @@ public class GermanPracticeTestSteps {
                 .then(SignEpka.instance())
                 .then(StoreEpkaInAktenkonto.instance()));
 
-    andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isTrue());
+    andThat(leDeActor).attemptsTo(Ensure.that(new EpkaCanBeFoundInAktenkonto()).isTrue());
+
+    OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());
+  }
+
+  @Wenn(
+      "das ePKA Dokument der versicherten Person von einem LE-DE ersetzt wird, in dem keine NFD Composition enthalten ist")
+  public void prepareAndReplaceEpkaDocumentWithoutNfdComposition() {
+    // take data from patient being on stage
+    // fill a ePKA document template
+    // - with KVNR, name and birthdate of the patient in the DPE composition
+    // - without NFD composition
+    // !!! sign the constructed ePKA document with an LE-DE identity
+    // store constructed and signed ePKA document in the ePA account of the patient
+
+    final var actorInTheSpotlight = OnStage.theActorInTheSpotlight();
+    final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
+
+    andThat(leDeActor)
+        .attemptsTo(
+            CreateEpka.fromTestdata(testdata, DEFECT_011_EPKA_TEMPLATE)
+                .then(SignEpka.instance())
+                .then(ReplaceEpkaInAktenkonto.instance()));
+
+    andThat(leDeActor).attemptsTo(Ensure.that(new EpkaCanBeFoundInAktenkonto()).isTrue());
 
     OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());
   }
@@ -252,7 +314,7 @@ public class GermanPracticeTestSteps {
                 .then(SignEpka.instance())
                 .then(StoreEpkaInAktenkonto.instance()));
 
-    andThat(leDeActor).attemptsTo(Ensure.that(new IsEpkaCanBeFoundInAktenkonto()).isTrue());
+    andThat(leDeActor).attemptsTo(Ensure.that(new EpkaCanBeFoundInAktenkonto()).isTrue());
 
     OnStage.stage().shineSpotlightOn(actorInTheSpotlight.getName());
   }

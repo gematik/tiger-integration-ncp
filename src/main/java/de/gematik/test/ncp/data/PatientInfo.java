@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,14 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.data;
 
-import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryDO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryResponseDO;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import org.hl7.v3.ClinicalDocument;
-import org.openqa.selenium.Pdf;
 
 /** Interface for objects holding all patient bound data, which might also be transient. */
 public interface PatientInfo extends Patient {
@@ -44,15 +47,15 @@ public interface PatientInfo extends Patient {
 
   void setPsaMetadata(AdhocQueryResponse psaMetadata);
 
-  RetrievePatientSummaryDO getPatientSummaryDO();
+  RetrievePatientSummaryResponseDO getPatientSummaryDO();
 
-  void setPatientSummaryDO(RetrievePatientSummaryDO patientSummaryDO);
+  void setPatientSummaryDO(RetrievePatientSummaryResponseDO patientSummaryDO);
 
   ClinicalDocument getPatientSummaryLvl3();
 
   void setPatientSummaryLvl3(ClinicalDocument patientSummary);
 
-  Pdf getPatientSummaryLvl1();
+  byte[] getPatientSummaryLvl1();
 
-  void setPatientSummaryLvl1(Pdf patientSummary);
+  void setPatientSummaryLvl1(byte[] patientSummary);
 }

@@ -1,0 +1,24 @@
+{
+  "entries": [
+    {
+      "timestamp": 1739554790120,
+      "duration": 22,
+      "operation": "NCPeH.UC_2",
+      "status": "200",
+      "message": {
+        "reqc": "NL",
+        "bkdur": 22
+      }
+    },
+    {
+      "timestamp": 1739554790344,
+      "duration": 120,
+      "operation": "NCPeH.UC_3",
+      "status": "200",
+      "message": {
+        "reqc": "NL",
+        "bkdur": 120
+      }
+    }
+  ]
+}

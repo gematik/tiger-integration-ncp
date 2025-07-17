@@ -1,0 +1,108 @@
+# Common Health Check Properties
+x-healthcheck-config: &healthcheck-ref
+  interval: 15s
+  timeout: 10s
+  retries: 100
+  start_period: 30s
+
+services:
+
+  # config provider setting up the configuration for the clients
+  config-provider:
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: ./ConfigProvider.Dockerfile
+    volumes:
+      - ncp-volume:/etc/epa3/:rw
+
+  # ePA client services
+  epa-ps-sim:
+    image: gematik1/epa-ps-sim:2.0.3
+    restart: 'no'
+    healthcheck:
+      <<: *healthcheck-ref
+      test: "wget -T5 -qO- http://localhost:8081/actuator/health | grep UP || exit 1"
+    environment:
+      - SPRING_PROFILES_ACTIVE=mock
+      - SERVER_PORT=8080
+      - MANAGEMENT_SERVER_PORT=8081
+      - AUTH_SERVER_HOST=epa-vau-proxy-ps-sim
+      - AUTH_SERVER_PORT=8080
+      - IDP_SERVER_PROTOCOL=https
+      - IDP_SERVER_HOST=idp-test.zentral.idp.splitdns.ti-dienste.de
+      - IDP_SERVER_PORT=443
+      - IDP_SERVER_PATH=.well-known/openid-configuration
+      - VAU_PROXY_HOST=epa-vau-proxy-ps-sim
+      - VAU_PROXY_PORT=8080
+      - INF_SERVER1_PROTOCOL=https
+      - INF_SERVER1_HOST=epa-as-1.test.epa4all.de
+      - INF_SERVER1_PORT=443
+      - INF_SERVER2_PROTOCOL=https
+      - INF_SERVER2_HOST=epa-as-2.test.epa4all.de
+      - INF_SERVER2_PORT=443
+      - FHIR_SERVER_HOST=epa-vau-proxy-ps-sim
+      - FHIR_SERVER_PORT=8080
+      - FHIR_SERVER_PATH=epa/medication/api/v1/fhir
+      - EML_RENDER_HOST=epa-vau-proxy-ps-sim
+      - EML_RENDER_PORT=8080
+      - ENTITLEMENT_SERVER_HOST=epa-vau-proxy-ps-sim
+      - ENTITLEMENT_SERVER_PORT=8080
+      - DOCUMENT_SERVICE_MOCK_CONNECTION_ADDRESS_HOST=epa-vau-proxy-ps-sim
+      - DOCUMENT_SERVICE_MOCK_CONNECTION_ADDRESS_PORT=8080
+      # public konnektor (with VPN)
+      - KONNEKTOR_HOST=ksp.ltuzd.telematik-test
+      - KONNEKTOR_PORT=443
+      - KONNEKTOR_PROTOCOL=https
+      - BASIC_AUTHENTICATION_ENABLED=false
+      - BASIC_AUTHENTICATION_USERNAME=${PS_SIM_KONN17_USERNAME}
+      - BASIC_AUTHENTICATION_PASSWORD=${PS_SIM_KONN17_PASSWORD}
+      - KONNEKTOR_CONNECTION_ADDRESS_PATH=kon17
+      # artica proxy (with VPN)
+      - EPA_PROXY_HOST=10.11.98.80
+      - EPA_PROXY_PORT=8080
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:6000,server=y,suspend=n
+      - MANDANT_NAME=EUV_Leistungserbringer_01
+      - MANDANT_SYSTEM_ID=EUV_EPA-PS_01
+      - MANDANT_WORKPLACE=EUV_Arbeitsplatz_01
+      - MANDANT_USER=User1
+    networks:
+      - ncp-client-network
+    ports:
+      - "9016:8080"
+
+  epa-vau-proxy-ps-sim:
+    image: gematik1/epa-vau-proxy-client:1.0.19
+    restart: 'no'
+    healthcheck:
+      <<: *healthcheck-ref
+      test: "wget -T5 -qO- http://localhost:8080/actuator/health | grep UP || exit 1"
+    environment:
+      - SPRING_PROFILES_ACTIVE=client-tu
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:6000,server=y,suspend=n
+      - CLIENT_SSL_TRUST_STORE=file:///app/config/root.p12
+      - VAU_PROXY_SERVER_URL=https://epa-as-1.test.epa4all.de:443 # IBM as default
+      - CLIENT_SSL_ENABLED=false
+      # proxy settings for VAU handshake
+      - CLIENT_PROXY_ENABLED=true
+      - CLIENT_PROXY_URL=10.11.98.80
+      - CLIENT_PROXY_PORT=8080
+      # proxy settings for gateway
+      - SPRING_CLOUD_GATEWAY_HTTPCLIENT_PROXY_HOST=10.11.98.80
+      - SPRING_CLOUD_GATEWAY_HTTPCLIENT_PROXY_PORT=8080
+      #- SPRING_CLOUD_GATEWAY_HTTPCLIENT_PROXY_HTTPS_SSL_USE_INSECURE_TRUST_MANAGER=true
+    networks:
+      - ncp-client-network
+    volumes:
+      - ncp-volume:/app/config:ro
+    ports:
+      - "9018:8080"
+
+
+networks:
+  ncp-client-network:
+    name: ncp-client-network
+
+volumes:
+  ncp-volume:
+    name: ncp-volume

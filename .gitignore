@@ -4,10 +4,11 @@
 *.iml
 **/*.jar
 /reports/
-.openapi-generator
+.openapi-generator*
+default.env
 
 *.jenkinsfile
 README.md
 !.github/README.md
-src/main/resources/epa-ps/**
+**/root.p12
 
