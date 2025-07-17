@@ -1,0 +1,610 @@
+openapi: 3.0.1
+info:
+  title: ePA SIM Documents API
+  description: Documents management in AktenSystem
+  version: 1.0.0
+  contact:
+    name: gematik GmbH
+    email: software-development@gematik.de
+    url: 'https://www.gematik.de'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
+tags:
+  - name: Documents
+
+paths:
+  /document/deleteObjects:
+    post:
+      tags:
+        - Documents
+      summary: Dokument(e) in einem Aktenkonto löschen
+      description: Mittels dieser Operation können Dokumente in einem Aktenkonto gelöscht
+        werden
+      operationId: deleteObjects
+      parameters:
+        - name: x-insurantid
+          in: header
+          description: Header parameter for insurant ID
+          required: true
+          schema:
+            type: string
+          example: X110123123
+      requestBody:
+        description: Übergibt die Daten zur Identifikation des Aktenkontos (KVNR)
+          und der zu löschenden Dokumente (entryUUID)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteObjectsRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: "Statusinformation, ob die Operation erfolgreich ausgeführt\
+            \ werden konnte."
+          content:
+            application/json:
+              schema:
+                $ref: "shared.yaml#/components/schemas/ResponseDTO"
+  /document/find:
+    post:
+      tags:
+        - Documents
+      summary: Objekte in einem Aktenkonto finden
+      description: "Mittels dieser Operation können Dokumente, Folder, SubmissionSets\
+        \ und Associations in einem Aktenkonto gefunden werden und deren Metadaten\
+        \ zurückgegeben werden"
+      operationId: find
+      parameters:
+        - name: x-insurantid
+          in: header
+          description: Header parameter for insurant ID
+          required: true
+          schema:
+            type: string
+          example: X110123123
+      requestBody:
+        description: Übergibt die Art der Suche und die Suchparameter für die Suche
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FindRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: Metadaten zu den gefundenen Objekten oder ggf. Statusinformationen
+            zu aufgetretenen Fehlern.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FindObjectsResponseDTO"
+  /document/getDocuments:
+    post:
+      tags:
+        - Documents
+      summary: Dokument(e) aus dem Aktenkonto abrufen
+      description: Mittels dieser Operation können Dokumente aus einem Aktenkonto
+        abgerufen werden
+      operationId: getDocuments
+      parameters:
+        - name: x-insurantid
+          in: header
+          description: Header parameter for insurant ID
+          required: true
+          schema:
+            type: string
+          example: X110123123
+      requestBody:
+        description: Übergibt die notwendigen Daten um die Dokumente im Aktenkonto
+          identifizieren zu können
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RetrieveDocumentsRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: "Die abgerufenen Dokumente oder ggf. Statusinformationen, wenn\
+            \ Fehler aufgetreten sind."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetrieveDocumentsResponseDTO"
+  /document/putDocuments:
+    post:
+      tags:
+        - Documents
+      summary: Dokument(e) in ein Aktenkonto einstellen
+      description: "Mittels dieser Operation können Dokumente, ggf. mit Folder oder\
+        \ Referenz auf einen bestehenden Folder in eine Aktenkonto (identifiziert\
+        \ mittels KVNR) eingestellt werden."
+      operationId: putDocuments
+      parameters:
+        - name: x-insurantid
+          in: header
+          description: Header parameter for insurant ID
+          required: true
+          schema:
+            type: string
+          example: X110123123
+      requestBody:
+        description: "Übergibt das Dokument und die dazugehörigen Metadaten, sowie\
+          \ ggf. Metadaten des Folders"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PutDocumentsRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: "Statusinformation, ob die Operation erfolgreich ausgeführt\
+            \ werden konnte."
+          content:
+            application/json:
+              schema:
+                $ref: "shared.yaml#/components/schemas/ResponseDTO"
+  /document/replaceDocuments:
+    post:
+      tags:
+        - Documents
+      summary: Dokument(e) in einem Aktenkonto ersetzen
+      description: Mittels dieser Operation können Dokumente in einem Aktenkonto ersetzt
+        werden
+      operationId: replaceDocuments
+      parameters:
+        - name: x-insurantid
+          in: header
+          description: Header parameter for insurant ID
+          required: true
+          schema:
+            type: string
+          example: X110123123
+      requestBody:
+        description: "Dokument(e) und deren Metadaten, die andere Dokumente, identifiziert\
+          \ durch ihre entryUUID, ersetzen sollen"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplaceDocumentsRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: "Statusinformation, ob die Operation erfolgreich ausgeführt\
+            \ werden konnte."
+          content:
+            application/json:
+              schema:
+                $ref: "shared.yaml#/components/schemas/ResponseDTO"
+  /document/updateMetadata:
+    post:
+      tags:
+        - Documents
+      summary: Dokument(e) in ein Aktenkonto aktualisieren
+      description: Mittels dieser Operation können Dokumente in eine Aktenkonto (identifiziert
+        mittels KVNR) aktualisiert werden.
+      operationId: updateDocuments
+      parameters:
+        - name: x-insurantid
+          in: header
+          description: Header parameter for insurant ID
+          required: true
+          schema:
+            type: string
+          example: X110123123
+      requestBody:
+        description: Übergibt die Metadaten der Dokumenten.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDocumentsRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: "Statusinformation, ob die Operation erfolgreich ausgeführt\
+            \ werden konnte."
+          content:
+            application/json:
+              schema:
+                $ref: "shared.yaml#/components/schemas/ResponseDTO"
+
+
+components:
+  schemas:
+    DeleteObjectsRequestDTO:
+      type: object
+      description: Request um Objekte aus einem Aktenkonto zu löschen
+      properties:
+        kvnr:
+          type: string
+          description: Identifikationsnummer (KVNR) des Aktenkonto. Für die Herausgeberidentifikation
+            (Root) wird immer der Wert 1.2.276.0.76.4.8 verwendet
+        entryUUIDs:
+          type: array
+          description: "Liste der entryUUIDs der Objekte, die gelöscht werden sollen"
+          items:
+            type: string
+      required:
+        - entryUUIDs
+        - kvnr
+    FindRequestDTO:
+      type: object
+      description: Request um den Suchtyp und die Suchparameter für die Objektsuche
+        in einem Aktenkonto zu übergeben
+      properties:
+        kvnr:
+          type: string
+          description: Identifikationsnummer (KVNR) des Aktenkonto. Für die Herausgeberidentifikation
+            (Root) wird immer der Wert 1.2.276.0.76.4.8 verwendet
+        query:
+          type: string
+          description: "Art der Suche. Unterstützt werden Suche nach Dokumenten (FindDocuments,\
+            \ FindDocumentsByComment, FindDocumentsByReferenceId, FindDocumentsByTitle),\
+            \ der aktuellen Version zu einem Dokument (GetRelatedApprovedDocuments),\
+            \ nach Foldern (FindFolders) und ihren Inhalten (GetFolderAndContents),\
+            \ sowie nach allen Objekttypen (GetAll)."
+          enum:
+            - FindDocuments
+            - FindDocumentsByTitle
+            - FindFolders
+            - GetAll
+            - GetFolderAndContents
+            - GetRelatedApprovedDocuments
+            - FindDocumentsByComment
+            - FindDocumentsByReferenceId
+        queryData:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Liste der Queryparameter und der dafür zu setzenden Werte.
+          example:
+            $XDSDocumentEntryStatus:
+              - urn:oasis:names:tc:ebxml-regrep:StatusType:Approved
+            $XDSDocumentEntryEntryUUID:
+              - urn:uuid:8299ca9b-065f-43fa-8fc0-e94f42726328
+        returnType:
+          type: string
+          description: "Art der Rückgabe der Suchergebnisse, als Liste von Objektreferenzen\
+            \ (ObjectRef) oder als vollständige Metadaten (LeafClass)"
+          enum:
+            - LeafClass
+            - ObjectRef
+      required:
+        - kvnr
+        - query
+        - queryData
+        - returnType
+    FindObjectsResponseDTO:
+      type: object
+      description: Ergebnisse einer Suche im Aktenkonto
+      properties:
+        success:
+          type: boolean
+          description: "Information, ob die Operation erfolgreich (true) oder nicht\
+            \ (false) ausgeführt werden konnte"
+        statusMessage:
+          type: string
+          description: Detailinformation zur Ausführung der Operation. Im Fehlerfall
+            Details zu aufgetretenen Fehlern.
+        registryObjectLists:
+          $ref: "#/components/schemas/RegistryObjectLists"
+          description: "Listen von gefunden Dokumenten (bzw. den zugehörigen Metadaten),\
+            \ Foldern, Submission-Sets und Associations"
+      required:
+        - success
+    RegistryObjectLists:
+      type: object
+      properties:
+        submissionSetsMetadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubmissionSetMetadata"
+        documentsMetadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/DocumentMetadata"
+        foldersMetadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/FolderMetadata"
+        associations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Association"
+    SubmissionSetMetadata:
+      type: object
+      properties:
+        authors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Author"
+        contentTypeCode:
+          type: string
+        submissionTime:
+          type: string
+          format: date-time
+        availabilityStatus:
+          type: string
+        uniqueId:
+          type: string
+        entryUUID:
+          type: string
+    Author:
+      type: object
+      properties:
+        identifier:
+          type: string
+        familyName:
+          type: string
+        givenName:
+          type: string
+        otherName:
+          type: string
+        nameAffix:
+          type: string
+        title:
+          type: string
+        oid:
+          type: string
+        authorInstitution:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuthorInstitution"
+        authorRole:
+          type: array
+          items:
+            type: string
+        authorSpecialty:
+          type: array
+          items:
+            type: string
+        authorTelecommunication:
+          type: array
+          items:
+            type: string
+    AuthorInstitution:
+      type: object
+      properties:
+        name:
+          type: string
+        identifier:
+          type: string
+    DocumentMetadata:
+      type: object
+      properties:
+        author:
+          type: array
+          items:
+            $ref: "#/components/schemas/Author"
+        availabilityStatus:
+          type: string
+        confidentialityCode:
+          type: array
+          items:
+            type: string
+        classCode:
+          type: string
+        comments:
+          type: string
+        creationTime:
+          type: string
+          format: date-time
+        entryUUID:
+          type: string
+        eventCodeList:
+          type: array
+          items:
+            type: string
+        formatCode:
+          type: string
+        hash:
+          type: string
+        healthcareFacilityTypeCode:
+          type: string
+        languageCode:
+          type: string
+        legalAuthenticator:
+          type: string
+        mimeType:
+          type: string
+        practiceSettingCode:
+          type: string
+        referenceIdList:
+          type: array
+          items:
+            type: string
+        serviceStartTime:
+          type: string
+          format: date-time
+        serviceStopTime:
+          type: string
+          format: date-time
+        size:
+          type: integer
+          format: int32
+        title:
+          type: string
+        typeCode:
+          type: string
+        uniqueId:
+          type: string
+        uri:
+          type: string
+        repositoryUniqueId:
+          type: string
+        home:
+          type: string
+        patientId:
+          type: string
+    FolderMetadata:
+      type: object
+      properties:
+        comments:
+          type: string
+        codeList:
+          type: array
+          items:
+            type: string
+        lastUpdateTime:
+          type: string
+          format: date-time
+        title:
+          type: string
+        uniqueId:
+          type: string
+        entryUUID:
+          type: string
+        availabilityStatus:
+          type: string
+    Association:
+      type: object
+      properties:
+        id:
+          type: string
+        associationType:
+          type: string
+        sourceObject:
+          type: string
+        targetObject:
+          type: string
+    RetrieveDocumentElement:
+      type: object
+      properties:
+        repositoryUniqueId:
+          type: string
+        documentUniqueId:
+          type: string
+        mimeType:
+          type: string
+        document:
+          type: string
+          format: byte
+    RetrieveDocumentsResponseDTO:
+      type: object
+      description: "Response, der die abgerufenen Dokumente enthält, oder Fehlerinformationen,\
+        \ für den Fall, dass ein Fehler aufgetreten ist"
+      properties:
+        success:
+          type: boolean
+          description: "Information, ob die Operation erfolgreich (true) oder nicht\
+            \ (false) ausgeführt werden konnte"
+        statusMessage:
+          type: string
+          description: Detailinformation zur Ausführung der Operation. Im Fehlerfall
+            Details zu aufgetretenen Fehlern.
+        documents:
+          type: array
+          description: "Liste der abgerufenen Dokumente. Zu jedem Dokument (Base64\
+            \ kodiert) sind auch uniqueId und mimeType enthalten. Leer, wenn keine\
+            \ Dokumente abgerufen werden konnten."
+          items:
+            $ref: "#/components/schemas/RetrieveDocumentElement"
+      required:
+        - success
+    RetrieveDocumentsRequestDTO:
+      type: object
+      description: Request um Dokumente aus einem Aktenkonto abrufen zu können
+      properties:
+        kvnr:
+          type: string
+          description: Identifikationsnummer (KVNR) des Aktenkonto. Für die Herausgeberidentifikation
+            (Root) wird immer der Wert 1.2.276.0.76.4.8 verwendet
+        repositoryUniqueId:
+          type: string
+          description: Eine Repository uniqueId der abzurufenden Dokumente
+        documentUniqueIds:
+          type: array
+          description: Liste der uniqueIDs der abzurufenden Dokumente
+          items:
+            type: string
+      required:
+        - documentUniqueIds
+        - kvnr
+        - repositoryUniqueId
+    Document:
+      type: object
+      properties:
+        documentData:
+          type: string
+          format: byte
+        documentMetadata:
+          $ref: "#/components/schemas/DocumentMetadata"
+        folderMetadata:
+          $ref: "#/components/schemas/FolderMetadata"
+    PutDocumentsRequestDTO:
+      type: object
+      description: Request um Dokumente in ein Aktenkonto einzustellen. Das Aktenkonto
+        wird dabei durch die übergebene KVNR identifiziert.
+      properties:
+        kvnr:
+          type: string
+          description: Identifikationsnummer (KVNR) des Aktenkonto. Für die Herausgeberidentifikation
+            (Root) wird immer der Wert 1.2.276.0.76.4.8 verwendet
+        documentSets:
+          type: array
+          description: "Liste der einzustellenden Dokumente inklusive Metadaten und\
+            \ Folderinformationen.Folderinformationen müssen nur übergeben werden,\
+            \ wenn ein Dokument in einen neuen oder bestehenden Folder eingestellt\
+            \ werden soll.Dabei gilt: Ist die entryUUID des Folders gesetzt, ist das\
+            \ Dokument in einen bestehenden Folder einzustellen, enthält die codeList\
+            \ mindestens einen Wert ist ein neuer Folder anzulegen, trifft keines\
+            \ von beiden zu, sind die Folder Metadaten ungültig."
+          items:
+            $ref: "#/components/schemas/Document"
+      required:
+        - kvnr
+    ReplaceDocument:
+      type: object
+      properties:
+        documentData:
+          type: string
+          format: byte
+        documentMetadata:
+          $ref: "#/components/schemas/DocumentMetadata"
+        entryUUIDOfDocumentToReplace:
+          type: string
+    ReplaceDocumentsRequestDTO:
+      type: object
+      description: Request um Dokumente in einem Aktenkonto zu ersetzen
+      properties:
+        kvnr:
+          type: string
+          description: Identifikationsnummer (KVNR) des Aktenkonto. Für die Herausgeberidentifikation
+            (Root) wird immer der Wert 1.2.276.0.76.4.8 verwendet
+        documentSets:
+          type: array
+          description: "Liste von Dokumenten, den zugehörigen Metadaten und der entryUUID\
+            \ des jeweils zu ersetzenden Dokuments"
+          items:
+            $ref: "#/components/schemas/ReplaceDocument"
+      required:
+        - documentSets
+        - kvnr
+    RestrictedUpdateDocument:
+      type: object
+      properties:
+        documentData:
+          type: string
+          format: byte
+        documentMetadata:
+          $ref: "#/components/schemas/DocumentMetadata"
+        entryUUIDOfDocumentToUpdate:
+          type: string
+    UpdateDocumentsRequestDTO:
+      type: object
+      description: Request um Dokumente in ein Aktenkonto aktualisieren. Das Aktenkonto
+        wird dabei durch die übergebene KVNR identifiziert.
+      properties:
+        kvnr:
+          type: string
+          description: Identifikationsnummer (KVNR) des Aktenkonto. Für die Herausgeberidentifikation
+            (Root) wird immer der Wert 1.2.276.0.76.4.8 verwendet
+        documentMetadataList:
+          type: array
+          description: "Liste von Dokumenten, den zugehörigen Metadaten und der entryUUID\
+            \ des jeweils zu aktualisierenden Dokuments"
+          items:
+            $ref: "#/components/schemas/RestrictedUpdateDocument"
+      required:
+        - kvnr

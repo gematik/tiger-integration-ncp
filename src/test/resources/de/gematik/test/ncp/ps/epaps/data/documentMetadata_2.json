@@ -7,7 +7,7 @@
       "otherName": null,
       "nameAffix": null,
       "title": "Dr.",
-      "oid": "1.2.276.0.76.4.16",
+      "oid": null,
       "authorInstitution": [
         {
           "name": "Praxis MüllerTEST-ONLY",
@@ -34,12 +34,12 @@
   "eventCodeList": [
     "H1"
   ],
-  "formatCode": "urn:gematik:ig:Notfalldatensatz:r3.1",
+  "formatCode": "urn:gematik:ig:pka:v1.0",
   "hash": null,
   "healthcareFacilityTypeCode": "PRA",
   "languageCode": "de-DE",
   "legalAuthenticator": null,
-  "mimeType": "application/xml",
+  "mimeType": "application/fhir+xml",
   "practiceSettingCode": "ALLG",
   "referenceIdList": [],
   "serviceStartTime": "2024-12-20T11:09:16.431334",

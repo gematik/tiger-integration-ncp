@@ -1,0 +1,86 @@
+openapi: 3.0.1
+info:
+  title: ePA SIM Signature API
+  description: Signed the document by the connector. Currently, only CMS signature with embedded document is supported.
+  version: 1.0.0
+  contact:
+    name: gematik GmbH
+    email: software-development@gematik.de
+    url: 'https://www.gematik.de'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
+tags:
+  - name: Signature
+
+paths:
+  /signature/signDocument:
+    post:
+      tags:
+        - Signature
+      summary: Dokument signieren
+      description: Dokument durch den Konnektor signieren lassen. Gegenwärtig wird
+        nur CMS Signatur mit eingebettetem Dokument unterstützt
+      operationId: signDocument
+      requestBody:
+        description: "Dokument welches signiert werden soll, sowie Signaturparameter"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignDocumentRequest"
+        required: true
+      responses:
+        "200":
+          description: "Erstellte Signatur im Erfolgsfall, andernfalls Fehlerinformationen"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignDocumentResponse"
+
+
+components:
+  schemas:
+    SignDocumentResponse:
+      type: object
+      description: Response der signDocument Operation mit der erzeugten Signatur
+      properties:
+        success:
+          type: boolean
+          description: "Information, ob die Operation erfolgreich (true) oder nicht\
+            \ (false) ausgeführt werden konnte"
+        statusMessage:
+          type: string
+          description: Detailinformation zur Ausführung der Operation. Im Fehlerfall
+            Details zu aufgetretenen Fehlern.
+        signatureObject:
+          type: string
+          format: byte
+          description: Die erzeugte Signatur oder das Dokument mit Signatur
+        signatureForm:
+          type: string
+          description: Format des zurückgegebenen Signaturobjektes
+          enum:
+            - SIGNATURE
+            - DOCUMENT_WITH_SIGNATURE
+      required:
+        - success
+    SignDocumentRequest:
+      type: object
+      description: Request Objekt um die Erstellung einer Signatur für das übergebene
+        Dokument durch den Konnektor auszulösen
+      properties:
+        document:
+          type: string
+          format: byte
+          description: Dokument welches signiert werden soll
+        performQES:
+          type: boolean
+          description: "Soll eine QES Signatur erstellt werden? true=ja (verwendet\
+            \ HBA), false=nein (verwendet SM-B)"
+        signatureAlgorithm:
+          type: string
+          description: Algorithmus für die Signatur (RSA oder ECC)
+          enum:
+            - RSA_ECC
+            - ECC
+            - RSA

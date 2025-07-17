@@ -1,0 +1,44 @@
+{
+  "entries": [
+    {
+      "timestamp": 1739554789755,
+      "duration": 17,
+      "operation": "NCPeH.UC_1",
+      "status": "200",
+      "message": {
+        "reqc": "NL",
+        "bkdur": 17
+      }
+    },
+    {
+      "timestamp": 1739554790020,
+      "duration": 22,
+      "operation": "NCPeH.UC_2",
+      "status": "200",
+      "message": {
+        "reqc": "NL",
+        "bkdur": 22
+      }
+    },
+    {
+      "timestamp": 1739554790120,
+      "duration": 22,
+      "operation": "NCPeH.UC_2",
+      "status": "200",
+      "message": {
+        "reqc": "NL",
+        "bkdur": 22
+      }
+    },
+    {
+      "timestamp": 1739554790244,
+      "duration": 120,
+      "operation": "NCPeH.UC_3",
+      "status": "200",
+      "message": {
+        "reqc": "NL",
+        "bkdur": 120
+      }
+    }
+  ]
+}

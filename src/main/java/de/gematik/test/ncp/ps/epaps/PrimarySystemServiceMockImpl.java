@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ps.epaps;
 
+import de.gematik.test.ncp.data.Practice;
+import de.gematik.test.ncp.data.SmbCard;
 import de.gematik.test.ncp.ps.PrimarySystemService;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
@@ -45,18 +50,18 @@ public final class PrimarySystemServiceMockImpl implements PrimarySystemService 
   private boolean epkaPresent = false;
 
   @Override
-  public boolean psIsUpAndRunning() {
-    return true;
-  }
-
-  @Override
   public void authorizeLeForKvnr(final String telematikId, final String kvnr) {
     // Do nothing because it's a mock
   }
 
   @Override
-  public String putDocument(final String kvnr, final byte[] epka) {
+  public String putDocument(final String kvnr, final Practice practice, final byte[] epka) {
     epkaPresent = true;
+    return "mockTitle";
+  }
+
+  @Override
+  public String replaceDocument(final String kvnr, final Practice practice, final byte[] epka) {
     return "mockTitle";
   }
 
@@ -82,12 +87,17 @@ public final class PrimarySystemServiceMockImpl implements PrimarySystemService 
   }
 
   @Override
+  public List<String> findAllDocuments(final String kvnr) {
+    return List.of();
+  }
+
+  @Override
   public void deleteExistingDocuments(final String kvnr, final List<String> documentEntryUUIDs) {
     epkaPresent = false;
   }
 
   @Override
-  public void configureKonnektor(final URL konnektorAddress) {
-    // Do nothing because it's a mock
+  public SmbCard getSmbCard() {
+    return new SmbCard("Praxis Münchhausen-BohlenTEST-ONLY", "1-883110000163990");
   }
 }

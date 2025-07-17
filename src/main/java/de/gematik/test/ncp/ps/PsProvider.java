@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,21 +12,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ps;
 
-import de.gematik.epa.api.ConfigurationApi;
-import de.gematik.epa.api.DocumentsApi;
-import de.gematik.epa.api.SignatureApi;
-import de.gematik.epa.api.authentication.LoginLogoutApi;
-import de.gematik.epa.api.entitlement.EntitlementApi;
-import de.gematik.epa.api.information.InformationApi;
 import de.gematik.test.ncp.ExternalServerConfig;
 import de.gematik.test.ncp.GeneralFactory;
+import de.gematik.test.ncp.gen.epa.api.authentication.LoginLogoutApi;
+import de.gematik.test.ncp.gen.epa.api.card.CardApi;
+import de.gematik.test.ncp.gen.epa.api.configuration.ConfigurationApi;
+import de.gematik.test.ncp.gen.epa.api.documents.DocumentsApi;
+import de.gematik.test.ncp.gen.epa.api.entitlement.EntitlementApi;
+import de.gematik.test.ncp.gen.epa.api.information.InformationApi;
+import de.gematik.test.ncp.gen.epa.api.signature.SignatureApi;
 import de.gematik.test.ncp.ps.epaps.EpaPrimarySystemServiceImpl;
 import de.gematik.test.ncp.ps.epaps.PrimarySystemServiceMockImpl;
 import de.gematik.test.ncp.util.Utils;
+import de.gematik.test.tiger.common.config.TigerGlobalConfiguration;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import lombok.*;
@@ -39,9 +45,10 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PsProvider {
 
-  public static final String PS_SIM_CONFIG_KEY = ExternalServerConfig.INFRASTRUCTURE_KEY + ".epaps";
+  public static final String PS_SIM_CONFIG_KEY =
+      ExternalServerConfig.EXTERNAL_SERVER_CONFIG_TIGER_KEY + ".epaps";
 
-  public static final String PS_JAR_ACTIVE_KEY = "tiger.servers.epaPsJar.active";
+  public static final String PS_DOCKER_COMPOSE_ACTIVE_KEY = "tiger.servers.epaPsComposeUrl.active";
 
   public static final String PS_EXT_ACTIVE_KEY = "tiger.servers.epaPsUrl.active";
 
@@ -60,8 +67,8 @@ public class PsProvider {
 
   @Getter(lazy = true)
   private final PrimarySystemService psImpl =
-      ((Utils.loadConfig(Boolean.class, PS_JAR_ACTIVE_KEY)
-              || Utils.loadConfig(Boolean.class, PS_EXT_ACTIVE_KEY))
+      ((TigerGlobalConfiguration.readBoolean(PS_DOCKER_COMPOSE_ACTIVE_KEY)
+              || TigerGlobalConfiguration.readBoolean(PS_EXT_ACTIVE_KEY))
           ? EpaPrimarySystemServiceImpl.builder()
               .config(getEpaPsConfig())
               .documentsProxy(
@@ -76,6 +83,7 @@ public class PsProvider {
                   GeneralFactory.createJAXRSClientProxy(InformationApi.class, getEpaPsConfig()))
               .loginLogoutProxy(
                   GeneralFactory.createJAXRSClientProxy(LoginLogoutApi.class, getEpaPsConfig()))
+              .cardApiProxy(GeneralFactory.createJAXRSClientProxy(CardApi.class, getEpaPsConfig()))
               .build()
           : defaultPsImpl.get().get());
 

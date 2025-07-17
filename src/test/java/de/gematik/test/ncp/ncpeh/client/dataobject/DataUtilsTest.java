@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.client.dataobject;
@@ -30,10 +34,7 @@ import de.gematik.test.ncp.data.PersonName;
 import de.gematik.test.ncp.utils.TestUtils;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import jakarta.ws.rs.core.Response;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Base64;
 import javax.xml.namespace.QName;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import org.hl7.v3.PRPAIN201306UV02;
@@ -62,6 +63,8 @@ class DataUtilsTest {
       "RetrieveDocumentSetResponse_Lvl3.xml";
   private static final String RETRIEVE_DOCUMENT_SET_RESPONSE_LVL_1_XML_FILE_NAME =
       "RetrieveDocumentSetResponse_Lvl1.xml";
+  private static final String RETRIEVE_DOCUMENT_SET_RESPONSE_020_XML_FILE_NAME =
+      "RetrieveDocumentSetResponse_020.xml";
   private static final String IDENTIFY_PATIENT_RESPONSE_FILE_NAME = "identifyPatientResponse.json";
   private static final String FIND_DOCUMENT_RESPONSE_FILE_NAME = "findDocumentResponse.json";
   private static final String RETRIEVE_DOCUMENT_RESPONSE_FILE_NAME =
@@ -72,6 +75,7 @@ class DataUtilsTest {
   private static final String PRPA_IN_201305_UV_02_298_XML_FILE_NAME = "PRPA_IN201305UV02_298.xml";
   private static final String ADHOC_QUERY_REQUEST_XML_FILE_NAME = "AdhocQueryRequest.xml";
   private static final String ADHOC_QUERY_RESPONSE_XML_FILE_NAME = "AdhocQueryResponse.xml";
+  private static final String ADHOC_QUERY_RESPONSE_010_XML_FILE_NAME = "AdhocQueryResponse_010.xml";
   private static final String RETRIEVE_DOCUMENT_SET_REQUEST_XML_FILE_NAME =
       "RetrieveDocumentSetRequest.xml";
   private static final String RETRIEVE_DOCUMENT_SET_RESPONSE_XML_FILE_NAME =
@@ -188,9 +192,6 @@ class DataUtilsTest {
 
     // Assert
     assertNotNull(patientSummary);
-    assertNotNull(patientSummary.getContent());
-    assertNotNull(
-        Base64.getEncoder().encode(patientSummary.getContent().getBytes(StandardCharsets.UTF_8)));
   }
 
   @Test
@@ -229,29 +230,6 @@ class DataUtilsTest {
 
     // Assert
     assertNull(result);
-  }
-
-  @Test
-  void writePatientSummaryToLocalFile() {
-    // Arrange
-    final var data =
-        TestUtils.loadFromXMLResource(
-            RetrieveDocumentSetResponseType.class,
-            this.getClass(),
-            RETRIEVE_DOCUMENT_SET_RESPONSE_LVL_1_XML_FILE_NAME);
-    final var cda1Document = DataUtils.readPatientSummaryLvl1(data);
-
-    // Act
-    final var filePath = DataUtils.writePatientSummaryToLocalFile(PATIENT, cda1Document);
-
-    // Assert
-    assertNotNull(filePath);
-    final var tempFile = new File(filePath);
-    tempFile.deleteOnExit();
-    assertTrue(tempFile.exists());
-    assertTrue(tempFile.isFile());
-    assertTrue(tempFile.canRead());
-    assertTrue(tempFile.delete());
   }
 
   @Test
@@ -358,7 +336,7 @@ class DataUtilsTest {
             RetrieveDocumentSetResponseType.class,
             this.getClass(),
             RETRIEVE_DOCUMENT_SET_RESPONSE_LVL_1_XML_FILE_NAME);
-    final var retrievePatientSummaryDO = mock(RetrievePatientSummaryDO.class);
+    final var retrievePatientSummaryDO = mock(RetrievePatientSummaryResponseDO.class);
     when(retrievePatientSummaryDO.ncpehFdResponseContent()).thenReturn(response);
 
     // Act
@@ -371,7 +349,7 @@ class DataUtilsTest {
   @Test
   void getRegistryResponseTypeEmptyResponseTest() {
     // Arrange
-    final var retrievePatientSummaryDO = mock(RetrievePatientSummaryDO.class);
+    final var retrievePatientSummaryDO = mock(RetrievePatientSummaryResponseDO.class);
     when(retrievePatientSummaryDO.ncpehFdResponseContent()).thenReturn(null);
 
     // Act
@@ -414,5 +392,49 @@ class DataUtilsTest {
     assertNotNull(ncpehInterfaceResponse.ncpehFdResponse());
     assertEquals(HttpStatus.OK, ncpehInterfaceResponse.ncpehFdResponse().status());
     assertNotNull(ncpehInterfaceResponse.ncpehFdResponseContent());
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    ADHOC_QUERY_RESPONSE_XML_FILE_NAME + ", 0,",
+    ADHOC_QUERY_RESPONSE_010_XML_FILE_NAME + ", 1, ERROR_GENERIC_DOCUMENT_MISSING",
+  })
+  void readRegistryErrorCodesFromAdhocQueryResponseTest(
+      final String data, final int expected, final String message) {
+    // Arrange
+    final var adhocQueryResponse =
+        TestUtils.loadFromXMLResource(AdhocQueryResponse.class, this.getClass(), data);
+
+    // Act
+    final var testee =
+        assertDoesNotThrow(
+            () -> DataUtils.readRegistryErrorCodesFromAdhocQueryResponse(adhocQueryResponse));
+
+    // Assert
+    assertEquals(expected, testee.size());
+    assertEquals(message, testee.stream().findFirst().orElse(null));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    RETRIEVE_DOCUMENT_SET_RESPONSE_LVL_3_XML_FILE_NAME + ", 0,",
+    RETRIEVE_DOCUMENT_SET_RESPONSE_020_XML_FILE_NAME + ", 1, ERROR_GENERIC_DOCUMENT_MISSING"
+  })
+  void readRegistryErrorCodesFromRegistryResponseTest(
+      final String data, final int expected, final String message) {
+    // Arrange
+    final var registryResponse =
+        TestUtils.loadFromXMLResource(RetrieveDocumentSetResponseType.class, this.getClass(), data);
+
+    // Act
+    final var testee =
+        assertDoesNotThrow(
+            () ->
+                DataUtils.readRegistryErrorCodesFromRegistryResponse(
+                    registryResponse.getRegistryResponse()));
+
+    // Assert
+    assertEquals(expected, testee.size());
+    assertEquals(message, testee.stream().findFirst().orElse(null));
   }
 }

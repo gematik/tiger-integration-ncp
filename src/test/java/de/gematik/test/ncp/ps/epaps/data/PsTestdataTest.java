@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ps.epaps.data;
@@ -19,16 +23,12 @@ package de.gematik.test.ncp.ps.epaps.data;
 import static de.gematik.test.ncp.utils.TestUtils.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 import de.gematik.epa.conversion.internal.enumerated.ClassCode;
 import de.gematik.epa.conversion.internal.enumerated.CodeInterface;
-import de.gematik.epa.dto.request.PutDocumentsRequestDTO;
-import de.gematik.epa.ihe.model.document.DocumentMetadata;
-import de.gematik.test.ncp.data.Practice;
-import de.gematik.test.ncp.data.Testdata;
+import de.gematik.test.ncp.data.PracticeImpl;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.DocumentMetadata;
+import de.gematik.test.ncp.gen.epa.api.documents.dto.PutDocumentsRequestDTO;
 import de.gematik.test.ncp.utils.TestUtils;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -38,8 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 @Slf4j
 class PsTestdataTest {
@@ -95,44 +93,37 @@ class PsTestdataTest {
   @SneakyThrows
   void createDocumentMetadataTest(final String practiceData, final String expectedData) {
     // Arrange
-    final var testdata = Testdata.instance();
-    final var spyTestdata = spy(testdata);
     final var practice =
-        TestUtils.loadFromJsonResource(Practice.class, this.getClass(), practiceData);
-    when(spyTestdata.practice()).thenReturn(practice);
+        TestUtils.loadFromJsonResource(PracticeImpl.class, this.getClass(), practiceData);
+    final var expected =
+        TestUtils.loadFromJsonResource(DocumentMetadata.class, this.getClass(), expectedData);
 
-    try (final MockedStatic<Testdata> testdataMockedStatic =
-        mockStatic(Testdata.class, Mockito.CALLS_REAL_METHODS)) {
-      testdataMockedStatic.when(Testdata::instance).thenReturn(spyTestdata);
+    // Act
+    final var testee = PsTestdata.createDocumentMetadata(practice);
 
-      final var expected =
-          TestUtils.loadFromJsonResource(DocumentMetadata.class, this.getClass(), expectedData);
-
-      // Act
-      final var testee = PsTestdata.createDocumentMetadata().toPsDocumentMetadata();
-
-      log.info(mapper.writeValueAsString(testee));
-
-      // Assert
-      assertThat(testee)
-          .usingRecursiveComparison()
-          .ignoringFieldsOfTypes(LocalDateTime.class)
-          .ignoringFields("title")
-          .isEqualTo(expected);
-    }
+    // Assert
+    log.info(mapper.writeValueAsString(testee));
+    assertThat(testee)
+        .usingRecursiveComparison()
+        .ignoringFieldsOfTypes(LocalDateTime.class)
+        .ignoringFields("title")
+        .isEqualTo(expected);
   }
 
   @Test
   @SneakyThrows
   void createPutDocumentRequestForEPKATest() {
     // Arrange
+    final var practice =
+        TestUtils.loadFromJsonResource(PracticeImpl.class, this.getClass(), "practice_1.json");
     final var expected =
         TestUtils.loadFromJsonResource(
             PutDocumentsRequestDTO.class, this.getClass(), "putDocumentsRequestDto.json");
 
     // Act
     final var testee =
-        PsTestdata.createPutDocumentRequestForEPKA("kvnr", "epka".getBytes(StandardCharsets.UTF_8));
+        PsTestdata.createPutDocumentRequestForEPKA(
+            "kvnr", practice, "epka".getBytes(StandardCharsets.UTF_8));
 
     log.info(mapper.writeValueAsString(testee));
 

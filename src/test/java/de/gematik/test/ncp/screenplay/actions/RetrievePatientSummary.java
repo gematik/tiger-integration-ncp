@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,16 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.screenplay.actions;
 
 import static de.gematik.test.ncp.ncpeh.client.dataobject.DataUtils.setRepositoryUniqueId;
 
+import de.gematik.test.ncp.data.PatientImpl;
 import de.gematik.test.ncp.glue.psa.UCHeaders;
 import de.gematik.test.ncp.ncpeh.PatientSummaryLevel;
 import de.gematik.test.ncp.ncpeh.client.dataobject.DataUtils;
-import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryDO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryResponseDO;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePatientAccessData;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePractitionerData;
@@ -56,6 +61,7 @@ public class RetrievePatientSummary implements Performable {
     final var patientSummary =
         ncpeh.retrievePatientSummary(
             patientAccessData,
+            new PatientImpl(patientData.name(), patientData.kvnr(), patientData.birthDate()),
             practitionerData.profileName(),
             practitionerData.country(),
             psaMetadata,
@@ -64,16 +70,16 @@ public class RetrievePatientSummary implements Performable {
 
     patientData.setPatientSummaryDO(patientSummary);
     Optional.ofNullable(patientSummary)
-        .map(RetrievePatientSummaryDO::ncpehFdResponseContent)
+        .map(RetrievePatientSummaryResponseDO::ncpehFdResponseContent)
         .map(DataUtils::readPatientSummaryLvl1)
         .ifPresent(patientData::setPatientSummaryLvl1);
     Optional.ofNullable(patientSummary)
-        .map(RetrievePatientSummaryDO::ncpehFdResponseContent)
+        .map(RetrievePatientSummaryResponseDO::ncpehFdResponseContent)
         .map(DataUtils::readPatientSummaryLvl3)
         .ifPresent(patientData::setPatientSummaryLvl3);
   }
 
-  public static RetrievePatientSummary fromLevel(final PatientSummaryLevel... patientSummaryLevel) {
+  public static RetrievePatientSummary ofLevel(final PatientSummaryLevel... patientSummaryLevel) {
     return new RetrievePatientSummary(null, patientSummaryLevel);
   }
 

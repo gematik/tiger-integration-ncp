@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.data;
@@ -52,7 +56,7 @@ public final class Testdata {
 
   public static final String EU_PRACTITIONERS_KEY = TESTDATA_BASEKEY + ".practitioners.eu";
 
-  public static final String PRACTICE_DE_KEY = TESTDATA_BASEKEY + ".practice.de";
+  public static final String DE_PRACTITIONERS_KEY = TESTDATA_BASEKEY + ".practitioners.de";
 
   public static final String EPKA_TEMPLATES_CONFIG_PATH = TESTDATA_BASEKEY + ".epka.templates";
 
@@ -67,8 +71,6 @@ public final class Testdata {
   public static final String PREFIXES_CONFIG_KEY = NAMES_CONFIG_BASEKEY + ".prefixes";
 
   public static final String RECORD_SYSTEMS_CONFIG_KEY = TESTDATA_BASEKEY + ".recordsystems";
-
-  public static final String DO_NOT_FAIL_CONFIG_KEY = CONFIG_BASEKEY + ".doNotFail";
 
   public static final String TESTDATA_FOLDER = "testdata";
   public static final String SEPARATOR = "/";
@@ -86,7 +88,7 @@ public final class Testdata {
       Utils.loadConfig(Practitioners.class, EU_PRACTITIONERS_KEY);
 
   @Getter(lazy = true)
-  private final Practice practice = Utils.loadConfig(Practices.class, PRACTICE_DE_KEY).getFirst();
+  private final Persons dePractitioners = Utils.loadConfig(Persons.class, DE_PRACTITIONERS_KEY);
 
   @Getter(lazy = true)
   private final ArrayList<String> knownTitles =
@@ -110,9 +112,6 @@ public final class Testdata {
   @Getter(lazy = true)
   private final RecordSystems recordSystems =
       Utils.loadConfig(RecordSystems.class, RECORD_SYSTEMS_CONFIG_KEY);
-
-  @Getter(lazy = true)
-  private final Boolean doNotFail = Utils.loadConfig(Boolean.class, DO_NOT_FAIL_CONFIG_KEY);
 
   private Testdata() {
     initialize();

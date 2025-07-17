@@ -1,0 +1,35 @@
+servers:
+
+  dwhUrl:
+    type: externalUrl
+    active: false
+    hostname: ${infrastructure.dwh.hostname}
+    healthcheckUrl: NONE
+    startupTimeoutSec: 1
+    source:
+      - https://dwh
+
+  dwhZion:
+    type: zion
+    active: "!{not ${tiger.servers.dwhUrl.active}}"
+    hostname: ${infrastructure.dwh.hostname}
+    zionConfiguration:
+      # define the server port.
+      # In a real setup you would leave this empty (then a random port will be used)
+      serverPort: ${tiger.ports.dwh}
+      mockResponses:
+        # a map with all the responses
+        getPerformanceReport:
+          # the name is arbitrary. It can be used to alter the response later on
+          requestCriterions:
+            # This is a list of JEXL expressions. Only when all expressions are met is this response considered
+            - message.method == 'GET'
+            - message.path == '/data/api/v1/testsolbde/NCPeH'
+          response:
+            statusCode: 200
+            body: ${dwhGetPerformanceReportResponseBody|}
+            headers:
+              Content-Type: "application/json; charset=utf-8"
+              Access-Control-Allow-Origin: "*"
+              Origin: "http://localhost:${tiger.ports.dwh}"
+

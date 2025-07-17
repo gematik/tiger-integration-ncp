@@ -1,6 +1,8 @@
 {
-  "name": "Praxis MüllerTEST-ONLY",
-  "telematikId": "1-SMC-B-Testkarte--999999999999999",
+  "smbCard": {
+    "name": "Praxis MüllerTEST-ONLY",
+    "telematikId": "1-SMC-B-Testkarte--999999999999999"
+  },
   "practitioners": [
     {
       "givenNames": "Sebastian",

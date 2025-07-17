@@ -1,0 +1,47 @@
+servers:
+
+  epaPsUrl:
+    type: externalUrl
+    active: false
+    hostname: ${infrastructure.epaps.hostname}
+    startupTimeoutSec: 180
+    healthcheckUrl: http://localhost:9016
+    healthcheckReturnCode: 404
+    source:
+      - http://localhost:9016
+
+  epaPsCompose:
+    type: compose
+    active: "!{not ${tiger.servers.epaPsUrl.active}}"
+
+    logFile: ./target/serverLogs/epaPsCompose.log
+
+    source:
+      - ./tiger/docker/dc-clients-tu-konn17-pub.yml
+
+    dockerOptions:
+      resolveComposeFiles: false
+      withLocalDockerCompose: false
+
+
+  epaVauProxyPsComposeUrl:
+    type: externalUrl
+    dependsUpon: epaPsCompose
+    active: "!{not ${tiger.servers.epaPsUrl.active}}"
+    hostname: epaVauProxyPsUrlHost
+    startupTimeoutSec: 180
+    healthcheckUrl: http://localhost:9018
+    healthcheckReturnCode: 404
+    source:
+      - ${tiger.servers.epaVauProxyPsComposeUrl.healthcheckUrl}
+
+  epaPsComposeUrl:
+    type: externalUrl
+    dependsUpon: epaPsCompose,epaVauProxyPsComposeUrl
+    active: "!{not ${tiger.servers.epaPsUrl.active}}"
+    hostname: ${infrastructure.epaps.hostname}
+    startupTimeoutSec: 180
+    healthcheckUrl: http://localhost:9016
+    healthcheckReturnCode: 404
+    source:
+      - ${tiger.servers.epaPsComposeUrl.healthcheckUrl}

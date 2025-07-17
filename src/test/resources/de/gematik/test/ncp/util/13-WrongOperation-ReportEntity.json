@@ -1,0 +1,10 @@
+{
+  "timestamp": 1739554789870,
+  "duration": 22,
+  "operation": "NCPeH.UC_4",
+  "status": "200",
+  "message": {
+    "reqc": "NL",
+    "bkdur": 22
+  }
+}

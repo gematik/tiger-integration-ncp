@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.client.dataobject;
@@ -25,6 +29,7 @@ import de.gematik.ncpeh.api.common.WrappedHttpResponse;
 import de.gematik.ncpeh.api.response.SimulatorCommunicationData;
 import de.gematik.test.ncp.data.AcknowledgementDetail;
 import de.gematik.test.ncp.data.Patient;
+import de.gematik.test.ncp.data.PatientAccessData;
 import de.gematik.test.ncp.data.PatientImpl;
 import de.gematik.test.ncp.data.PersonName;
 import de.gematik.test.ncp.ncpeh.NcpehService;
@@ -36,18 +41,14 @@ import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBElement;
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,8 +68,8 @@ import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryError;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-import org.apache.commons.io.FileUtils;
 import org.hl7.v3.CD;
 import org.hl7.v3.ClinicalDocument;
 import org.hl7.v3.ED;
@@ -176,9 +177,9 @@ public class DataUtils {
    * Read the structured patient summary in the CDA3 format ({@link ClinicalDocument}) from an NCPeH
    * retrieveDocument response
    *
-   * @param response {@link RetrievePatientSummaryDO} response object of the {@link
-   *     NcpehService#retrievePatientSummary(Patient, String, String, AdhocQueryResponse, String,
-   *     PatientSummaryLevel...)} operation
+   * @param response {@link RetrievePatientSummaryResponseDO} response object of the {@link
+   *     NcpehService#retrievePatientSummary(PatientAccessData, Patient, String, String,
+   *     AdhocQueryResponse, String, PatientSummaryLevel...)} operation
    * @return {@link ClinicalDocument} patient summary, or null if non was found
    */
   public static ClinicalDocument readPatientSummaryLvl3(
@@ -191,47 +192,27 @@ public class DataUtils {
   /**
    * Read the patient summary in the CDA1 format (PDF) from an NCPeH retrieveDocument response
    *
-   * @param response {@link RetrievePatientSummaryDO} response object of the {@link
-   *     NcpehService#retrievePatientSummary(Patient, String, String, AdhocQueryResponse, String,
-   *     PatientSummaryLevel...)} operation
+   * @param response {@link RetrievePatientSummaryResponseDO} response object of the {@link
+   *     NcpehService#retrievePatientSummary(PatientAccessData, Patient, String, String,
+   *     AdhocQueryResponse, String, PatientSummaryLevel...)} operation
    * @return {@link Pdf} patient summary, or null if non was found
    */
-  public static Pdf readPatientSummaryLvl1(final RetrieveDocumentSetResponseType response) {
-    return Optional.ofNullable(getPatientSummaryOfLevel(response, PatientSummaryLevel.LEVEL_1))
-        .map(doc -> new Pdf(Base64.getEncoder().encodeToString(doc)))
-        .orElse(null);
-  }
-
-  /**
-   * Write a CDA1 patient summary (PDF format) to a file in the temp folder, subfolder {@value
-   * TESTSUITE_PATH_PART} of the local file system (might be user specific).
-   *
-   * @param patient {@link Patient} information, which are used to create the file name.
-   * @param cda1Document {@link Pdf} CDA1 patient summary
-   * @return {@link String} the absolute path of the file, where the patient summary was written to.
-   */
-  @SneakyThrows
-  public static String writePatientSummaryToLocalFile(
-      final Patient patient, final Pdf cda1Document) {
-    final var tempFile = createTempFile(".pdf", patient.kvnr(), "Patient_Summary_Level_1");
-
-    final var pdfBytes = cda1Document.getContent().getBytes(StandardCharsets.UTF_8);
-    FileUtils.writeByteArrayToFile(tempFile, pdfBytes);
-
-    return tempFile.getAbsolutePath();
+  public static byte[] readPatientSummaryLvl1(final RetrieveDocumentSetResponseType response) {
+    return getPatientSummaryOfLevel(response, PatientSummaryLevel.LEVEL_1);
   }
 
   /**
    * Read the {@link SimulatorCommunicationData} from the body of a HTTP {@link Response} and
-   * generate an {@link IdentifyPatientDO} object from its contents
+   * generate an {@link IdentifyPatientResponseDO} object from its contents
    *
    * @param response {@link Response} as received in an HTTP communication
-   * @return {@link IdentifyPatientDO} object created from the response body contents
+   * @return {@link IdentifyPatientResponseDO} object created from the response body contents
    */
-  public static IdentifyPatientDO convertResponseDataForIdentifyPatient(final Response response) {
+  public static IdentifyPatientResponseDO convertResponseDataForIdentifyPatient(
+      final Response response) {
     final var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
 
-    return new IdentifyPatientDO(
+    return new IdentifyPatientResponseDO(
         HttpStatus.valueOf(response.getStatus()),
         parseHttpRequest(simulatorComData.requestSend(), PRPAIN201305UV02.class),
         parseHttpResponse(simulatorComData.responseReceived(), PRPAIN201306UV02.class));
@@ -239,16 +220,16 @@ public class DataUtils {
 
   /**
    * Read the {@link SimulatorCommunicationData} from the body of a HTTP {@link Response} and
-   * generate an {@link FindPatientSummaryDO} object from its contents
+   * generate an {@link FindPatientSummaryResponseDO} object from its contents
    *
    * @param response {@link Response} as received in an HTTP communication
-   * @return {@link FindPatientSummaryDO} object created from the response body contents
+   * @return {@link FindPatientSummaryResponseDO} object created from the response body contents
    */
-  public static FindPatientSummaryDO convertResponseDataForFindPatientSummary(
+  public static FindPatientSummaryResponseDO convertResponseDataForFindPatientSummary(
       final Response response) {
     final var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
 
-    return new FindPatientSummaryDO(
+    return new FindPatientSummaryResponseDO(
         HttpStatus.valueOf(response.getStatus()),
         parseHttpRequest(simulatorComData.requestSend(), AdhocQueryRequest.class),
         parseHttpResponse(simulatorComData.responseReceived(), AdhocQueryResponse.class));
@@ -256,16 +237,16 @@ public class DataUtils {
 
   /**
    * Read the {@link SimulatorCommunicationData} from the body of a HTTP {@link Response} and
-   * generate an {@link RetrievePatientSummaryDO} object from its contents
+   * generate an {@link RetrievePatientSummaryResponseDO} object from its contents
    *
    * @param response {@link Response} as received in an HTTP communication
-   * @return {@link RetrievePatientSummaryDO} object created from the response body contents
+   * @return {@link RetrievePatientSummaryResponseDO} object created from the response body contents
    */
-  public static RetrievePatientSummaryDO convertResponseDataForRetrievePatientSummary(
+  public static RetrievePatientSummaryResponseDO convertResponseDataForRetrievePatientSummary(
       final Response response) {
     final var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
 
-    return new RetrievePatientSummaryDO(
+    return new RetrievePatientSummaryResponseDO(
         HttpStatus.valueOf(response.getStatus()),
         parseHttpRequest(simulatorComData.requestSend(), RetrieveDocumentSetRequestType.class),
         parseHttpResponse(
@@ -316,34 +297,28 @@ public class DataUtils {
   }
 
   public static @NotNull Optional<RegistryResponseType> getRegistryResponseType(
-      final RetrievePatientSummaryDO retrievePatientSummaryDO) {
+      final RetrievePatientSummaryResponseDO retrievePatientSummaryDO) {
     return Optional.ofNullable(retrievePatientSummaryDO)
         .map(NcpehInterfaceResponse::ncpehFdResponseContent)
         .map(RetrieveDocumentSetResponseType::getRegistryResponse);
   }
 
-  // region private
-
-  private static File createTempFile(
-      @NonNull final String fileNameSuffix,
-      @NonNull final String firstNamePart,
-      final String... furtherNameParts)
-      throws IOException {
-    final var nameParts = new ArrayList<String>();
-    nameParts.add(firstNamePart);
-    Optional.ofNullable(furtherNameParts).ifPresent(fnp -> nameParts.addAll(Arrays.asList(fnp)));
-    nameParts.add(LocalDateTime.now().format(BASIC_DATE_TIME_FORMAT));
-
-    final var file =
-        File.createTempFile(String.join("_", nameParts), fileNameSuffix, testsuiteTempDir());
-    final var fileRestricted = file.setWritable(true, true) && file.setExecutable(true, true);
-    if (!fileRestricted) {
-      log.warn("Access rights of temporary file could not be set as requested");
-    }
-    file.deleteOnExit();
-
-    return file;
+  public static Collection<String> readRegistryErrorCodesFromAdhocQueryResponse(
+      final AdhocQueryResponse adhocQueryResponse) {
+    return Optional.ofNullable(adhocQueryResponse)
+        .flatMap(metadata -> Optional.ofNullable(metadata.getRegistryErrorList()))
+        .map(list -> list.getRegistryError().stream().map(RegistryError::getErrorCode).toList())
+        .orElseGet(List::of);
   }
+
+  public static Collection<String> readRegistryErrorCodesFromRegistryResponse(
+      final RegistryResponseType registryResponse) {
+    return Optional.ofNullable(registryResponse.getRegistryErrorList())
+        .map(list -> list.getRegistryError().stream().map(RegistryError::getErrorCode).toList())
+        .orElseGet(List::of);
+  }
+
+  // region private
 
   @SneakyThrows
   private static File getOrCreateTestsuiteTmpFolder() {
@@ -502,8 +477,7 @@ public class DataUtils {
         responseContent);
   }
 
-  private static <T> T parseHttpBody(
-      final WrappedHttpMessage httpMessage, final Class<T> bodyType) {
+  public static <T> T parseHttpBody(final WrappedHttpMessage httpMessage, final Class<T> bodyType) {
     final var soapMessage = httpMessage.httpBody();
     final var doc = extractBodyAsDocument(soapMessage);
     return unmarshalXml(bodyType, doc);

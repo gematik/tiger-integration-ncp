@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,11 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ps;
 
-import java.net.URL;
+import de.gematik.test.ncp.data.Practice;
+import de.gematik.test.ncp.data.SmbCard;
 import java.util.List;
 
 /**
@@ -26,13 +31,6 @@ import java.util.List;
  * it! Don't go sideways!
  */
 public interface PrimarySystemService {
-
-  /**
-   * Check if the PS is running and its operations ready to be used
-   *
-   * @return true if it is, false otherwise
-   */
-  boolean psIsUpAndRunning();
 
   /**
    * Authorize the LE to have right to write an ePKA to the Aktenkonto of the patient, identified by
@@ -46,10 +44,21 @@ public interface PrimarySystemService {
    * Upload an ePKA document for the patient, identified by the given KVNR.
    *
    * @param kvnr the patient identification number, a.k.a. KVNR
+   * @param practice the german practice
    * @param epka document (ePKA) to upload
    * @return the title of the uploaded document (which is unique for every upload)
    */
-  String putDocument(String kvnr, byte[] epka);
+  String putDocument(String kvnr, final Practice practice, byte[] epka);
+
+  /**
+   * Replace an ePKA document for the patient, identified by the given KVNR.
+   *
+   * @param kvnr the patient identification number, a.k.a. KVNR
+   * @param practice the german practice
+   * @param epka document (ePKA) to upload
+   * @return the title of the uploaded document (which is unique for every upload)
+   */
+  String replaceDocument(String kvnr, final Practice practice, byte[] epka);
 
   /**
    * Check, whether for the given KVNR an Aktenkonto exists.
@@ -71,13 +80,22 @@ public interface PrimarySystemService {
   byte[] signDocument(byte[] document, boolean asQES, String signatureAlgorithm);
 
   /**
-   * Find all ePKA documents in the Aktenkonto belonging to the given kvnr and return their
+   * Find ePKA documents with ClassCode.MEDIZINISCHER_AUSWEIS, FormatCode.PATIENTEN_KURZ_AKTE &
+   * TypeCode.ERGEBNISSE_DIAGNOSTIK in the Aktenkonto belonging to the given kvnr and return their
    * entryUUIDs.
    *
    * @param kvnr the PatientID used to identify the Aktenkonto
    * @return {@link List} of entryUUIDs
    */
   List<String> findEpka(String kvnr);
+
+  /**
+   * Find all documents in the Aktenkonto belonging to the given kvnr and return their entryUUIDs.
+   *
+   * @param kvnr the PatientID used to identify the Aktenkonto
+   * @return {@link List} of entryUUIDs
+   */
+  List<String> findAllDocuments(String kvnr);
 
   /**
    * Delete the documents with the entryUUIDs provided in the Aktenkonto identified by the given
@@ -90,9 +108,10 @@ public interface PrimarySystemService {
   void deleteExistingDocuments(String kvnr, List<String> documentEntryUUIDs);
 
   /**
-   * In the PS switch to the Konnektor with the given address.
+   * Retrieves the practice information by calling the card API proxy.
    *
-   * @param konnektorAddress {@link URL} address of the Konnektor to switch to.
+   * @return the practice information
+   * @throws PsException if the card API response is unsuccessful or no practice is found
    */
-  void configureKonnektor(URL konnektorAddress);
+  SmbCard getSmbCard();
 }

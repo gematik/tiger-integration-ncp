@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 gematik GmbH
+ * Copyright 2024-2025 gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ******
+ *
+ * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh;
@@ -20,10 +24,12 @@ import de.gematik.ncpeh.api.NcpehSimulatorApi;
 import de.gematik.test.ncp.ExternalServerConfig;
 import de.gematik.test.ncp.GeneralFactory;
 import de.gematik.test.ncp.ncpeh.client.NcpehClientImpl;
+import de.gematik.test.ncp.reporting.NcpehContext;
 import de.gematik.test.ncp.util.Utils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.cxf.jaxrs.client.Client;
 
 /**
  * Singleton class to provide the instance of an {@link NcpehService} implementation. Currently,
@@ -33,7 +39,7 @@ import lombok.NoArgsConstructor;
 public final class NcpehProvider {
 
   public static final String NCPEH_SIMULATION_CONFIG_KEY =
-      ExternalServerConfig.INFRASTRUCTURE_KEY + ".ncpehSim";
+      ExternalServerConfig.EXTERNAL_SERVER_CONFIG_TIGER_KEY + ".ncpehSim";
 
   @Getter(lazy = true)
   private static final NcpehProvider instance = new NcpehProvider();
@@ -43,12 +49,19 @@ public final class NcpehProvider {
       NcpehClientImpl.builder()
           .config(getNcpehConfig())
           .clientProxy(
-              GeneralFactory.createJAXRSClientProxy(NcpehSimulatorApi.class, getNcpehConfig()))
+              GeneralFactory.createNcpehTimeLoggingProxy(
+                  GeneralFactory.createJAXRSClientProxy(NcpehSimulatorApi.class, getNcpehConfig()),
+                  getNcpehContext(),
+                  NcpehSimulatorApi.class,
+                  Client.class))
           .build();
 
   @Getter(lazy = true)
   private final ExternalServerConfig ncpehConfig =
       Utils.loadConfig(ExternalServerConfig.class, NCPEH_SIMULATION_CONFIG_KEY);
+
+  @Getter(lazy = true)
+  private final NcpehContext ncpehContext = new NcpehContext();
 
   public static NcpehService getNcpehService() {
     return getInstance().getNcpehImpl();
