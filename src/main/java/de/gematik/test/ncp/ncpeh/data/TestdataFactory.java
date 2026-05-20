@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.data;
@@ -31,6 +32,7 @@ import de.gematik.test.ncp.data.PatientAccessData;
 import de.gematik.test.ncp.ncpeh.NcpehService;
 import de.gematik.test.ncp.ncpeh.PatientSummaryLevel;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
@@ -44,7 +46,23 @@ import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 @UtilityClass
 public class TestdataFactory {
 
-  public static final String EPED_ACCESS_CODE_ASSIGNING_AUTHORITY = "1.2.276.0.76.4.299";
+  /**
+   * OID of the {@code accessCodeAssigningAuthority} used for the PSA scope.
+   *
+   * @see <a
+   *     href="https://gemspec.gematik.de/docs/gemSpec/gemSpec_NCPeH_FD/latest/#4.1.1">gemSpec_NCPeH_FD
+   *     - 4.1.1 Konfigurationsparameter</a>
+   */
+  public static final String OID_AC_EPKA_ASSIGNING_AUTHORITY = "1.2.276.0.76.4.298";
+
+  /**
+   * OID of the {@code accessCodeAssigningAuthority} used for the EPED scope.
+   *
+   * @see <a
+   *     href="https://gemspec.gematik.de/docs/gemSpec/gemSpec_NCPeH_FD/latest/#4.1.1">gemSpec_NCPeH_FD
+   *     - 4.1.1 Konfigurationsparameter</a>
+   */
+  public static final String OID_AC_ERP_ASSIGNING_AUTHORITY = "1.2.276.0.76.4.299";
 
   /**
    * Build an IdentifyPatientRequest with the given KVNR and some fixed test data (see constants in
@@ -59,8 +77,10 @@ public class TestdataFactory {
   public static IdentifyPatientRequest buildStandardIdentifyPatientRequest(
       @NonNull final PatientAccessData patientAccessData,
       @NonNull final EuCountryCode country,
+      @NonNull final String accessCodeAssigningAuthority,
       @NonNull final NcpehSimTestdataProfile testdata) {
     return IdentifyPatientRequestBuilder.newInstance()
+        .accessCodeAssigningAuthority(accessCodeAssigningAuthority)
         .accessCode(patientAccessData.getAccessCode())
         .kvnr(patientAccessData.getKvnr())
         .euCountryCode(country)
@@ -74,6 +94,8 @@ public class TestdataFactory {
    *
    * @param patientAccessData patientAccessData information e.g. KVNR
    * @param country code of the country, where the EU practitioner is located
+   * @param xdsDocumentEntryClassCode semantic signifier identifying the document class to be
+   *     searched for
    * @param testdata configured testdata profile, e.g. for information regarding ida and trc
    *     assertion profile
    * @return {@link FindDocumentsRequest}
@@ -81,8 +103,10 @@ public class TestdataFactory {
   public static FindDocumentsRequest buildStandardFindDocumentsRequest(
       @NonNull final PatientAccessData patientAccessData,
       @NonNull final EuCountryCode country,
+      @NonNull final String xdsDocumentEntryClassCode,
       @NonNull final NcpehSimTestdataProfile testdata) {
     return FindDocumentsRequestBuilder.newInstance()
+        .xdsDocumentEntryClassCode(xdsDocumentEntryClassCode)
         .trcAssertionProfileName(testdata.trcProfileName())
         .kvnr(patientAccessData.getKvnr())
         .accessCode(patientAccessData.getAccessCode())
@@ -100,7 +124,8 @@ public class TestdataFactory {
    * @param testdata configured testdata profile, e.g. for information regarding ida and trc
    *     assertion profile
    * @param metadata data as they are returned by the {@link
-   *     NcpehService#findPatientSummary(PatientAccessData, String, String, String)} operation<br>
+   *     NcpehService#findDocuments(PatientAccessData, String, String, String, String, Map)}
+   *     operation <br>
    *     Note: So far no data are read from metadata, but test data defined in the constants of this
    *     class are used instead
    * @param patientSummaryLevels List of patientAccessData summary levels (1 and 3), which shall be

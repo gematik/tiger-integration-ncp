@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.client.dataobject;
@@ -35,6 +36,7 @@ import de.gematik.test.ncp.data.PersonName;
 import de.gematik.test.ncp.ncpeh.NcpehService;
 import de.gematik.test.ncp.ncpeh.PatientSummaryLevel;
 import de.gematik.test.ncp.util.Utils;
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
@@ -46,7 +48,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
 import java.util.Collection;
@@ -59,7 +60,6 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
@@ -106,9 +106,6 @@ public class DataUtils {
 
   public static final List<String> CODE_SYSTEM_XCPD_ERRORS =
       List.of("1.3.6.1.4.1.19376.1.2.27.3", "1.3.6.1.4.1.12559.11.10.1.3.2.2.1");
-
-  private static final DateTimeFormatter BASIC_DATE_TIME_FORMAT =
-      new DateTimeFormatterBuilder().appendPattern("yyyyMMddHHmmss").toFormatter();
 
   @Getter(lazy = true, value = AccessLevel.PRIVATE)
   private final File testsuiteTempDir = getOrCreateTestsuiteTmpFolder();
@@ -177,25 +174,35 @@ public class DataUtils {
    * Read the structured patient summary in the CDA3 format ({@link ClinicalDocument}) from an NCPeH
    * retrieveDocument response
    *
-   * @param response {@link RetrievePatientSummaryResponseDO} response object of the {@link
+   * @param response {@link RetrieveDocumentsResponseDTO} response object of the {@link
    *     NcpehService#retrievePatientSummary(PatientAccessData, Patient, String, String,
    *     AdhocQueryResponse, String, PatientSummaryLevel...)} operation
-   * @return {@link ClinicalDocument} patient summary, or null if non was found
+   * @return {@link ClinicalDocument} patient summary, or null if none was found
    */
   public static ClinicalDocument readPatientSummaryLvl3(
       final RetrieveDocumentSetResponseType response) {
-    return Optional.ofNullable(getPatientSummaryOfLevel(response, PatientSummaryLevel.LEVEL_3))
-        .map(dr -> unmarshalXml(ClinicalDocument.class, dr))
+    return readClinicalDocument(getPatientSummaryOfLevel(response, PatientSummaryLevel.LEVEL_3));
+  }
+
+  /**
+   * Unmarshal the given byte array into a {@link ClinicalDocument} object
+   *
+   * @param document byte array containing the XML representation of a ClinicalDocument
+   * @return {@link ClinicalDocument} object, or null if the input document was null
+   */
+  public static ClinicalDocument readClinicalDocument(final byte[] document) {
+    return Optional.ofNullable(document)
+        .map(d -> unmarshalXml(ClinicalDocument.class, d))
         .orElse(null);
   }
 
   /**
    * Read the patient summary in the CDA1 format (PDF) from an NCPeH retrieveDocument response
    *
-   * @param response {@link RetrievePatientSummaryResponseDO} response object of the {@link
+   * @param response {@link RetrieveDocumentsResponseDTO} response object of the {@link
    *     NcpehService#retrievePatientSummary(PatientAccessData, Patient, String, String,
    *     AdhocQueryResponse, String, PatientSummaryLevel...)} operation
-   * @return {@link Pdf} patient summary, or null if non was found
+   * @return {@link Pdf} patient summary, or null if none was found
    */
   public static byte[] readPatientSummaryLvl1(final RetrieveDocumentSetResponseType response) {
     return getPatientSummaryOfLevel(response, PatientSummaryLevel.LEVEL_1);
@@ -203,33 +210,33 @@ public class DataUtils {
 
   /**
    * Read the {@link SimulatorCommunicationData} from the body of a HTTP {@link Response} and
-   * generate an {@link IdentifyPatientResponseDO} object from its contents
+   * generate an {@link IdentifyPatientResponseDTO} object from its contents
    *
    * @param response {@link Response} as received in an HTTP communication
-   * @return {@link IdentifyPatientResponseDO} object created from the response body contents
+   * @return {@link IdentifyPatientResponseDTO} object created from the response body contents
    */
-  public static IdentifyPatientResponseDO convertResponseDataForIdentifyPatient(
+  public static IdentifyPatientResponseDTO convertResponseDataForIdentifyPatient(
       final Response response) {
     final var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
 
-    return new IdentifyPatientResponseDO(
+    return new IdentifyPatientResponseDTO(
         HttpStatus.valueOf(response.getStatus()),
         parseHttpRequest(simulatorComData.requestSend(), PRPAIN201305UV02.class),
         parseHttpResponse(simulatorComData.responseReceived(), PRPAIN201306UV02.class));
   }
 
   /**
-   * Read the {@link SimulatorCommunicationData} from the body of a HTTP {@link Response} and
-   * generate an {@link FindPatientSummaryResponseDO} object from its contents
+   * Read the {@link SimulatorCommunicationData} from the body of an HTTP {@link Response} and
+   * generate a {@link FindDocumentsResponseDTO} object from its contents
    *
    * @param response {@link Response} as received in an HTTP communication
-   * @return {@link FindPatientSummaryResponseDO} object created from the response body contents
+   * @return {@link FindDocumentsResponseDTO} object created from the response body contents
    */
-  public static FindPatientSummaryResponseDO convertResponseDataForFindPatientSummary(
+  public static FindDocumentsResponseDTO convertResponseDataForFindDocuments(
       final Response response) {
     final var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
 
-    return new FindPatientSummaryResponseDO(
+    return new FindDocumentsResponseDTO(
         HttpStatus.valueOf(response.getStatus()),
         parseHttpRequest(simulatorComData.requestSend(), AdhocQueryRequest.class),
         parseHttpResponse(simulatorComData.responseReceived(), AdhocQueryResponse.class));
@@ -237,20 +244,39 @@ public class DataUtils {
 
   /**
    * Read the {@link SimulatorCommunicationData} from the body of a HTTP {@link Response} and
-   * generate an {@link RetrievePatientSummaryResponseDO} object from its contents
+   * generate an {@link RetrieveDocumentsResponseDTO} object from its contents
    *
    * @param response {@link Response} as received in an HTTP communication
-   * @return {@link RetrievePatientSummaryResponseDO} object created from the response body contents
+   * @return {@link RetrieveDocumentsResponseDTO} object created from the response body contents
    */
-  public static RetrievePatientSummaryResponseDO convertResponseDataForRetrievePatientSummary(
+  public static RetrieveDocumentsResponseDTO convertResponseDataForRetrieveDocuments(
       final Response response) {
     final var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
 
-    return new RetrievePatientSummaryResponseDO(
+    return new RetrieveDocumentsResponseDTO(
         HttpStatus.valueOf(response.getStatus()),
         parseHttpRequest(simulatorComData.requestSend(), RetrieveDocumentSetRequestType.class),
         parseHttpResponse(
             simulatorComData.responseReceived(), RetrieveDocumentSetResponseType.class));
+  }
+
+  /**
+   * Read the {@link SimulatorCommunicationData} from the body of a HTTP {@link Response} and
+   * generate a {@link ProvideAndRegisterDocumentSetResponseDTO} object from its contents
+   *
+   * @param response {@link Response} as received in an HTTP communication
+   * @return {@link ProvideAndRegisterDocumentSetResponseDTO} object created from the response body
+   *     contents
+   */
+  public static ProvideAndRegisterDocumentSetResponseDTO
+      convertResponseDataForProvideAndRegisterDocumentSet(final Response response) {
+    var simulatorComData = response.readEntity(SimulatorCommunicationData.class);
+
+    return new ProvideAndRegisterDocumentSetResponseDTO(
+        HttpStatus.valueOf(response.getStatus()),
+        parseHttpRequest(
+            simulatorComData.requestSend(), ProvideAndRegisterDocumentSetRequestType.class),
+        parseHttpResponse(simulatorComData.responseReceived(), RegistryResponseType.class));
   }
 
   @SuppressWarnings("unchecked")
@@ -297,8 +323,8 @@ public class DataUtils {
   }
 
   public static @NotNull Optional<RegistryResponseType> getRegistryResponseType(
-      final RetrievePatientSummaryResponseDO retrievePatientSummaryDO) {
-    return Optional.ofNullable(retrievePatientSummaryDO)
+      final RetrieveDocumentsResponseDTO retrieveDocumentsResponseDTO) {
+    return Optional.ofNullable(retrieveDocumentsResponseDTO)
         .map(NcpehInterfaceResponse::ncpehFdResponseContent)
         .map(RetrieveDocumentSetResponseType::getRegistryResponse);
   }
@@ -446,8 +472,11 @@ public class DataUtils {
   }
 
   private static byte[] getPatientSummaryOfLevel(
-      @NonNull final RetrieveDocumentSetResponseType response, final PatientSummaryLevel level) {
-    return response.getDocumentResponse().stream()
+      final RetrieveDocumentSetResponseType response, final PatientSummaryLevel level) {
+    return Optional.ofNullable(response)
+        .map(RetrieveDocumentSetResponseType::getDocumentResponse)
+        .stream()
+        .flatMap(Collection::stream)
         .filter(dr -> level.documentIsOfLevel(dr.getDocumentUniqueId()))
         .map(DocumentResponse::getDocument)
         .findFirst()

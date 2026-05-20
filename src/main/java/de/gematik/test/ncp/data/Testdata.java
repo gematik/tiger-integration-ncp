@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.data;
@@ -151,6 +152,17 @@ public final class Testdata {
    */
   public String getDefaultEpkaTemplatePath() {
     return epkaTemplates().get(DEFAULT_EPKA_KEY_NAME);
+  }
+
+  public NcpehSimTestdataProfile getNcpehSimTestdataProfile(
+      @NonNull final String testdataProfileName) {
+    return Optional.ofNullable(ncpehSimTestdataProfiles().get(testdataProfileName))
+        .orElseThrow(
+            () ->
+                new IllegalArgumentException(
+                    "No entry found for profile name '"
+                        + testdataProfileName
+                        + "' in testdata.profiles"));
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,18 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.data;
 
 import static de.gematik.test.ncp.utils.TestUtils.loadFromJsonResource;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.gematik.epa.conversion.ResponseUtils;
@@ -72,6 +77,9 @@ class TestdataFactoryTest {
         }
       };
   private static final String ADHOC_QUERY_RESPONSE_XML_FILE_NAME = "AdhocQueryResponse.xml";
+  private static final String OID_AC_EPKA_ASSIGNING_AUTHORITY = "1.2.276.0.76.4.298";
+  private static final String XDS_DOCUMENT_ENTRY_CLASS_CODE_PSA =
+      "('60591-5^^2.16.840.1.113883.6.1')";
 
   private final ObjectMapper mapper = new ObjectMapper();
 
@@ -84,7 +92,10 @@ class TestdataFactoryTest {
         assertDoesNotThrow(
             () ->
                 TestdataFactory.buildStandardIdentifyPatientRequest(
-                    PATIENT_ACCESS_DATA, COUNTRY, TESTDATA_PROFILE));
+                    PATIENT_ACCESS_DATA,
+                    COUNTRY,
+                    OID_AC_EPKA_ASSIGNING_AUTHORITY,
+                    TESTDATA_PROFILE));
     // Assert
     assertEquals(KVNR, request.patientId().kvnr());
 
@@ -93,6 +104,30 @@ class TestdataFactoryTest {
         loadFromJsonResource(
             IdentifyPatientRequest.class, this.getClass(), "IdentifyPatientRequest.json");
     assertEquals(expected, request);
+  }
+
+  @Test
+  void buildStandardIdentifyPatientRequest_shouldThrowOnNullArguments() {
+    assertThrows(
+        NullPointerException.class,
+        () ->
+            TestdataFactory.buildStandardIdentifyPatientRequest(
+                null, COUNTRY, "auth", TESTDATA_PROFILE));
+    assertThrows(
+        NullPointerException.class,
+        () ->
+            TestdataFactory.buildStandardIdentifyPatientRequest(
+                PATIENT_ACCESS_DATA, null, "auth", TESTDATA_PROFILE));
+    assertThrows(
+        NullPointerException.class,
+        () ->
+            TestdataFactory.buildStandardIdentifyPatientRequest(
+                PATIENT_ACCESS_DATA, COUNTRY, null, TESTDATA_PROFILE));
+    assertThrows(
+        NullPointerException.class,
+        () ->
+            TestdataFactory.buildStandardIdentifyPatientRequest(
+                PATIENT_ACCESS_DATA, COUNTRY, "auth", null));
   }
 
   @SneakyThrows
@@ -104,7 +139,10 @@ class TestdataFactoryTest {
         assertDoesNotThrow(
             () ->
                 TestdataFactory.buildStandardFindDocumentsRequest(
-                    PATIENT_ACCESS_DATA, COUNTRY, TESTDATA_PROFILE));
+                    PATIENT_ACCESS_DATA,
+                    COUNTRY,
+                    XDS_DOCUMENT_ENTRY_CLASS_CODE_PSA,
+                    TESTDATA_PROFILE));
     // Assert
     assertEquals(KVNR, request.patientId().kvnr());
 
@@ -113,6 +151,30 @@ class TestdataFactoryTest {
         loadFromJsonResource(
             FindDocumentsRequest.class, this.getClass(), "FindDocumentsRequest.json");
     assertEquals(expected, request);
+  }
+
+  @Test
+  void buildStandardFindDocumentsRequest_shouldThrowOnNullArguments() {
+    assertThrows(
+        NullPointerException.class,
+        () ->
+            TestdataFactory.buildStandardFindDocumentsRequest(
+                null, COUNTRY, XDS_DOCUMENT_ENTRY_CLASS_CODE_PSA, TESTDATA_PROFILE));
+    assertThrows(
+        NullPointerException.class,
+        () ->
+            TestdataFactory.buildStandardFindDocumentsRequest(
+                PATIENT_ACCESS_DATA, null, XDS_DOCUMENT_ENTRY_CLASS_CODE_PSA, TESTDATA_PROFILE));
+    assertThrows(
+        NullPointerException.class,
+        () ->
+            TestdataFactory.buildStandardFindDocumentsRequest(
+                PATIENT_ACCESS_DATA, COUNTRY, null, TESTDATA_PROFILE));
+    assertThrows(
+        NullPointerException.class,
+        () ->
+            TestdataFactory.buildStandardFindDocumentsRequest(
+                PATIENT_ACCESS_DATA, COUNTRY, XDS_DOCUMENT_ENTRY_CLASS_CODE_PSA, null));
   }
 
   @SneakyThrows

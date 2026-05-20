@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.screenplay.questions;
 
-import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
+import de.gematik.test.ncp.screenplay.abilities.ManagePatientRecords;
 import de.gematik.test.ncp.screenplay.abilities.TreatPatient;
 import de.gematik.test.ncp.util.IheUtils;
 import java.util.Optional;
@@ -33,8 +34,9 @@ public class IsFindPatientSummaryResponseStatusFailure implements Question<Boole
   @Override
   public Boolean answeredBy(final Actor actor) {
     final var patient = actor.usingAbilityTo(TreatPatient.class).getPatient();
-    final var patientData = patient.usingAbilityTo(ProvidePatientData.class);
-    return Optional.ofNullable(patientData.getPsaMetadata())
+    final var patientRecord =
+        actor.usingAbilityTo(ManagePatientRecords.class).getRecordFor(patient);
+    return Optional.ofNullable(patientRecord.getPsaDocumentMetadata())
         .map(RegistryResponseType::getStatus)
         .filter(IheUtils.FAILURE_RESPONSE::equals)
         .isPresent();

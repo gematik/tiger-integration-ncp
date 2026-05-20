@@ -1,5 +1,5 @@
-<!--
-  ~ Copyright 2024-2025 gematik GmbH
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+  ~ Copyright (Change Date see Readme), gematik GmbH
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
   ~
   ~ *******
   ~
-  ~ For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+  ~ For additional notes and disclaimer from gematik and in case of changes
+  ~ by gematik, find details in the "Readme" file.
   -->
-
 <Bundle xmlns="http://hl7.org/fhir">
   <id value="ec5bf24f-e823-45d6-97c6-14e35ded0ec0"/>
   <meta>
@@ -37,7 +37,7 @@
   <entry>
     <fullUrl value="urn:uuid:8e17ccc0-9d1a-11eb-a8b3-0242ac130003"/>
     <resource>
-      <Composition xmlns="http://hl7.org/fhir">
+      <Composition>
         <id value="8e17ccc0-9d1a-11eb-a8b3-0242ac130003"/>
         <meta>
           <versionId value="1.0.0"/>
@@ -215,7 +215,7 @@
   <entry>
     <fullUrl value="urn:uuid:c3fd0113-9833-4333-bfd2-fff813222b64"/>
     <resource>
-      <AllergyIntolerance xmlns="http://hl7.org/fhir">
+      <AllergyIntolerance>
         <id value="c3fd0113-9833-4333-bfd2-fff813222b64"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Allergy_Intolerance|1.0.0"/>
@@ -250,7 +250,7 @@
   <entry>
     <fullUrl value="urn:uuid:9ddb500a-2f32-480b-a435-683c27ef444e"/>
     <resource>
-      <Condition xmlns="http://hl7.org/fhir">
+      <Condition>
         <id value="9ddb500a-2f32-480b-a435-683c27ef444e"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Condition|1.0.0"/>
@@ -288,7 +288,7 @@
   <entry>
     <fullUrl value="urn:uuid:0269e4f2-f633-11eb-9a03-0242ac130003"/>
     <resource>
-      <Condition xmlns="http://hl7.org/fhir">
+      <Condition>
         <id value="0269e4f2-f633-11eb-9a03-0242ac130003"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Condition|1.0.0"/>
@@ -326,7 +326,7 @@
   <entry>
     <fullUrl value="urn:uuid:13bf04ee-f633-11eb-9a03-0242ac130003"/>
     <resource>
-      <Condition xmlns="http://hl7.org/fhir">
+      <Condition>
         <id value="13bf04ee-f633-11eb-9a03-0242ac130003"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Condition|1.0.0"/>
@@ -358,7 +358,7 @@
   <entry>
     <fullUrl value="urn:uuid:28558acc-f633-11eb-9a03-0242ac130003"/>
     <resource>
-      <Condition xmlns="http://hl7.org/fhir">
+      <Condition>
         <id value="28558acc-f633-11eb-9a03-0242ac130003"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Condition|1.0.0"/>
@@ -396,7 +396,7 @@
   <entry>
     <fullUrl value="urn:uuid:534af71e-f9c4-11eb-9a03-0242ac130003"/>
     <resource>
-      <Condition xmlns="http://hl7.org/fhir">
+      <Condition>
         <id value="534af71e-f9c4-11eb-9a03-0242ac130003"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Condition_Communication_Disorder|1.0.0"/>
@@ -429,7 +429,7 @@
   <entry>
     <fullUrl value="urn:uuid:1443cb86-df52-11eb-ba80-0242ac130004"/>
     <resource>
-      <Consent xmlns="http://hl7.org/fhir">
+      <Consent>
         <id value="1443cb86-df52-11eb-ba80-0242ac130004"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFDxDPE_Consent_Active_Advance_Directive|1.0.0"/>
@@ -440,7 +440,7 @@
             <system value="http://terminology.hl7.org/CodeSystem/consentscope"/>
             <version value="4.0.1"/>
             <code value="patient-privacy"/>
-            <display value="Privacy Consent"></display>
+            <display value="Privacy Consent"/>
           </coding>
         </scope>
         <category>
@@ -448,7 +448,7 @@
             <system value="http://loinc.org"/>
             <version value="2.71"/>
             <code value="59284-0"/>
-            <display value="Consent Document"></display>
+            <display value="Consent Document"/>
           </coding>
         </category>
         <patient>
@@ -513,7 +513,7 @@
   <entry>
     <fullUrl value="urn:uuid:7d261218-8678-11eb-8dcd-0242ac130003"/>
     <resource>
-      <Device xmlns="http://hl7.org/fhir">
+      <Device>
         <id value="7d261218-8678-11eb-8dcd-0242ac130003"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Device_Implant|1.0.0"/>
@@ -534,7 +534,7 @@
   <entry>
     <fullUrl value="urn:uuid:82179290-867a-11eb-8dcd-0242ac130003"/>
     <resource>
-      <DeviceUseStatement xmlns="http://hl7.org/fhir">
+      <DeviceUseStatement>
         <id value="82179290-867a-11eb-8dcd-0242ac130003"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Device_Use_Statement_Implant|1.0.0"/>
@@ -558,7 +558,7 @@
   <entry>
     <fullUrl value="urn:uuid:d6b888f6-9d07-11eb-a8b3-0242ac130003"/>
     <resource>
-      <MedicationStatement xmlns="http://hl7.org/fhir">
+      <MedicationStatement>
         <id value="d6b888f6-9d07-11eb-a8b3-0242ac130003"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Medication_Statement_Administration_Instruction|1.0.0"/>
@@ -579,7 +579,7 @@
   <entry>
     <fullUrl value="urn:uuid:292d932c-f62e-11eb-9a03-0242ac130003"/>
     <resource>
-      <MedicationStatement xmlns="http://hl7.org/fhir">
+      <MedicationStatement>
         <id value="292d932c-f62e-11eb-9a03-0242ac130003"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Medication_Statement_Administration_Instruction|1.0.0"/>
@@ -600,7 +600,7 @@
   <entry>
     <fullUrl value="urn:uuid:846a5feb-840f-4232-8750-6f4cd40f3174"/>
     <resource>
-      <Medication xmlns="http://hl7.org/fhir">
+      <Medication>
         <id value="846a5feb-840f-4232-8750-6f4cd40f3174"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Medication|1.0.0"/>
@@ -623,7 +623,7 @@
   <entry>
     <fullUrl value="urn:uuid:c8854236-f62d-11eb-9a03-0242ac130003"/>
     <resource>
-      <Medication xmlns="http://hl7.org/fhir">
+      <Medication>
         <id value="c8854236-f62d-11eb-9a03-0242ac130003"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Medication|1.0.0"/>
@@ -646,7 +646,7 @@
   <entry>
     <fullUrl value="urn:uuid:a4aba0aa-9138-4621-a77c-8ec5b16e2282"/>
     <resource>
-      <Observation xmlns="http://hl7.org/fhir">
+      <Observation>
         <id value="a4aba0aa-9138-4621-a77c-8ec5b16e2282"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Observation_Note|1.0.0"/>
@@ -679,7 +679,7 @@
   <entry>
     <fullUrl value="urn:uuid:e8610a8a-85dc-4a49-88be-ee8d3ab69f73"/>
     <resource>
-      <Patient xmlns="http://hl7.org/fhir">
+      <Patient>
         <id value="e8610a8a-85dc-4a49-88be-ee8d3ab69f73"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Patient_NFD|1.0.0"/>
@@ -763,7 +763,7 @@
   <entry>
     <fullUrl value="urn:uuid:d0117f4a-685c-4659-aa94-14e3514bc86b"/>
     <resource>
-      <Practitioner xmlns="http://hl7.org/fhir">
+      <Practitioner>
         <id value="d0117f4a-685c-4659-aa94-14e3514bc86b"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Practitioner|1.0.0"/>
@@ -802,7 +802,7 @@
   <entry>
     <fullUrl value="urn:uuid:b99a6afc-aedb-4c1a-9433-589eb967c680"/>
     <resource>
-      <Practitioner xmlns="http://hl7.org/fhir">
+      <Practitioner>
         <id value="b99a6afc-aedb-4c1a-9433-589eb967c680"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Practitioner_Physician|1.0.0"/>
@@ -834,7 +834,7 @@
   <entry>
     <fullUrl value="urn:uuid:464ee2ce-24f3-4319-934b-b0b994bf9aad"/>
     <resource>
-      <Procedure xmlns="http://hl7.org/fhir">
+      <Procedure>
         <id value="464ee2ce-24f3-4319-934b-b0b994bf9aad"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Procedure|1.0.0"/>
@@ -859,7 +859,7 @@
   <entry>
     <fullUrl value="urn:uuid:bd1e4596-df3a-11eb-ba80-0242ac130004"/>
     <resource>
-      <Observation xmlns="http://hl7.org/fhir">
+      <Observation>
         <id value="bd1e4596-df3a-11eb-ba80-0242ac130004"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Observation_Voluntary_Additional_Information|1.0.0"/>
@@ -893,7 +893,7 @@
     <fullUrl value="urn:uuid:ebefcfca-7168-40e5-8918-7af38c7f10c9"/>
     <resource>
 
-      <PractitionerRole xmlns="http://hl7.org/fhir">
+      <PractitionerRole>
         <id value="ebefcfca-7168-40e5-8918-7af38c7f10c9"/>
         <meta>
           <profile value="https://fhir.kbv.de/StructureDefinition/KBV_PR_MIO_NFD_Practitioner_Role_With_Organization|1.0.0"/>

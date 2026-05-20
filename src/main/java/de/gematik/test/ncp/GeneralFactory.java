@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,54 +15,46 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import de.gematik.ncpeh.api.NcpehSimulatorApi;
 import de.gematik.test.ncp.reporting.NcpehContext;
 import de.gematik.test.ncp.reporting.NcpehTimeLoggingHandler;
-import jakarta.ws.rs.core.MediaType;
 import java.lang.reflect.Proxy;
 import java.util.List;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.joda.time.DateTime;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @UtilityClass
 public class GeneralFactory {
 
+  @Getter
+  private static final ObjectMapper objectMapper =
+      new ObjectMapper()
+          .registerModule(new JodaModule())
+          .registerModule(new JavaTimeModule())
+          .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+          .enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING)
+          .enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
+          .setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
+
   /** A Jackson JSON provider configured with custom serialization and deserialization settings. */
-  public static final JacksonJsonProvider JACKSON_JSON_PROVIDER = createJacksonJsonProvider();
-
-  /**
-   * Creates and configures a JacksonJsonProvider with specific settings for serialization and
-   * deserialization.
-   *
-   * @return a configured JacksonJsonProvider instance
-   */
-  private static JacksonJsonProvider createJacksonJsonProvider() {
-    final var provider =
-        new JacksonJsonProvider()
-            .enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING)
-            .enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-    provider
-        .locateMapper(DateTime.class, MediaType.APPLICATION_JSON_TYPE)
-        .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-        .registerModule(new JavaTimeModule());
-
-    return provider;
-  }
+  private static final JacksonJsonProvider JACKSON_JSON_PROVIDER =
+      new JacksonJsonProvider(objectMapper);
 
   /**
    * Creates a JAX-RS client proxy for the specified proxy class and server configuration.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.screenplay.abilities;
@@ -25,12 +26,23 @@ import lombok.RequiredArgsConstructor;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
 
+/**
+ * Ability to know the current practitioner (actor) in the test scenario. This is useful when a
+ * patient needs to perform actions that refer to a previously encountered health professional who
+ * is currently not on the stage.
+ */
 @RequiredArgsConstructor
 public class KnowCurrentPractitioner implements Ability {
 
   @Getter private final Actor currentPractitioner;
 
-  public static KnowCurrentPractitioner with(final Actor acquaintance) {
+  /**
+   * Factory method to create the ability to know the specified current practitioner.
+   *
+   * @param acquaintance the actor representing the current practitioner
+   * @return a new instance of the KnowCurrentPractitioner ability
+   */
+  public static KnowCurrentPractitioner as(final Actor acquaintance) {
     return new KnowCurrentPractitioner(acquaintance);
   }
 }

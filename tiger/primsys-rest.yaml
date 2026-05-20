@@ -1,0 +1,29 @@
+servers:
+
+  primsysUrl:
+    type: externalUrl
+    active: false
+    hostname: ${infrastructure.primsys-rest.hostname}
+    dependsUpon: primsysProxy
+    healthcheckUrl: http://localhost:${tiger.ports.primsysProxy}
+    healthcheckReturnCode: 401
+    source:
+      - ${tiger.servers.primsysUrl.healthcheckUrl}
+
+  primsysProxy:
+    # Another tiger proxy server which forwards requests to primsys via a corporate proxy.
+    # This is currently needed as a workaround, as forwardToProxy seems to break local connections
+    # when set for the main tiger proxy even with localhost added to noProxyHosts.
+    type: tigerProxy
+    active: ${tiger.servers.primsysUrl.active}
+    tigerProxyConfiguration:
+      proxyPort: ${tiger.ports.primsysProxy}
+      proxyRoutes:
+        - from: http://localhost
+          to: https://erpps-test.dev.gematik.solutions
+
+      forwardToProxy:
+        type: http
+        # set via environment variables PROXY_HOST and PROXY_PORT
+        hostname: ${proxy.host}
+        port: ${proxy.port}

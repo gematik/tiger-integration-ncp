@@ -39,12 +39,46 @@ patients:
     birthDate: "1955-01-01"
 practitioners:
   eu:
+    # profileName pattern: <role name><family name (main part)><country name>
     - name: van der Meer
-      profileName: default
+      profileName: practitionerVanDerMeerNetherlands
+      countryName: NETHERLANDS
     - name: Dr. Baumgartner
-      profileName: default
+      profileName: practitionerBaumgartnerAustria
+      countryName: AUSTRIA
     - name: Prof. Chevalier
-      profileName: default
+      profileName: practitionerChevalierFrance
+      countryName: FRANCE
+    - name: Dr. Elisabeth Pauwels
+      profileName: pharmacistPauwelsBelgium
+      countryName: BELGIUM
+    - name: Asparuhk Michailow
+      profileName: pharmacistMichailowBulgaria
+      countryName: BULGARIA
+    - name: Dr. med. Smilla Grundtvig
+      profileName: pharmacistGrundtvigDenmark
+      countryName: DENMARK
+    - name: J\uc481nis Liepi\uc586\uc5a1
+      # Jānis Liepiņš - J\uc481nis Liepi\uc586\uc5a1
+      profileName: pharmacistLiepinsLatvia
+      countryName: LATVIA
+    - name: Urte \uc5bdili\uc6abt\uc497
+      # Urte Žiliūtė - Urte \uc5bdili\uc6abt\uc497
+      profileName: pharmacistZiluteLithuania
+      countryName: LITHUANIA
+    - name: Hannah Leitner
+      profileName: pharmacistLeitnerAustria
+      countryName: AUSTRIA
+    - name: Marjan Morales
+      profileName: pharmacistMoralesSpain
+      countryName: SPAIN
+    - name: Bo\u017cena Kami\u1e45ska
+      # Bożena Kamińska - Bo\u017cena Kami\u1e45ska
+      profileName: pharmacistKaminskaPoland
+      countryName: POLAND
+    - name: Mees De Vries
+      profileName: pharmacistVriesNetherlands
+      countryName: NETHERLANDS
   de:
     - titles: Dr.
       givenNames: Stefan
@@ -60,10 +94,47 @@ profiles:
   default:
     trcProfileName: trcDefault
     idaProfileName: idaDefault
+  practitionerVanDerMeerNetherlands:
+    trcProfileName: trcVanDerMeer
+    idaProfileName: idaVanDerMeer
+  practitionerBaumgartnerAustria:
+    trcProfileName: trcBaumgartner
+    idaProfileName: idaBaumgartner
+  practitionerChevalierFrance:
+    trcProfileName: trcChevalier
+    idaProfileName: idaChevalier
+  pharmacistPauwelsBelgium:
+    trcProfileName: trcPauwels
+    idaProfileName: idaPauwels
+  pharmacistMichailowBulgaria:
+    trcProfileName: trcMichailow
+    idaProfileName: idaMichailow
+  pharmacistLiepinsLatvia:
+    trcProfileName: trcLiepins
+    idaProfileName: idaLiepins
+  pharmacistGrundtvigDenmark:
+    trcProfileName: trcGrundtvig
+    idaProfileName: idaGrundtvig
+  pharmacistZiluteLithuania:
+    trcProfileName: trcZilute
+    idaProfileName: idaZilute
+  pharmacistMoralesSpain:
+    trcProfileName: trcMorales
+    idaProfileName: idaMorales
+  pharmacistKaminskaPoland:
+    trcProfileName: trcKaminska
+    idaProfileName: idaKaminska
+  pharmacistVriesNetherlands:
+    trcProfileName: trcVries
+    idaProfileName: idaVries
+  pharmacistLeitnerAustria:
+    trcProfileName: trcLeitner
+    idaProfileName: idaLeitner
 config:
   names:
     titles:
       - "Dr."
+      - "Dr. med."
       - "Prof."
       - "Graf"
       - "Gräfin"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.data;
@@ -40,24 +41,22 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 public final class FindDocumentsRequestBuilder extends RequestBaseBuilder<FindDocumentsRequest> {
 
-  private String trcAssertionProfileName;
-
   private static final String XDS_DOCUMENT_FORMAT_STRING = "('%s')";
-  private static final String XDS_DOCUMENT_ENTRY_CLASS_CODE = "60591-5^^2.16.840.1.113883.6.1";
-  private static final String XDS_DOCUMENT_ENTRY_CLASS_CODE_VALUE =
-      String.format(XDS_DOCUMENT_FORMAT_STRING, XDS_DOCUMENT_ENTRY_CLASS_CODE);
   private static final String XDS_DOCUMENT_ENTRY_STATUS_VALUE =
       String.format(XDS_DOCUMENT_FORMAT_STRING, STATUS_APPROVED);
+
+  private String trcAssertionProfileName;
+  private String xdsDocumentEntryClassCode;
 
   @Override
   public FindDocumentsRequest build() {
     return new FindDocumentsRequest(
         super.buildRequestBase(),
         new TrcAssertionProfile(
-            new BaseAssertionProfile(trcAssertionProfileName, null, null, null, null), null),
+            new BaseAssertionProfile(trcAssertionProfileName, null, null, null, null), null, null),
         super.buildPatientId(),
         accessCode(),
-        XDS_DOCUMENT_ENTRY_CLASS_CODE_VALUE,
+        xdsDocumentEntryClassCode,
         XDS_DOCUMENT_ENTRY_STATUS_VALUE,
         null);
   }

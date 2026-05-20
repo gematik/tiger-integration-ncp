@@ -13,6 +13,7 @@ servers:
     type: zion
     active: "!{not ${tiger.servers.epaFdVUrl.active}}"
     hostname: ${infrastructure.epafdv.hostname}
+    startupTimeoutSec: 90
     zionConfiguration:
       # define the server port.
       # In a real setup you would leave this empty (then a random port will be used)

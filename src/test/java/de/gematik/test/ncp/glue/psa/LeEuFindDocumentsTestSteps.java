@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.glue.psa;
@@ -25,7 +26,7 @@ import static net.serenitybdd.screenplay.GivenWhenThen.then;
 import static net.serenitybdd.screenplay.GivenWhenThen.when;
 
 import de.gematik.test.ncp.screenplay.actions.ConfirmThatSearchForPatientSummaryFails;
-import de.gematik.test.ncp.screenplay.actions.FindPatientSummaryData;
+import de.gematik.test.ncp.screenplay.actions.FindDocuments;
 import de.gematik.test.ncp.screenplay.questions.FoundPatientSummaryDocument;
 import de.gematik.test.ncp.screenplay.questions.GetNumberOfPatientSummaryDocuments;
 import de.gematik.test.ncp.screenplay.questions.GetRegistryErrorCodesFromAdhocQueryResponse;
@@ -54,7 +55,7 @@ public class LeEuFindDocumentsTestSteps {
     // kompletter Positiv-Ablauf von FindDocuments und den Prüfungen
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
-    leEuActor.attemptsTo(FindPatientSummaryData.instance());
+    leEuActor.attemptsTo(FindDocuments.forPsa());
     and(leEuActor).attemptsTo(Ensure.that(new GetNumberOfPatientSummaryDocuments()).isEqualTo(2L));
     and(leEuActor).attemptsTo(Ensure.that(FoundPatientSummaryDocument.ofCdaLevel(1)).isTrue());
     and(leEuActor).attemptsTo(Ensure.that(FoundPatientSummaryDocument.ofCdaLevel(3)).isTrue());
@@ -69,7 +70,7 @@ public class LeEuFindDocumentsTestSteps {
     //   see "der LE-EU erhält einen FindDocuments RegistryError mit errorCode ERROR_NO_CONSENT"
 
     final var leEuActor = OnStage.theActorCalled(leEuName);
-    leEuActor.attemptsTo(FindPatientSummaryData.instance());
+    leEuActor.attemptsTo(FindDocuments.forPsa());
     and(leEuActor)
         .attemptsTo(ConfirmThatSearchForPatientSummaryFails.withErrorCode(ERROR_NO_CONSENT));
   }
@@ -80,7 +81,7 @@ public class LeEuFindDocumentsTestSteps {
   public void leEuStartsFindDocuments() {
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
-    when(leEuActor).attemptsTo(FindPatientSummaryData.instance());
+    when(leEuActor).attemptsTo(FindDocuments.forPsa());
   }
 
   @Und(

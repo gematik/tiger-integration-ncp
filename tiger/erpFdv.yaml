@@ -1,0 +1,16 @@
+servers:
+
+  erpFdvDocker:
+    type: docker
+    active: false
+    hostname: ${infrastructure.erpFdv.hostname}
+    healthcheckReturnCode: 401
+    source:
+      - europe-west3-docker.pkg.dev/gematik-all-infra-prod/e-rezept/remotefdv-mockserver@sha256
+    version: 26b1c80fc003d94f576eab64f5ecaeef5a1b7c42b68fc042d8688137ca2f73ad
+    dockerOptions:
+      copyFiles:
+        - sourcePath: smartcards
+          destinationPath: /app/smartcards
+    environment:
+      - TI_ENV=TU

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,19 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 package de.gematik.test.ncp.ncpeh.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import de.gematik.ncpeh.api.NcpehSimulatorApi;
 import de.gematik.ncpeh.api.common.EuCountryCode;
+import de.gematik.ncpeh.api.common.PrescriptionDispenseData;
+import de.gematik.ncpeh.api.request.DocumentRequest;
+import de.gematik.ncpeh.api.request.IdentifyPatientRequest;
 import de.gematik.test.ncp.ExternalServerConfig;
+import de.gematik.test.ncp.data.Medication;
+import de.gematik.test.ncp.data.NcpehSimTestdataProfile;
 import de.gematik.test.ncp.data.Patient;
 import de.gematik.test.ncp.data.PatientAccessData;
 import de.gematik.test.ncp.data.Testdata;
@@ -30,17 +35,19 @@ import de.gematik.test.ncp.ncpeh.NcpehException;
 import de.gematik.test.ncp.ncpeh.NcpehService;
 import de.gematik.test.ncp.ncpeh.PatientSummaryLevel;
 import de.gematik.test.ncp.ncpeh.client.dataobject.DataUtils;
-import de.gematik.test.ncp.ncpeh.client.dataobject.FindPatientSummaryResponseDO;
-import de.gematik.test.ncp.ncpeh.client.dataobject.IdentifyPatientResponseDO;
-import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryResponseDO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.FindDocumentsResponseDTO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.IdentifyPatientResponseDTO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.ProvideAndRegisterDocumentSetResponseDTO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.RetrieveDocumentsResponseDTO;
+import de.gematik.test.ncp.ncpeh.data.ProvideAndRegisterSetOfDocumentsRequestBuilder;
+import de.gematik.test.ncp.ncpeh.data.RetrieveSetOfDocumentsRequestBuilder;
 import de.gematik.test.ncp.ncpeh.data.TestdataFactory;
-import de.gematik.test.tiger.common.config.TigerGlobalConfiguration;
+import de.gematik.test.ncp.util.Utils;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -61,8 +68,10 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public class NcpehClientImpl implements NcpehService {
 
-  public static final String REQUEST_HEADER_X_NCPEHMOCK_RESPONSE = "X-NCPeHMock-Response";
-  public static final String REQUEST_HEADER_X_NCPEHMOCK_PATIENT = "X-NCPeHMock-Patient";
+  public static final String CUSTOM_HEADER_PREFIX = "X-NCPeHMock-";
+  public static final String REQUEST_HEADER_RESPONSE_FILE = CUSTOM_HEADER_PREFIX + "Response";
+  public static final String REQUEST_HEADER_PATIENT = CUSTOM_HEADER_PREFIX + "Patient";
+  public static final String REQUEST_HEADER_MEDICATION = CUSTOM_HEADER_PREFIX + "Medication";
 
   @NonNull private final ExternalServerConfig config;
 
@@ -71,23 +80,35 @@ public class NcpehClientImpl implements NcpehService {
   private final NcpehSimulatorApi clientProxy;
 
   @Override
-  public IdentifyPatientResponseDO identifyPatient(
+  public IdentifyPatientResponseDTO identifyPatient(
       final PatientAccessData patientAccessData,
       final String testdataProfileName,
-      final String leiCountry,
-      final String ncpehMockControlRequestHeader) {
-    final var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
+      final String providerCountry,
+      final String accessCodeAssigningAuthority,
+      final String ncpehMockControlRequestHeader,
+      final Patient patient) {
 
-    setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader);
+    NcpehSimTestdataProfile testdata =
+        Testdata.instance().getNcpehSimTestdataProfile(testdataProfileName);
+    IdentifyPatientRequest request =
+        TestdataFactory.buildStandardIdentifyPatientRequest(
+            patientAccessData,
+            EuCountryCode.valueOf(providerCountry.toUpperCase()),
+            accessCodeAssigningAuthority,
+            testdata);
 
-    try (final var response =
-        clientProxy()
-            .identifyPatient(
-                TestdataFactory.buildStandardIdentifyPatientRequest(
-                    patientAccessData,
-                    EuCountryCode.valueOf(leiCountry.toUpperCase()),
-                    testdata))) {
+    return identifyPatient(request, ncpehMockControlRequestHeader, patient);
+  }
 
+  @Override
+  public IdentifyPatientResponseDTO identifyPatient(
+      final IdentifyPatientRequest identifyPatientRequest,
+      final String ncpehMockControlRequestHeader,
+      final Patient patient) {
+
+    setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader, patient);
+
+    try (var response = clientProxy().identifyPatient(identifyPatientRequest)) {
       if (HttpStatus.valueOf(response.getStatus()).is2xxSuccessful()) {
         return DataUtils.convertResponseDataForIdentifyPatient(response);
       }
@@ -97,60 +118,29 @@ public class NcpehClientImpl implements NcpehService {
     }
   }
 
-  private void setNcpehMockControlRequestHeader(final String ncpehMockControlRequestHeader) {
-    setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader, null);
-  }
-
-  private void setNcpehMockControlRequestHeader(
-      final String ncpehMockControlRequestHeader, final Patient patient) {
-    // Cast to Client to add headers
-    final Client client = (Client) clientProxy();
-    final MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
-    headers.put(
-        REQUEST_HEADER_X_NCPEHMOCK_RESPONSE,
-        List.of(Optional.ofNullable(ncpehMockControlRequestHeader).orElse("")));
-
-    headers.put(
-        REQUEST_HEADER_X_NCPEHMOCK_PATIENT,
-        List.of(
-            Optional.ofNullable(patient)
-                .map(
-                    p -> {
-                      try {
-                        return Base64.getEncoder()
-                            .encodeToString(
-                                TigerGlobalConfiguration.getObjectMapper()
-                                    .writeValueAsString(patient)
-                                    .getBytes(StandardCharsets.UTF_8));
-                      } catch (final JsonProcessingException e) {
-                        throw new NcpehException("Exception by writing json", e);
-                      }
-                    })
-                .orElse("")));
-
-    client.headers(headers);
-  }
-
   @Override
-  public FindPatientSummaryResponseDO findPatientSummary(
+  public FindDocumentsResponseDTO findDocuments(
       final PatientAccessData patientAccessData,
       final String testdataProfileName,
-      final String leiCountry,
-      final String ncpehMockControlRequestHeader) {
-    final var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
+      final String providerCountry,
+      final String xdsDocumentEntryClassCode,
+      final String ncpehMockControlRequestHeader,
+      final Map<String, Medication> medicationByPrescriptionId) {
+    var testdata = Testdata.instance().getNcpehSimTestdataProfile(testdataProfileName);
 
-    setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader);
+    setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader, medicationByPrescriptionId);
 
     try (final var response =
         clientProxy()
             .findDocuments(
                 TestdataFactory.buildStandardFindDocumentsRequest(
                     patientAccessData,
-                    EuCountryCode.valueOf(leiCountry.toUpperCase()),
+                    EuCountryCode.valueOf(providerCountry.toUpperCase()),
+                    xdsDocumentEntryClassCode,
                     testdata))) {
 
       if (HttpStatus.valueOf(response.getStatus()).is2xxSuccessful()) {
-        return DataUtils.convertResponseDataForFindPatientSummary(response);
+        return DataUtils.convertResponseDataForFindDocuments(response);
       }
 
       throw new NcpehException("findDocuments operation did not run successfully", response);
@@ -158,7 +148,40 @@ public class NcpehClientImpl implements NcpehService {
   }
 
   @Override
-  public RetrievePatientSummaryResponseDO retrievePatientSummary(
+  public RetrieveDocumentsResponseDTO retrieveDocuments(
+      final PatientAccessData patientAccessData,
+      final Patient patient,
+      final String testdataProfileName,
+      final String providerCountry,
+      final Set<DocumentRequest> documentRequestSet,
+      final String ncpehMockControlRequestHeader,
+      final Map<String, Medication> medicationByPrescriptionId) {
+    var testdata = Testdata.instance().getNcpehSimTestdataProfile(testdataProfileName);
+    setNcpehMockControlRequestHeader(
+        ncpehMockControlRequestHeader, patient, medicationByPrescriptionId);
+
+    var request =
+        RetrieveSetOfDocumentsRequestBuilder.newInstance()
+            .documentRequestSet(documentRequestSet)
+            .trcAssertionProfileName(testdata.trcProfileName())
+            .kvnr(patientAccessData.getKvnr())
+            .accessCode(patientAccessData.getAccessCode())
+            .euCountryCode(EuCountryCode.fromCountryName(providerCountry))
+            .idaAssertionProfileName(testdata.idaProfileName())
+            .build();
+
+    try (var response = clientProxy().retrieveSetOfDocuments(request)) {
+
+      if (HttpStatus.valueOf(response.getStatus()).is2xxSuccessful()) {
+        return DataUtils.convertResponseDataForRetrieveDocuments(response);
+      }
+
+      throw new NcpehException("retrieveDocuments operation did not run successfully", response);
+    }
+  }
+
+  @Override
+  public RetrieveDocumentsResponseDTO retrievePatientSummary(
       final PatientAccessData patientAccessData,
       final Patient patient,
       final String testdataProfileName,
@@ -166,7 +189,7 @@ public class NcpehClientImpl implements NcpehService {
       final AdhocQueryResponse metadata,
       final String ncpehMockControlRequestHeader,
       final PatientSummaryLevel... patientSummaryLevels) {
-    final var testdata = Testdata.instance().ncpehSimTestdataProfiles().get(testdataProfileName);
+    var testdata = Testdata.instance().getNcpehSimTestdataProfile(testdataProfileName);
 
     setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader, patient);
 
@@ -181,11 +204,85 @@ public class NcpehClientImpl implements NcpehService {
                     patientSummaryLevels))) {
 
       if (HttpStatus.valueOf(response.getStatus()).is2xxSuccessful()) {
-        return DataUtils.convertResponseDataForRetrievePatientSummary(response);
+        return DataUtils.convertResponseDataForRetrieveDocuments(response);
       }
 
       throw new NcpehException(
           "retrievePatientSummary operation did not run successfully", response);
     }
+  }
+
+  @Override
+  public ProvideAndRegisterDocumentSetResponseDTO provideAndRegisterDocumentSet(
+      final PatientAccessData patientAccessData,
+      final String testdataProfileName,
+      final String providerCountry,
+      final List<PrescriptionDispenseData> dispensations,
+      final String formatCode,
+      final String typeCode,
+      final String classCode,
+      final String ncpehMockControlRequestHeader) {
+    final var testdata = Testdata.instance().getNcpehSimTestdataProfile(testdataProfileName);
+
+    setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader);
+
+    try (final var response =
+        clientProxy()
+            .provideAndRegisterSetOfDocuments(
+                ProvideAndRegisterSetOfDocumentsRequestBuilder.newInstance()
+                    .trcAssertionProfileName(testdata.trcProfileName())
+                    .formatCode(formatCode)
+                    .typeCode(typeCode)
+                    .classCode(classCode)
+                    .dispensations(dispensations)
+                    .kvnr(patientAccessData.getKvnr())
+                    .accessCode(patientAccessData.getAccessCode())
+                    .euCountryCode(EuCountryCode.valueOf(providerCountry.toUpperCase()))
+                    .idaAssertionProfileName(testdata.idaProfileName())
+                    .build())) {
+
+      if (HttpStatus.valueOf(response.getStatus()).is2xxSuccessful()) {
+        return DataUtils.convertResponseDataForProvideAndRegisterDocumentSet(response);
+      }
+
+      throw new NcpehException(
+          "provideAndRegisterDocumentSet operation did not run successfully", response);
+    }
+  }
+
+  private void setNcpehMockControlRequestHeader(final String ncpehMockControlRequestHeader) {
+    setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader, null, null);
+  }
+
+  private void setNcpehMockControlRequestHeader(
+      final String ncpehMockControlRequestHeader, final Patient patient) {
+    setNcpehMockControlRequestHeader(ncpehMockControlRequestHeader, patient, null);
+  }
+
+  private void setNcpehMockControlRequestHeader(
+      final String ncpehMockControlRequestHeader,
+      final Map<String, Medication> medicationByPrescriptionId) {
+    setNcpehMockControlRequestHeader(
+        ncpehMockControlRequestHeader, null, medicationByPrescriptionId);
+  }
+
+  private void setNcpehMockControlRequestHeader(
+      final String ncpehMockControlRequestHeader,
+      final Patient patient,
+      final Map<String, Medication> medicationByPrescriptionId) {
+    MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
+
+    if (ncpehMockControlRequestHeader != null) {
+      headers.put(REQUEST_HEADER_RESPONSE_FILE, List.of(ncpehMockControlRequestHeader));
+    }
+    if (patient != null) {
+      headers.put(REQUEST_HEADER_PATIENT, List.of(Utils.getB64Json(patient)));
+    }
+    if (medicationByPrescriptionId != null && !medicationByPrescriptionId.isEmpty()) {
+      headers.put(REQUEST_HEADER_MEDICATION, List.of(Utils.getB64Json(medicationByPrescriptionId)));
+    }
+
+    // cast to Client to modify headers
+    ((Client) clientProxy()).reset().headers(headers);
   }
 }

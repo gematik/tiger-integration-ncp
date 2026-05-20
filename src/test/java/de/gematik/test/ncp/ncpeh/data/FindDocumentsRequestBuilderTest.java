@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.data;
@@ -41,6 +42,7 @@ class FindDocumentsRequestBuilderTest {
     // Arrange
     final var builder =
         FindDocumentsRequestBuilder.newInstance()
+            .xdsDocumentEntryClassCode("('60591-5^^2.16.840.1.113883.6.1')")
             .trcAssertionProfileName("Trc")
             .euCountryCode(EuCountryCode.AUSTRIA)
             .idaAssertionProfileName("ida")

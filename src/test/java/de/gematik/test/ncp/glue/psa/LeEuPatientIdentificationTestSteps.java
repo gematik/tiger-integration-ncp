@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.glue.psa;
@@ -35,9 +36,9 @@ import de.gematik.test.ncp.screenplay.questions.GetAcknowledgementDetailErrortex
 import de.gematik.test.ncp.screenplay.questions.GetAcknowledgementDetailLocationtextFromIdentifyPatientResponse;
 import de.gematik.test.ncp.screenplay.questions.GetPractitionerData;
 import de.gematik.test.ncp.screenplay.questions.GetReasonEncodingFromIdentifyPatientResponse;
-import de.gematik.test.ncp.screenplay.questions.IsIdentifyPatientDataCorrect;
+import de.gematik.test.ncp.screenplay.questions.IdentifyPatientData;
 import de.gematik.test.ncp.screenplay.questions.IsNoIdentifyPatientData;
-import de.gematik.test.ncp.screenplay.questions.WhoIsTreatedPatient;
+import de.gematik.test.ncp.screenplay.questions.practitioner.CurrentPatient;
 import io.cucumber.java.de.Dann;
 import io.cucumber.java.de.Und;
 import io.cucumber.java.de.Wenn;
@@ -66,7 +67,7 @@ public class LeEuPatientIdentificationTestSteps {
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
     final var country = leEuActor.asksFor(new GetPractitionerData()).country();
-    final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+    final var patient = leEuActor.asksFor(CurrentPatient.asActor());
 
     andThat(patient).attemptsTo(UnauthorizeEuCountry.forCountry(country));
     andThat(patient).attemptsTo(Ensure.that(AuthorizationIsActive.forCountry(country)).isFalse());
@@ -86,7 +87,7 @@ public class LeEuPatientIdentificationTestSteps {
     // make patient data including invalid accessCode and KVNR available to actor LeEu
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
-    final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+    final var patient = leEuActor.asksFor(CurrentPatient.asActor());
     when(patient).attemptsTo(MakeAccessCodeDefect.instance());
     and(patient).attemptsTo(ProvidePatientAccessDataToLeEu.withLeEu(leEuActor));
 
@@ -100,7 +101,7 @@ public class LeEuPatientIdentificationTestSteps {
     // make patient data including accessCode and invalid KVNR available to actor LeEu
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
-    final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+    final var patient = leEuActor.asksFor(CurrentPatient.asActor());
 
     when(patient).attemptsTo(ProvidePatientAccessDataToLeEu.withKvnrAndLeEu(otherKvnr, leEuActor));
 
@@ -119,7 +120,8 @@ public class LeEuPatientIdentificationTestSteps {
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
     leEuActor.attemptsTo(
-        IdentifyPatient.instance().then(Ensure.that(new IsIdentifyPatientDataCorrect()).isTrue()));
+        IdentifyPatient.forPsa()
+            .then(Ensure.that(IdentifyPatientData.matchesProvidedDataAndAccessCode()).isTrue()));
   }
 
   @Wenn("^der LE-EU mit KVNR und AccessCode der versicherten Person die Identifikation aufruft$")
@@ -129,7 +131,7 @@ public class LeEuPatientIdentificationTestSteps {
     // before. Get and store response.
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
-    when(leEuActor).attemptsTo(IdentifyPatient.instance());
+    when(leEuActor).attemptsTo(IdentifyPatient.forPsa());
   }
 
   @Dann(
@@ -140,7 +142,8 @@ public class LeEuPatientIdentificationTestSteps {
     // https://polarion.int.gematik.de/polarion/redirect/project/Mainline_OPB1/wiki/Euro%20Vision/gemSpec_NCPeH_FD?selection=ML-131797
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
-    then(leEuActor).attemptsTo(Ensure.that(new IsIdentifyPatientDataCorrect()).isTrue());
+    then(leEuActor)
+        .attemptsTo(Ensure.that(IdentifyPatientData.matchesProvidedDataAndAccessCode()).isTrue());
   }
 
   @Dann("^erhält der LE-EU ein Identifikationsergebnis ohne Versichertendaten zurück$")
@@ -217,7 +220,7 @@ public class LeEuPatientIdentificationTestSteps {
     // no need to do anything here except for moving the patient into the spotlight for the next
     // step
     final var leEuActor = OnStage.theActorInTheSpotlight();
-    final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+    final var patient = leEuActor.asksFor(CurrentPatient.asActor());
     OnStage.stage().shineSpotlightOn(patient.getName());
   }
 }

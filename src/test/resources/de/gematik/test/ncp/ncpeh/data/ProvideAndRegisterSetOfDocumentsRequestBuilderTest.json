@@ -1,0 +1,45 @@
+{
+  "baseParameter": {
+    "euCountryCode": "BE",
+    "idaAssertionProfile": {
+      "assertionProperties": {
+        "profileName": "ida",
+        "invalidSignature": null,
+        "deltaNotBefore": null,
+        "deltaNotAfter": null,
+        "purposeOfUse": null
+      },
+      "structuralRole": null,
+      "permissions": null,
+      "attributeStatements": null
+    }
+  },
+  "trcAssertionProfile": {
+    "assertionProperties": {
+      "profileName": "Trc",
+      "invalidSignature": null,
+      "deltaNotBefore": null,
+      "deltaNotAfter": null,
+      "purposeOfUse": null
+    },
+    "subjectId": null
+  },
+  "patientId": {
+    "kvnr": "X123456789",
+    "kvnrAssigningAuthority": "1.2.276.0.76.3.1.580.147"
+  },
+  "accessCode": "ABC123",
+  "formatCode": "dummyformat",
+  "typeCode": "dummytype",
+  "classCode": "dummyclass",
+  "dispensations": [
+    {
+      "prescriptionId": "aid",
+      "isSubstituted": true
+    },
+    {
+      "prescriptionId": "bid",
+      "isSubstituted": false
+    }
+  ]
+}

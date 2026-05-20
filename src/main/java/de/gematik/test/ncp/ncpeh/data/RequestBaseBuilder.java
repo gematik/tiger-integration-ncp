@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.data;
@@ -24,7 +25,9 @@ import de.gematik.ncpeh.api.common.BaseAssertionProfile;
 import de.gematik.ncpeh.api.common.EuCountryCode;
 import de.gematik.ncpeh.api.common.IdaAssertionProfile;
 import de.gematik.ncpeh.api.common.PatientId;
+import de.gematik.ncpeh.api.common.Saml2AttributeProperty;
 import de.gematik.ncpeh.api.request.RequestBase;
+import java.util.Set;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.Builder;
@@ -64,22 +67,24 @@ import org.apache.commons.lang3.builder.Builder;
 public abstract class RequestBaseBuilder<R> implements Builder<R> {
 
   public static final String KVNR_ASSIGNING_AUTHORITY = "1.2.276.0.76.3.1.580.147";
-  private EuCountryCode euCountryCode;
-
-  private String idaAssertionProfileName;
-
-  private String kvnr;
 
   private String accessCode;
+  private String idaAssertionProfileName;
+  private String kvnr;
+  private EuCountryCode euCountryCode;
+
+  private String idaStructuralRole;
+  private Set<String> idaPermissions;
+  private Set<Saml2AttributeProperty> idaAttributeStatements;
 
   public RequestBase buildRequestBase() {
     return new RequestBase(
         euCountryCode,
         new IdaAssertionProfile(
             new BaseAssertionProfile(idaAssertionProfileName, null, null, null, null),
-            null,
-            null,
-            null));
+            idaStructuralRole,
+            idaPermissions,
+            idaAttributeStatements));
   }
 
   public PatientId buildPatientId() {

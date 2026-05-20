@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.data;
@@ -41,10 +42,11 @@ class IdentifyPatientRequestBuilderTest {
     // Arrange
     final var builder =
         IdentifyPatientRequestBuilder.newInstance()
+            .accessCodeAssigningAuthority("1.2.276.0.76.4.298")
             .euCountryCode(EuCountryCode.AUSTRIA)
             .idaAssertionProfileName("ida")
-            .kvnr("X123456789")
-            .accessCode("ABC123");
+            .accessCode("ABC123")
+            .kvnr("X123456789");
 
     // Act
     final var testee = assertDoesNotThrow(builder::build, "Method build threw exception");

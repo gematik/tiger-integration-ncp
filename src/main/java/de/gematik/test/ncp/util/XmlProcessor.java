@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 package de.gematik.test.ncp.util;
 
@@ -104,7 +105,12 @@ public class XmlProcessor<T extends XmlProcessor<T>> {
         value = XmlProcessor.documentBuilder.get();
         if (value == null) {
           final DocumentBuilder actualValue =
-              supplyOrThrowSneaky(() -> DocumentBuilderFactory.newInstance().newDocumentBuilder());
+              supplyOrThrowSneaky(
+                  () -> {
+                    var dbf = DocumentBuilderFactory.newInstance();
+                    dbf.setNamespaceAware(true);
+                    return dbf.newDocumentBuilder();
+                  });
           value = actualValue == null ? XmlProcessor.documentBuilder : actualValue;
           XmlProcessor.documentBuilder.set(value);
         }
@@ -122,7 +128,26 @@ public class XmlProcessor<T extends XmlProcessor<T>> {
           value = XmlProcessor.xpathProcessor.get();
           if (value == null) {
             final XPath actualValue = XPathFactory.newInstance().newXPath();
-            value = actualValue == null ? XmlProcessor.xpathProcessor : actualValue;
+            actualValue.setNamespaceContext(
+                new javax.xml.namespace.NamespaceContext() {
+                  @Override
+                  public String getNamespaceURI(final String prefix) {
+                    return "fhir".equals(prefix)
+                        ? "http://hl7.org/fhir"
+                        : javax.xml.XMLConstants.NULL_NS_URI;
+                  }
+
+                  @Override
+                  public String getPrefix(final String uri) {
+                    return null;
+                  }
+
+                  @Override
+                  public java.util.Iterator<String> getPrefixes(final String uri) {
+                    return null;
+                  }
+                });
+            value = actualValue;
             XmlProcessor.xpathProcessor.set(value);
           }
         }

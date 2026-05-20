@@ -41,7 +41,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
 
   # PET/Polarion Tags
   @TCID:NCP1_E2E_PSA_UC3_001
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Positiv
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Positiv
   @AF-ID:AF_10122-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -73,7 +73,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_UC3_010
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:3 @TESTFALL:Negativ
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:3 @TESTFALL:Negativ
   @AF-ID:AF_10122-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -110,7 +110,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_UC3_011
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ
   @AF-ID:AF_10122-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -149,7 +149,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_UC3_020
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ
   @AF-ID:AF_10122-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -187,7 +187,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_UC3_021
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:3 @TESTFALL:Negativ
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:3 @TESTFALL:Negativ
   @AF-ID:AF_10122-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -229,7 +229,7 @@ Funktionalität: NCPeH PSA Use Case 3 - Versichertendatensatz abrufen
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_UC3_030
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Positiv
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Positiv
   @AF-ID:AF_10107-01 @AF-ID:AF_10122-01
   @DESCRIPTION
   # Weitere Tags, team-intern

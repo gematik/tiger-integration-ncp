@@ -12,6 +12,10 @@ additionalConfigurationFiles:
     baseKey: tiger
   - filename: tiger/dwh.yaml
     baseKey: tiger
+  - filename: tiger/primsys-rest.yaml
+    baseKey: tiger
+  - filename: tiger/erpFdv.yaml
+    baseKey: tiger
 
 management:
   endpoints:
@@ -37,6 +41,7 @@ ports:
   epaPs: "${free.port.2}"
   ncpehSim: "${free.port.3}"
   dwh: "${free.port.4}"
+  primsysProxy: "${free.port.5}"
 
 tigerProxy:
   skipTrafficEndpointsSubscription: true

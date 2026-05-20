@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,25 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh;
 
+import de.gematik.ncpeh.api.common.PrescriptionDispenseData;
+import de.gematik.ncpeh.api.request.DocumentRequest;
+import de.gematik.ncpeh.api.request.IdentifyPatientRequest;
+import de.gematik.test.ncp.data.Medication;
 import de.gematik.test.ncp.data.Patient;
 import de.gematik.test.ncp.data.PatientAccessData;
-import de.gematik.test.ncp.ncpeh.client.dataobject.FindPatientSummaryResponseDO;
-import de.gematik.test.ncp.ncpeh.client.dataobject.IdentifyPatientResponseDO;
-import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryResponseDO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.FindDocumentsResponseDTO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.IdentifyPatientResponseDTO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.ProvideAndRegisterDocumentSetResponseDTO;
+import de.gematik.test.ncp.ncpeh.client.dataobject.RetrieveDocumentsResponseDTO;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 /**
@@ -42,28 +51,78 @@ public interface NcpehService {
    * @param patientAccessData The health insurance identification number of the patientAccessData
    *     (a.k.a. KVNR)
    * @param testdataProfileName key of the testdata profile configured in the testdata.yaml to use
-   * @param leiCountry name of the country, where the EU-Lei is situated
+   * @param providerCountry name of the country, where the EU-Lei is situated
+   * @param accessCodeAssigningAuthority assigning authority OID for the access code
    * @param ncpehMockControlRequestHeader control header for the NCPeH-Simulation-Mock response
-   * @return {@link IdentifyPatientResponseDO} the patientAccessData information necessary for
+   * @param patient A patient object to include in requests to a mock.
+   * @return {@link IdentifyPatientResponseDTO} the patientAccessData information necessary for
    *     identification purposes
    */
-  IdentifyPatientResponseDO identifyPatient(
+  IdentifyPatientResponseDTO identifyPatient(
       PatientAccessData patientAccessData,
       String testdataProfileName,
-      String leiCountry,
-      String ncpehMockControlRequestHeader);
+      String providerCountry,
+      String accessCodeAssigningAuthority,
+      String ncpehMockControlRequestHeader,
+      Patient patient);
 
   /**
-   * Find the patients ePKA and return its metadata. Note: This operation will likely be subject to
-   * non-backward compatible changes in the future
+   * Retrieve the patientAccessData information necessary for identification purposes.
    *
-   * @return The return type here is not yet defined and will likely change in the future
+   * @param identifyPatientRequest The request to be sent to the NCPeH test driver interface
+   * @param ncpehMockControlRequestHeader Control header for the NCPeH-Simulation-Mock response
+   * @param patient A patient object to include in requests to a mock.
+   * @return {@link IdentifyPatientResponseDTO} the patientAccessData information necessary for
+   *     identification purposes
    */
-  FindPatientSummaryResponseDO findPatientSummary(
+  IdentifyPatientResponseDTO identifyPatient(
+      IdentifyPatientRequest identifyPatientRequest,
+      String ncpehMockControlRequestHeader,
+      Patient patient);
+
+  /**
+   * Find metadata for documents matching the specified criteria.
+   *
+   * @param patientAccessData The patient's health insurance identification number (a.k.a. KVNR)
+   * @param testdataProfileName Key which refers to a testdata profile configured in testdata.yaml
+   * @param providerCountry Name of the country where the EU Healthcare Provider Institution is
+   *     situated
+   * @param xdsDocumentEntryClassCode Semantic signifier identifying the document class to be
+   *     searched for
+   * @param ncpehMockControlRequestHeader Control header for the NCPeH-Simulation-Mock response
+   * @param medicationByPrescriptionId Map of Prescription IDs to medication data
+   * @return {@link FindDocumentsResponseDTO} The simulator communication data containing the
+   *     AdhocQueryRequest and AdhocQueryResponse
+   */
+  FindDocumentsResponseDTO findDocuments(
       PatientAccessData patientAccessData,
       String testdataProfileName,
-      String leiCountry,
-      String ncpehMockControlRequestHeader);
+      String providerCountry,
+      String xdsDocumentEntryClassCode,
+      String ncpehMockControlRequestHeader,
+      Map<String, Medication> medicationByPrescriptionId);
+
+  /**
+   * Retrieve the specified documents for the patient.
+   *
+   * @param patientAccessData The patient's health insurance identification number (a.k.a. KVNR)
+   * @param patient The patient object containing patient details
+   * @param testdataProfileName Key of the testdata profile configured in the testdata.yaml to use
+   * @param providerCountry Name of the country where the EU Healthcare Provider Institution is
+   *     situated
+   * @param documentRequestSet Set of document requests specifying which documents to retrieve
+   * @param ncpehMockControlRequestHeader Control header for the NCPeH-Simulation-Mock response
+   * @param medicationByPrescriptionId Map of Prescription IDs to Medication objects for mocking
+   * @return {@link RetrieveDocumentsResponseDTO} The retrieved documents
+   */
+  RetrieveDocumentsResponseDTO retrieveDocuments(
+      PatientAccessData patientAccessData,
+      Patient patient,
+      String testdataProfileName,
+      String providerCountry,
+      Set<DocumentRequest> documentRequestSet,
+      String ncpehMockControlRequestHeader,
+      final Map<String, Medication> medicationByPrescriptionId);
 
   /**
    * Retrieve the patient's ePKA. Note: This operation will likely be subject to non-backward
@@ -75,13 +134,14 @@ public interface NcpehService {
    * @param testdataProfileName Key of the testdata profile configured in the testdata.yaml to use
    * @param leiCountry Name of the country where the EU-Lei is situated
    * @param metadata The metadata of the ePKA as returned by the {@link
-   *     NcpehService#findPatientSummary(PatientAccessData, String, String, String)} operation
+   *     NcpehService#findDocuments(PatientAccessData, String, String, String, String, Map)}
+   *     operation
    * @param ncpehMockControlRequestHeader Control header for the NCPeH-Simulation-Mock response
    * @param patientSummaryLevels Varargs parameter specifying the levels of patient summary to
    *     retrieve
-   * @return {@link RetrievePatientSummaryResponseDO} The patient's ePKA
+   * @return {@link RetrieveDocumentsResponseDTO} The patient's ePKA
    */
-  RetrievePatientSummaryResponseDO retrievePatientSummary(
+  RetrieveDocumentsResponseDTO retrievePatientSummary(
       PatientAccessData patientAccessData,
       Patient patient,
       String testdataProfileName,
@@ -89,4 +149,28 @@ public interface NcpehService {
       AdhocQueryResponse metadata,
       String ncpehMockControlRequestHeader,
       PatientSummaryLevel... patientSummaryLevels);
+
+  /**
+   * Provide information on dispensed prescriptions
+   *
+   * @param patientAccessData The patient's health insurance identification number (a.k.a. KVNR)
+   * @param testdataProfileName Key of the testdata profile configured in the testdata.yaml to use
+   * @param providerCountry Name of the country where the EU Healthcare Provider Institution is
+   *     situated
+   * @param dispensations Required prescription data used to generate DispenseDocuments
+   * @param formatCode The format code for the provided document set
+   * @param typeCode The type code for the provided document set
+   * @param classCode The class code for the provided document set
+   * @param ncpehMockControlRequestHeader Control header for the NCPeH-Simulation-Mock
+   * @return {@link ProvideAndRegisterDocumentSetResponseDTO} The response to the transaction
+   */
+  ProvideAndRegisterDocumentSetResponseDTO provideAndRegisterDocumentSet(
+      PatientAccessData patientAccessData,
+      String testdataProfileName,
+      String providerCountry,
+      List<PrescriptionDispenseData> dispensations,
+      String formatCode,
+      String typeCode,
+      String classCode,
+      String ncpehMockControlRequestHeader);
 }
