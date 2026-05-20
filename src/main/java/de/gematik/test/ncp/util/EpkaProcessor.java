@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.util;
@@ -40,17 +41,21 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class EpkaProcessor extends XmlProcessor<EpkaProcessor> {
 
-  public static final String KVNR_XPATH_IN_EPKA = "//Patient/identifier/value/@value";
+  public static final String KVNR_XPATH_IN_EPKA =
+      "//fhir:Patient/fhir:identifier/fhir:value/@value";
 
-  public static final String BIRTHDATE_XPATH_IN_EPKA = "//Patient/birthDate/@value";
+  public static final String BIRTHDATE_XPATH_IN_EPKA = "//fhir:Patient/fhir:birthDate/@value";
 
-  public static final String FULL_NAME_XPATH_IN_EPKA = "//Patient/name/text/@value";
+  public static final String FULL_NAME_XPATH_IN_EPKA = "//fhir:Patient/fhir:name/fhir:text/@value";
 
-  public static final String LAST_NAME_XPATH_IN_EPKA = "//Patient/name/family/@value";
+  public static final String LAST_NAME_XPATH_IN_EPKA =
+      "//fhir:Patient/fhir:name/fhir:family/@value";
 
-  public static final String GIVEN_NAME_XPATH_IN_EPKA = "//Patient/name/given/@value";
+  public static final String GIVEN_NAME_XPATH_IN_EPKA =
+      "//fhir:Patient/fhir:name/fhir:given/@value";
 
-  public static final String NAME_PREFIX_XPATH_IN_EPKA = "//Patient/name/prefix/@value";
+  public static final String NAME_PREFIX_XPATH_IN_EPKA =
+      "//fhir:Patient/fhir:name/fhir:prefix/@value";
 
   @Getter(lazy = true)
   private static final XPathExpression kvnrXpath =

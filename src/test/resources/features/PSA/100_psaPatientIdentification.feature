@@ -55,7 +55,7 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
 
   # PET/Polarion Tags
   @TCID:NCP1_E2E_PSA_UC1_001
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Positiv @TESTSTUFE:3
   @AF-ID:AF_10107-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -76,7 +76,7 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
 
   # PET/Polarion Tags
   @TCID:NCP1_E2E_PSA_UC1_010
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ @TESTSTUFE:3
   @AF-ID:AF_10107-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -103,7 +103,7 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_UC1_011
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ @TESTSTUFE:3
   @AF-ID:AF_10107-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -130,7 +130,7 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_UC1_012
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:3 @TESTFALL:Negativ @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:3 @TESTFALL:Negativ @TESTSTUFE:3
   @AF-ID:AF_10107-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -160,7 +160,7 @@ Funktionalität: NCPeH PSA Use Case 1 - Versicherten im Behandlungsland identifi
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_UC1_020
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ @TESTSTUFE:3
   @AF-ID:AF_10107-01
   @DESCRIPTION
   # Weitere Tags, team-intern

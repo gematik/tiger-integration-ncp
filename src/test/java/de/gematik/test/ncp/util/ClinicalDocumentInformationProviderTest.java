@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,30 +15,42 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.util;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Objects;
-import lombok.SneakyThrows;
+import de.gematik.test.ncp.utils.TestUtils;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.hl7.v3.ClinicalDocument;
 import org.junit.jupiter.api.Test;
 
 class ClinicalDocumentInformationProviderTest {
 
   private static final String CLINICAL_DOCUMENT_XML_FILE_NAME = "ClinicalDocument.xml";
+  private static final String PRESCRIPTION_CDA1_FILE_NAME = "Prescription_CDA1.xml";
 
-  private static final ClinicalDocument clinicalDocument = getClinicalDocument();
+  private static final ClinicalDocument clinicalDocument =
+      TestUtils.loadFromXMLResource(
+          ClinicalDocument.class,
+          ClinicalDocumentInformationProviderTest.class,
+          CLINICAL_DOCUMENT_XML_FILE_NAME);
 
   @Test
   void kvnrFromCDA3DocumentTest() {
     // Arrange & Act
     final var kvnr =
         assertDoesNotThrow(
-            () -> ClinicalDocumentInformationProvider.kvnrFromCDA3Document(clinicalDocument));
+            () -> ClinicalDocumentInformationProvider.getPatientKvnr(clinicalDocument));
 
     // Assert
     assertNotNull(kvnr);
@@ -51,7 +63,7 @@ class ClinicalDocumentInformationProviderTest {
     // Arrange & Act
     final var name =
         assertDoesNotThrow(
-            () -> ClinicalDocumentInformationProvider.nameFromCDA3Document(clinicalDocument));
+            () -> ClinicalDocumentInformationProvider.getPatientName(clinicalDocument));
 
     // Assert
     assertNotNull(name);
@@ -63,18 +75,33 @@ class ClinicalDocumentInformationProviderTest {
     // Arrange & Act
     final var birthDate =
         assertDoesNotThrow(
-            () -> ClinicalDocumentInformationProvider.birthDataFromCDA3Document(clinicalDocument));
+            () -> ClinicalDocumentInformationProvider.getPatientDateOfBirth(clinicalDocument));
 
     // Assert
     assertNotNull(birthDate);
   }
 
-  @SneakyThrows
-  private static ClinicalDocument getClinicalDocument() {
-    return Utils.unmarshalXml(
-        ClinicalDocument.class,
-        Objects.requireNonNull(
-            ClinicalDocumentInformationProviderTest.class.getResourceAsStream(
-                CLINICAL_DOCUMENT_XML_FILE_NAME)));
+  @Test
+  void getB64PdfPayload_shouldReturnNullForCda3Document() {
+    // Arrange & Act & Assert
+    assertNull(ClinicalDocumentInformationProvider.getB64PdfPayload(clinicalDocument));
+  }
+
+  @Test
+  void getB64PdfPayload_shouldReturnBase64EncodedPdfOfCda1Document() {
+    // Arrange
+    var cda1Document =
+        TestUtils.loadFromXMLResource(
+            ClinicalDocument.class,
+            ClinicalDocumentInformationProviderTest.class,
+            PRESCRIPTION_CDA1_FILE_NAME);
+
+    // Act
+    var b64 = ClinicalDocumentInformationProvider.getB64PdfPayload(cda1Document);
+
+    // Assert
+    assertNotNull(b64);
+    assertFalse(b64.isEmpty());
+    assertDoesNotThrow(() -> Base64.getDecoder().decode(b64.getBytes(StandardCharsets.UTF_8)));
   }
 }

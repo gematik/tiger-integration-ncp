@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.data;
 
-import de.gematik.test.ncp.ncpeh.client.dataobject.RetrievePatientSummaryResponseDO;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+import de.gematik.test.ncp.ncpeh.client.dataobject.RetrieveDocumentsResponseDTO;
 import org.hl7.v3.ClinicalDocument;
 
 /** Interface for objects holding all patient bound data, which might also be transient. */
@@ -43,13 +43,9 @@ public interface PatientInfo extends Patient {
 
   void hasAktenkonto(Boolean hasAktenkonto);
 
-  AdhocQueryResponse getPsaMetadata();
+  RetrieveDocumentsResponseDTO getPatientSummaryDO();
 
-  void setPsaMetadata(AdhocQueryResponse psaMetadata);
-
-  RetrievePatientSummaryResponseDO getPatientSummaryDO();
-
-  void setPatientSummaryDO(RetrievePatientSummaryResponseDO patientSummaryDO);
+  void setPatientSummaryDO(RetrieveDocumentsResponseDTO patientSummaryDO);
 
   ClinicalDocument getPatientSummaryLvl3();
 

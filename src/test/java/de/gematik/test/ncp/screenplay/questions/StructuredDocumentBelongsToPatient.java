@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.screenplay.questions;
@@ -36,8 +37,8 @@ public class StructuredDocumentBelongsToPatient implements Question<Boolean> {
     final var cda3Document = patientData.getPatientSummaryLvl3();
     return patientData.samePerson(
         new PatientImpl(
-            ClinicalDocumentInformationProvider.nameFromCDA3Document(cda3Document),
-            ClinicalDocumentInformationProvider.kvnrFromCDA3Document(cda3Document),
-            ClinicalDocumentInformationProvider.birthDataFromCDA3Document(cda3Document)));
+            ClinicalDocumentInformationProvider.getPatientName(cda3Document),
+            ClinicalDocumentInformationProvider.getPatientKvnr(cda3Document),
+            ClinicalDocumentInformationProvider.getPatientDateOfBirth(cda3Document)));
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,21 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import de.gematik.test.ncp.GeneralFactory;
 import de.gematik.test.tiger.common.config.TigerConfigurationException;
 import de.gematik.test.tiger.common.config.TigerGlobalConfiguration;
 import jakarta.xml.bind.JAXBContext;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -183,5 +188,23 @@ public class Utils {
   public static <T> List<String> toStringListElements(
       final List<T> list, final Function<T, String> toStringFunction) {
     return Optional.ofNullable(list).stream().flatMap(List::stream).map(toStringFunction).toList();
+  }
+
+  /**
+   * Serialize the given object to JSON and encode it as Base64 String.
+   *
+   * @param instance object to serialize
+   * @return Base64 encoded JSON String
+   */
+  public static String getB64Json(final Object instance) {
+    try {
+      return Base64.getEncoder()
+          .encodeToString(
+              GeneralFactory.getObjectMapper()
+                  .writeValueAsString(instance)
+                  .getBytes(StandardCharsets.UTF_8));
+    } catch (final JsonProcessingException e) {
+      throw new RuntimeException("Failed to serialize object to JSON", e);
+    }
   }
 }

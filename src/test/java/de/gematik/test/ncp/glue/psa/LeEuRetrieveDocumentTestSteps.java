@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.glue.psa;
@@ -24,7 +25,7 @@ import static net.serenitybdd.screenplay.GivenWhenThen.and;
 import static net.serenitybdd.screenplay.GivenWhenThen.then;
 
 import de.gematik.test.ncp.ncpeh.PatientSummaryLevel;
-import de.gematik.test.ncp.screenplay.actions.RetrievePatientSummary;
+import de.gematik.test.ncp.screenplay.actions.retrieve_documents.RetrievePatientSummary;
 import de.gematik.test.ncp.screenplay.questions.GetRegistryErrorCodesFromRegistryResponse;
 import de.gematik.test.ncp.screenplay.questions.GetRetrievedPatientSummaryDocuments;
 import de.gematik.test.ncp.screenplay.questions.IsRetrievedPatientSummaryResponseStatusFailure;

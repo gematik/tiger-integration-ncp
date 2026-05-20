@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.screenplay.questions;
@@ -24,6 +25,7 @@ import static de.gematik.test.ncp.ncpeh.data.RequestBaseBuilder.KVNR_ASSIGNING_A
 
 import de.gematik.epa.conversion.internal.requests.factories.slot.SlotFactory;
 import de.gematik.epa.conversion.internal.requests.factories.slot.SlotName;
+import de.gematik.test.ncp.screenplay.abilities.ManagePatientRecords;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
 import de.gematik.test.ncp.screenplay.abilities.TreatPatient;
 import de.gematik.test.ncp.util.IheUtils;
@@ -46,7 +48,9 @@ public class IsSourcePatientIdCorrectForDocument implements Question<Boolean> {
   public Boolean answeredBy(final Actor actor) {
     final var patient = actor.usingAbilityTo(TreatPatient.class).getPatient();
     final var patientData = patient.usingAbilityTo(ProvidePatientData.class);
-    final var psaMetadata = patientData.getPsaMetadata();
+    final var patientRecord =
+        actor.usingAbilityTo(ManagePatientRecords.class).getRecordFor(patient);
+    final var psaMetadata = patientRecord.getPsaDocumentMetadata();
 
     final var extrinsicObject = IheUtils.retrieveExtrinsicObjectToCdaLevel(psaMetadata, level);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.screenplay.questions;
 
-import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
+import de.gematik.test.ncp.screenplay.abilities.ManagePatientRecords;
 import de.gematik.test.ncp.screenplay.abilities.TreatPatient;
 import jakarta.xml.bind.JAXBElement;
 import java.util.Collection;
@@ -34,9 +35,10 @@ public class GetNumberOfPatientSummaryDocuments implements Question<Long> {
   @Override
   public Long answeredBy(final Actor actor) {
     final var patient = actor.usingAbilityTo(TreatPatient.class).getPatient();
-    final var patientData = patient.usingAbilityTo(ProvidePatientData.class);
+    final var patientRecord =
+        actor.usingAbilityTo(ManagePatientRecords.class).getRecordFor(patient);
 
-    return Optional.ofNullable(patientData.getPsaMetadata())
+    return Optional.ofNullable(patientRecord.getPsaDocumentMetadata())
         .flatMap(metadata -> Optional.ofNullable(metadata.getRegistryObjectList()))
         .flatMap(list -> Optional.ofNullable(list.getIdentifiable()))
         .stream()

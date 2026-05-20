@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.screenplay.abilities;
@@ -28,6 +29,7 @@ import lombok.Getter;
 import lombok.experimental.Delegate;
 import net.serenitybdd.screenplay.Ability;
 
+/** Ability to use the NCPeH (Simulation) via an implementation of {@link NcpehService} */
 public class UseNcpeh implements Ability {
 
   @Delegate // lombok.experimental kann aber auch von Hand implementiert werden
@@ -35,14 +37,41 @@ public class UseNcpeh implements Ability {
 
   @Getter private final Map<UCHeaders, String> ncpehMockControlRequestHeaders;
 
+  /**
+   * Default constructor without control headers for the NCPeH-Simulation-Mock
+   *
+   * @see <a
+   *     href="https://github.com/gematik/NCPeH-Simulation-API/blob/main/ncpeh-simulation-mock/README.md">ncpeh-simulation-mock
+   *     README.md on GitHub</a>
+   */
   public UseNcpeh() {
     this(null);
   }
 
+  /**
+   * Creates a UseNcpeh Ability with optional control headers for the NCPeH-Simulation-Mock to
+   * influence response behavior. If not set, the default behavior of the mock is used.
+   *
+   * @param ncpehMockControlRequestHeaders optional control headers for the NCPeH-Simulation-Mock
+   * @see <a
+   *     href="https://github.com/gematik/NCPeH-Simulation-API/blob/main/ncpeh-simulation-mock/README.md">ncpeh-simulation-mock
+   *     README.md on GitHub</a>
+   */
   public UseNcpeh(final Map<UCHeaders, String> ncpehMockControlRequestHeaders) {
     this(NcpehProvider.getNcpehService(), ncpehMockControlRequestHeaders);
   }
 
+  /**
+   * Creates a UseNcpeh ability with a specific NcpehService implementation and optional control
+   * headers for the NCPeH-Simulation-Mock to influence response behavior. If not set, the default
+   * behavior of the mock is used.
+   *
+   * @param service the NcpehService instance to use
+   * @param ncpehMockControlRequestHeaders optional control headers for the NCPeH-Simulation-Mock
+   * @see <a
+   *     href="https://github.com/gematik/NCPeH-Simulation-API/blob/main/ncpeh-simulation-mock/README.md">ncpeh-simulation-mock
+   *     README.md on GitHub</a>
+   */
   public UseNcpeh(
       final NcpehService service, final Map<UCHeaders, String> ncpehMockControlRequestHeaders) {
     this.service = service;

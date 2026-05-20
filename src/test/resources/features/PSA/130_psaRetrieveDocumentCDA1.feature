@@ -52,7 +52,7 @@ Funktionalität: NCPeH PSA Use Case 4 - Versichertendatensatz als PDF abrufen
 
   # PET/Polarion Tags
   @TCID:NCP1_E2E_PSA_UC4_001
-  @STATUS:Spezifiziert @MODUS:Halbautomatisch @PRIO:1 @TESTFALL:Positiv
+  @STATUS:Implementiert @MODUS:Halbautomatisch @PRIO:1 @TESTFALL:Positiv
   @AF-ID:AF_10123-01
   @DESCRIPTION
   # Weitere Tags, team-intern

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.glue.psa;
@@ -27,7 +28,7 @@ import static net.serenitybdd.screenplay.GivenWhenThen.givenThat;
 import de.gematik.test.ncp.data.PersonName;
 import de.gematik.test.ncp.data.Testdata;
 import de.gematik.test.ncp.ncpeh.NcpehProvider;
-import de.gematik.test.ncp.screenplay.abilities.KnowCurrentPractitioner;
+import de.gematik.test.ncp.screenplay.abilities.ManagePatientRecords;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePatientAccessData;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePatientData;
 import de.gematik.test.ncp.screenplay.abilities.ProvidePerformanceReportData;
@@ -39,6 +40,7 @@ import de.gematik.test.ncp.screenplay.abilities.UseFdv;
 import de.gematik.test.ncp.screenplay.abilities.UseNcpeh;
 import de.gematik.test.ncp.screenplay.abilities.UsePrimarySystem;
 import de.gematik.test.ncp.screenplay.actions.AuthorizeLeForEpaAccount;
+import de.gematik.test.ncp.screenplay.actions.EnterTreatment;
 import de.gematik.test.ncp.screenplay.questions.FindPatientWithKontoInAktensystem;
 import de.gematik.test.ncp.screenplay.questions.GetSmbCard;
 import de.gematik.test.ncp.screenplay.questions.IsAktenkontoActive;
@@ -65,6 +67,14 @@ public class ActorsInitializationSteps {
 
   public static final String TEST_ACTOR_NAME = "Max Testermann";
 
+  private static final String TAG_FILTER_PSA_NOPR =
+      "@eHDSI-Szenario:PSA_PatIdentification "
+          + "or @eHDSI-Szenario:PSA_FindDocuments "
+          + "or @eHDSI-Szenario:PSA_RetrieveDocumentCDA3 "
+          + "or @eHDSI-Szenario:PSA_RetrieveDocumentCDA1";
+  private static final String TAG_FILTER_PSA_PR = "@eHDSI-Szenario:PSA_PerfRep";
+  private static final String TAG_FILTER_PSA_ALL = TAG_FILTER_PSA_NOPR + " or " + TAG_FILTER_PSA_PR;
+
   private static final String TAG_SEPARATOR = ":";
   private static final String CURRENT_TIMESTAMP_PLUS_ONE_HOUR_TIGER_CONFIGURATION_KEY =
       "currentTimestampPlusOneHour";
@@ -73,7 +83,7 @@ public class ActorsInitializationSteps {
   private static final int ONE_HOUR = 1;
   private static final String NCPEHRESPONSE_TAG_PREFIX = "@NCPEH-RESPONSE-";
   private static final String FDV_RESPONSE_TAG_NAME = "@FDV-RESPONSE";
-  public static final String VALUE_SEPARATOR = ",";
+  private static final String VALUE_SEPARATOR = ",";
 
   private static final String SCENARIO_NAME_TAG_PREFIX = "@TCID:";
 
@@ -82,7 +92,7 @@ public class ActorsInitializationSteps {
   private Map<UCHeaders, String> ncpehMockControlRequestHeaders;
   private List<String> fdvMockRequestCriterions = List.of();
 
-  @Before("not @PerfRep")
+  @Before(TAG_FILTER_PSA_NOPR)
   public void setUp(final Scenario scenario) {
     // Set currentTimestampPlusOneHour in TigerGlobalConfiguration
     final var nowPlusOneHour = Instant.now().plus(ONE_HOUR, ChronoUnit.HOURS);
@@ -116,15 +126,14 @@ public class ActorsInitializationSteps {
     OnStage.setTheStage(Cast.ofStandardActors());
 
     // Create LE_DE actor
-    final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME);
-    givenThat(leDeActor).whoCan(new UsePrimarySystem());
+    final var leDeActor = OnStage.theActorCalled(LE_DE_ACTOR_NAME).whoCan(new UsePrimarySystem());
     final var smbCard = leDeActor.asksFor(GetSmbCard.instance());
-    andThat(leDeActor)
-        .whoCan(
-            ProvidePracticeData.fromSmbCardAndPractitioners(smbCard, testdata.dePractitioners()));
+    givenThat(leDeActor)
+        .can(ProvidePracticeData.fromSmbCardAndPractitioners(smbCard, testdata.dePractitioners()));
+    andThat(leDeActor).can(ManagePatientRecords.startingWithNoExistingRecords());
   }
 
-  @Before("@PerfRep")
+  @Before(TAG_FILTER_PSA_PR)
   public void setUpPerformanceReportActors(final Scenario scenario) {
     // Set currentTimestampPlusOneHour in TigerGlobalConfiguration
     final var nowPlusOneHour = Instant.now().plus(ONE_HOUR, ChronoUnit.HOURS);
@@ -152,6 +161,7 @@ public class ActorsInitializationSteps {
     final var smbCard = leDeActor.asksFor(GetSmbCard.instance());
     leDeActor.can(
         ProvidePracticeData.fromSmbCardAndPractitioners(smbCard, testdata.dePractitioners()));
+    and(leDeActor).can(ManagePatientRecords.startingWithNoExistingRecords());
 
     OnStage.theActorCalled(TEST_ACTOR_NAME)
         .whoCan(new ProvidePerformanceReportData())
@@ -200,15 +210,15 @@ public class ActorsInitializationSteps {
     final var patient = OnStage.theActorInTheSpotlight();
     final var leEuActor = OnStage.theActorCalled(leEuName);
 
-    patient.can(KnowCurrentPractitioner.with(leEuActor));
-
     leEuActor
         .can(
             ProvidePractitionerData.fromPractitionerAndCountry(
                 this.testdata.euPractitioners().findByName(leEuName), euCountry))
         .can(new UseNcpeh(ncpehMockControlRequestHeaders))
         .can(new ProvidePatientAccessData())
-        .can(new TreatPatient(patient));
+        .can(ManagePatientRecords.startingWithNoExistingRecords());
+
+    patient.attemptsTo(EnterTreatment.withEuPractitioner(leEuActor, euCountry));
   }
 
   @Angenommen(
@@ -236,7 +246,7 @@ public class ActorsInitializationSteps {
     OnStage.stage().shineSpotlightOn(patient.getName());
   }
 
-  @After
+  @After(TAG_FILTER_PSA_ALL)
   public void tearDown() {
     log.debug("Tear down the stage");
     OnStage.drawTheCurtain();

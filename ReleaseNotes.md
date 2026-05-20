@@ -2,6 +2,21 @@
 
 # Release Notes: Tiger-Integration-NCP
 
+## Release 2.1.0.0 (2026-05-20)
+
+**Note:** Starting with release 2.1.0.0, the versioning scheme has changed. The first three digits
+now correspond to the referenced specification version, and the fourth digit reflects additional
+updates or changes to the API itself.
+
+### changed
+
+- Updated and improved README
+- Updated LICENSE and Copyright Notice
+- Updated dependency `ncpeh-simulation-api` to version 2.1.0.1
+
+### added
+- Added implementations for ePeDA positive test cases
+
 ## Release 1.6.2 (2025-07-17)
 
 ### changed

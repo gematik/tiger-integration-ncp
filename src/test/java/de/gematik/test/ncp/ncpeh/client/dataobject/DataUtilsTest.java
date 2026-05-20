@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.client.dataobject;
@@ -69,6 +70,12 @@ class DataUtilsTest {
   private static final String FIND_DOCUMENT_RESPONSE_FILE_NAME = "findDocumentResponse.json";
   private static final String RETRIEVE_DOCUMENT_RESPONSE_FILE_NAME =
       "retrieveDocumentResponse.json";
+  private static final String PROVIDE_AND_REGISTER_DOCUMENT_SET_RESPONSE_FILE_NAME =
+      "provideAndRegisterDocumentSetResponse.json";
+  private static final String PROVIDE_AND_REGISTER_DOCUMENT_SET_REQUEST_XML_FILE_NAME =
+      "ProvideAndRegisterDocumentSetRequest.xml";
+  private static final String PROVIDE_AND_REGISTER_DOCUMENT_SET_RESPONSE_XML_FILE_NAME =
+      "ProvideAndRegisterDocumentSetResponse.xml";
 
   private static final String UNKNOWN_KVNR_RESPONSE_REASON = "AnswerNotAvailable";
   private static final String INSUFFICIENT_RIGHTS_RESPONSE_REASON = "InsufficientRights";
@@ -264,7 +271,7 @@ class DataUtilsTest {
   }
 
   @Test
-  void convertResponseDataForFindPatientSummary() {
+  void convertResponseDataForFindDocuments() {
     // Arrange
     final var response =
         Response.ok(
@@ -276,7 +283,7 @@ class DataUtilsTest {
 
     // Act
     final var testee =
-        assertDoesNotThrow(() -> DataUtils.convertResponseDataForFindPatientSummary(response));
+        assertDoesNotThrow(() -> DataUtils.convertResponseDataForFindDocuments(response));
 
     // Assert
     assertNcpehInterfaceResponse(testee);
@@ -295,7 +302,7 @@ class DataUtilsTest {
   }
 
   @Test
-  void convertResponseDataForRetrievePatientSummary() {
+  void convertResponseDataForRetrieveDocuments() {
     // Arrange
     final var response =
         Response.ok(
@@ -307,7 +314,7 @@ class DataUtilsTest {
 
     // Act
     final var testee =
-        assertDoesNotThrow(() -> DataUtils.convertResponseDataForRetrievePatientSummary(response));
+        assertDoesNotThrow(() -> DataUtils.convertResponseDataForRetrieveDocuments(response));
 
     // Assert
     assertNcpehInterfaceResponse(testee);
@@ -336,7 +343,7 @@ class DataUtilsTest {
             RetrieveDocumentSetResponseType.class,
             this.getClass(),
             RETRIEVE_DOCUMENT_SET_RESPONSE_LVL_1_XML_FILE_NAME);
-    final var retrievePatientSummaryDO = mock(RetrievePatientSummaryResponseDO.class);
+    final var retrievePatientSummaryDO = mock(RetrieveDocumentsResponseDTO.class);
     when(retrievePatientSummaryDO.ncpehFdResponseContent()).thenReturn(response);
 
     // Act
@@ -349,7 +356,7 @@ class DataUtilsTest {
   @Test
   void getRegistryResponseTypeEmptyResponseTest() {
     // Arrange
-    final var retrievePatientSummaryDO = mock(RetrievePatientSummaryResponseDO.class);
+    final var retrievePatientSummaryDO = mock(RetrieveDocumentsResponseDTO.class);
     when(retrievePatientSummaryDO.ncpehFdResponseContent()).thenReturn(null);
 
     // Act
@@ -436,5 +443,43 @@ class DataUtilsTest {
     // Assert
     assertEquals(expected, testee.size());
     assertEquals(message, testee.stream().findFirst().orElse(null));
+  }
+
+  @Test
+  void convertResponseDataForProvideAndRegisterDocumentsetTest() {
+    // Arrange
+    final var response =
+        Response.ok(
+                TestUtils.loadFromJsonResource(
+                    SimulatorCommunicationData.class,
+                    this.getClass(),
+                    PROVIDE_AND_REGISTER_DOCUMENT_SET_RESPONSE_FILE_NAME))
+            .build();
+
+    // Act
+    final var testee =
+        assertDoesNotThrow(
+            () -> DataUtils.convertResponseDataForProvideAndRegisterDocumentSet(response));
+
+    // Assert
+    assertNcpehInterfaceResponse(testee);
+
+    final var requestRootQName =
+        new QName("urn:ihe:iti:xds-b:2007", "ProvideAndRegisterDocumentSetRequest");
+    final var expectedRequestContent =
+        TestUtils.readResourceFile(
+            this.getClass(), PROVIDE_AND_REGISTER_DOCUMENT_SET_REQUEST_XML_FILE_NAME);
+    assertThat(
+        marshalXml(testee.ncpehFdRequestContent(), requestRootQName),
+        CompareMatcher.isSimilarTo(expectedRequestContent).ignoreWhitespace().ignoreComments());
+
+    final var responseRootQName =
+        new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0", "RegistryResponse");
+    final var expectedResponseContent =
+        TestUtils.readResourceFile(
+            this.getClass(), PROVIDE_AND_REGISTER_DOCUMENT_SET_RESPONSE_XML_FILE_NAME);
+    assertThat(
+        marshalXml(testee.ncpehFdResponseContent(), responseRootQName),
+        CompareMatcher.isSimilarTo(expectedResponseContent).ignoreWhitespace().ignoreComments());
   }
 }

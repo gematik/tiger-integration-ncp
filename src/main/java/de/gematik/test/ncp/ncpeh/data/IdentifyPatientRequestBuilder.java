@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,16 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.ncpeh.data;
 
+import de.gematik.ncpeh.api.common.EuCountryCode;
+import de.gematik.ncpeh.api.common.SubjectId;
 import de.gematik.ncpeh.api.request.IdentifyPatientRequest;
+import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -37,17 +41,24 @@ import lombok.experimental.Accessors;
 public final class IdentifyPatientRequestBuilder
     extends RequestBaseBuilder<IdentifyPatientRequest> {
 
-  public static final String PSA_ACCESS_CODE_ASSIGNING_AUTHORITY = "1.2.276.0.76.4.298";
+  // mandatory
+  private String accessCodeAssigningAuthority;
+
+  // optional
+  private String hcidNcpCountryA;
+  private String hcidNcpCountryB;
+  private Set<SubjectId> additionalLivingSubjectIds;
+  private EuCountryCode patientAddressCountry;
 
   public IdentifyPatientRequest build() {
     return new IdentifyPatientRequest(
         super.buildRequestBase(),
         super.buildPatientId(),
         accessCode(),
-        PSA_ACCESS_CODE_ASSIGNING_AUTHORITY,
-        null,
-        null,
-        null,
-        null);
+        accessCodeAssigningAuthority,
+        hcidNcpCountryA,
+        hcidNcpCountryB,
+        additionalLivingSubjectIds,
+        patientAddressCountry);
   }
 }

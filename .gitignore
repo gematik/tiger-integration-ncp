@@ -6,9 +6,13 @@
 /reports/
 .openapi-generator*
 default.env
+.env
 
 *.jenkinsfile
 README.md
 !.github/README.md
-**/root.p12
+*.p12
+!tiger/docker/vau-proxy/root.p12
+/smartcards/
+/tiger/ideas4countryBprofiles.txt
 

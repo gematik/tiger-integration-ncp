@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.util;
@@ -25,8 +26,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import de.gematik.test.ncp.data.Patient;
 import de.gematik.test.ncp.data.PatientImpl;
 import de.gematik.test.ncp.data.PersonName;
+import de.gematik.test.tiger.common.config.TigerGlobalConfiguration;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Base64;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
 class UtilsTest {
@@ -58,4 +62,22 @@ class UtilsTest {
     assertNotNull(result);
     assertTrue(result.isEmpty());
   }
+
+  @Test
+  @SneakyThrows
+  void getB64Json_shouldSerializeCorrectly() {
+    // Arrange
+    var in = new PersonRecord("Max", "Power", 42);
+
+    // Act & Assert
+    String b64Json = Utils.getB64Json(in);
+    assertNotNull(b64Json);
+    assertFalse(b64Json.isEmpty());
+    var out =
+        TigerGlobalConfiguration.getObjectMapper()
+            .readValue(Base64.getDecoder().decode(b64Json), PersonRecord.class);
+    assertEquals(in, out);
+  }
+
+  record PersonRecord(String firstName, String lastName, int age) {}
 }

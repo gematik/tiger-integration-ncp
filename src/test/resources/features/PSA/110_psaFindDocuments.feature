@@ -50,7 +50,7 @@ Funktionalität: NCPeH PSA Use Case 2 - Verfügbare Versichertendatensätze des 
 
   # PET/Polarion Tags
   @TCID:NCP1_E2E_PSA_UC2_001
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Positiv @TESTSTUFE:3
   @AF-ID:AF_10121-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -74,7 +74,7 @@ Funktionalität: NCPeH PSA Use Case 2 - Verfügbare Versichertendatensätze des 
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_UC2_010
-  @STATUS:InBearbeitung @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ @TESTSTUFE:3
   @AF-ID:AF_10121-01
   @DESCRIPTION
   # Weitere Tags, team-intern

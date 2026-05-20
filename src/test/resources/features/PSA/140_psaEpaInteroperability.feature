@@ -37,7 +37,7 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_EPA_010
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ @TESTSTUFE:3
   @AF-ID:AF_10107-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -167,7 +167,7 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_EPA_020
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Positiv
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Positiv
   @AF-ID:AF_10107-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -193,7 +193,7 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_EPA_030
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ
   @AF-ID:AF_10107-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -234,7 +234,7 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_EPA_031
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ
   @AF-ID:AF_10107-01 @AF-ID:AF_10121-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -275,7 +275,7 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_EPA_032
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:1 @TESTFALL:Negativ
   @AF-ID:AF_10107-01 @AF-ID:AF_10121-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -318,7 +318,7 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_EPA_033
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:2 @TESTFALL:Positiv
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:2 @TESTFALL:Positiv
   @AF-ID:AF_10107-01 @AF-ID:AF_10121-01
   @DESCRIPTION
   # Weitere Tags, team-intern
@@ -355,7 +355,7 @@ Funktionalität: NCPeH PSA Interoperabilität mit der Anbindung an die Anwendung
   # Nur Testentwurf, deshalb ist das Szenario im Build zu ignorieren
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_EPA_040
-  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:3 @TESTFALL:Positiv
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:3 @TESTFALL:Positiv
   @AF-ID:AF_10107-01 @AF-ID:AF_10121-01
   @DESCRIPTION
   # Weitere Tags, team-intern

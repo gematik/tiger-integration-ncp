@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.glue.psa;
@@ -169,6 +170,7 @@ public class NcpehPerfReportingTestSteps {
   }
 
   @Angenommen("^der Testfall (NCP1[A-Za-z0-9_]*) wurde zu einem bekannten Zeitpunkt ausgeführt$")
+  @Angenommen("^der Testfall (NCP2[A-Za-z0-9_]*) wurde zu einem bekannten Zeitpunkt ausgeführt$")
   public void ncpehTestcaseHasBeenExecutedAtPointOfTime(final String testCaseId) {
     // Check if exists log with testCaseId name in reporting folder
     // Find & parse founded the youngest scenarios log file and saved by Test Actor ability
@@ -203,18 +205,22 @@ public class NcpehPerfReportingTestSteps {
     // Error, if any execution time of PerformanceUsecases could not be taken from the test results
   }
 
-  @Und("die Daten der Performance Use Cases aus dem Testfall sind bekannt")
-  @Und("die Daten der Performance Use Cases aus dem Negativ Testfall sind bekannt")
+  @Und(
+      "^die (?:erwarteten |)Daten der Performance Use Cases aus dem (?:Negativ |)Testfall sind bekannt$")
   public void importTestcaseExecutionDataOfPerformanceUsecases(
       final PerformanceUseCases performanceUsecase) {
     // PerformanceUsecaseTable: | country | PerformanceUsecases (comma separated list) |
     // ehdsiErrorcodes (comma separated list) |
     // Possible PerformanceUsecases and their meaning:
-    //    "NCPeH.UC_1": Identify Patient
-    //    "NCPeH.UC_2": FindDocuments
-    //    "NCPeH.UC_3": Retrieve Documents CDA L3
-    //    "NCPeH.UC_4": Retrieve Documents CDA L1 (PDF)
-    // ehdsiErrorcodes: "none" if no eHDSI error is related to that PerformanceUsecase, otherwise
+    //    "NCPeH.UC_1": IdentifyPatient for Patient Summary
+    //    "NCPeH.UC_2": FindDocuments for Patient Summary
+    //    "NCPeH.UC_3": RetrieveDocuments CDA L3 for Patient Summary
+    //    "NCPeH.UC_4": RetrieveDocuments CDA L1 (PDF) for Patient Summary
+    //    "NCPeH.UC_9": IdentifyPatient for ePrescription
+    //    "NCPeH.UC_10": FindDocuments for ePrescription
+    //    "NCPeH.UC_11": RetrieveDocuments for ePrescription
+    //    "NCPeH.UC_12": ProvideAndRegisterDocumentSet for eDispensation
+    // ehdsiErrorcodes: "null" if no eHDSI error is related to that PerformanceUsecase, otherwise
     //    expected error-String
 
     // Check country, error code & use cases by saved data in ability
@@ -340,7 +346,7 @@ public class NcpehPerfReportingTestSteps {
     // must be given as <keyname>:null
 
     // for each report entry
-    //    check, that the ecode entry in the message field is empty
+    //    check, that the "err" entry in the message field is empty
 
     OnStage.theActorInTheSpotlight()
         .attemptsTo(Ensure.that(HasPerformanceReportEntryErrorcode.instance()).isFalse());
@@ -349,13 +355,13 @@ public class NcpehPerfReportingTestSteps {
   @Und(
       "jeder erwartete Performance Report Eintrag enthält im Message Feld den erwarteten eHDSI Fehlercode")
   public void checkPerformanceReportEntryWithErrorcode() {
-    // check that the ecode entry in the message field for each perf use case according to its given
+    // check that the "err" entry in the message field for each perf use case according to its given
     // expectation
     // Hint: according to A_22513-01 a non-existing value in the json structure of the message field
     // must be given as <keyname>:null
 
     // for each expected PerformanceUsecase
-    //    expected eHDSI errorCode matches the reported ecode entry
+    //    expected eHDSI errorCode matches the reported "err" entry
     // Error, if there is no correlation between imported report(s) and data of imported testcase
     // found
 

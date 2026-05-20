@@ -12,7 +12,7 @@ servers:
 
   epaPsCompose:
     type: compose
-    active: "!{not ${tiger.servers.epaPsUrl.active}}"
+    active: false
 
     logFile: ./target/serverLogs/epaPsCompose.log
 
@@ -27,7 +27,7 @@ servers:
   epaVauProxyPsComposeUrl:
     type: externalUrl
     dependsUpon: epaPsCompose
-    active: "!{not ${tiger.servers.epaPsUrl.active}}"
+    active: false
     hostname: epaVauProxyPsUrlHost
     startupTimeoutSec: 180
     healthcheckUrl: http://localhost:9018
@@ -38,7 +38,7 @@ servers:
   epaPsComposeUrl:
     type: externalUrl
     dependsUpon: epaPsCompose,epaVauProxyPsComposeUrl
-    active: "!{not ${tiger.servers.epaPsUrl.active}}"
+    active: false
     hostname: ${infrastructure.epaps.hostname}
     startupTimeoutSec: 180
     healthcheckUrl: http://localhost:9016

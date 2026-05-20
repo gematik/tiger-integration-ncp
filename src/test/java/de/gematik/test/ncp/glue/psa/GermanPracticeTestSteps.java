@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
-
 package de.gematik.test.ncp.glue.psa;
 
 import static de.gematik.test.ncp.glue.psa.ActorsInitializationSteps.LE_DE_ACTOR_NAME;
@@ -38,7 +38,7 @@ import de.gematik.test.ncp.screenplay.actions.StoreEpkaInAktenkonto;
 import de.gematik.test.ncp.screenplay.questions.AuthorizationIsActive;
 import de.gematik.test.ncp.screenplay.questions.EpkaCanBeFoundInAktenkonto;
 import de.gematik.test.ncp.screenplay.questions.GetPractitionerData;
-import de.gematik.test.ncp.screenplay.questions.WhoIsTreatedPatient;
+import de.gematik.test.ncp.screenplay.questions.practitioner.CurrentPatient;
 import io.cucumber.java.de.Angenommen;
 import io.cucumber.java.de.Und;
 import io.cucumber.java.de.Wenn;
@@ -63,9 +63,9 @@ public class GermanPracticeTestSteps {
   public void patientAssignsAccessRightsForEuCountry() {
     final var leEuActor = OnStage.theActorInTheSpotlight();
     final var country = leEuActor.asksFor(new GetPractitionerData()).country();
-    final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+    final var patient = leEuActor.asksFor(CurrentPatient.asActor());
     patient.attemptsTo(
-        AuthorizeEuCountry.forCountry(country)
+        AuthorizeEuCountry.forPatientSummary(country)
             .then(Ensure.that(AuthorizationIsActive.forCountry(country)).isTrue()));
     // set the leEuActor in the spotlight again
     OnStage.stage().shineSpotlightOn(leEuActor.getName());
@@ -78,7 +78,7 @@ public class GermanPracticeTestSteps {
     // Behandlung$")
 
     final var leEuActor = OnStage.theActorInTheSpotlight();
-    final var patient = leEuActor.asksFor(new WhoIsTreatedPatient());
+    final var patient = leEuActor.asksFor(CurrentPatient.asActor());
 
     patient.attemptsTo(ProvidePatientAccessDataToLeEu.withLeEu(leEuActor));
 
@@ -91,7 +91,7 @@ public class GermanPracticeTestSteps {
   public void handoverKvnrAndAccesscodeToSecondLeEu() {
     // the second initialized LE-EU needs to get KVNR and the actual accesscode
     final var leEuActor1 = OnStage.theActorInTheSpotlight();
-    final var patient = leEuActor1.asksFor(new WhoIsTreatedPatient());
+    final var patient = leEuActor1.asksFor(CurrentPatient.asActor());
     final var leEuActor2 =
         patient.usingAbilityTo(KnowCurrentPractitioner.class).getCurrentPractitioner();
     patient.attemptsTo(ProvidePatientAccessDataToLeEu.withLeEu(leEuActor2));

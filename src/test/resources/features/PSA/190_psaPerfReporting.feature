@@ -21,6 +21,8 @@
 #language: de
 #noinspection NonAsciiCharacters,SpellCheckingInspection
 @PRODUKT:NCPeH_FD
+# Weitere Tags, team-intern
+@eHDSI-Szenario:PSA_PerfRep
 Funktionalität: NCPeH PSA Rohdaten Performance Reporting
   Die folgend benannten NCPeH-Anwendungsfälle basieren auf dem Anwendungsszenario "Patient Summary Land A."
   Betrachtet werden die Themen zum Reporting der Performance Rohdaten des NCPeH-FD an den Dienst der gematik
@@ -31,45 +33,41 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
       aufgebaut wird
     2. Prüfung des gemeldeten Status der vier Operationen im Report
     3. Implizite Prüfung der Einhaltung der Vorgaben zum Reporting (durch erfolgreichen Import ins Data Warehouse)
-    4. Manuelle Prüfung der Anzeige in Grafana (Basis: erfolgreicher Import ins Data Warehouse)
   Involvierte Anwendungsfälle:
     AF_10107-* - Versicherten im Behandlungsland identifizieren
-      gemSpec_Perf: NCPeH.UC_1, Operation PSA_RespondingGateway
+      gemSpec_Perf: NCPeH.UC_1, Operation "Cross_Gateway_Patient_Discovery::findIdentityByTraits (PS-A)"
     AF_10121-* - Verfügbare Versichertendatensätze des ePKA MIO auflisten
-      gemSpec_Perf: NCPeH.UC_2, Operation PSA_FindDocuments
-    AF_10122-* - Versicherten im Behandlungsland identifizieren
-      gemSpec_Perf: NCPeH.UC_3, Operation PSA_RetrieveDocument
+      gemSpec_Perf: NCPeH.UC_2, Operation "Cross_Gateway_Query::FindDocuments (PS-A)"
+    AF_10122-* - Versicherten im Behandlungsland identifizieren     und
     AF_10123-* - Versichertendatensatz als PDF abrufen
-  gemSpec_Perf: NCPeH.UC_4, Operation PSA_RetrieveDocumentPDF
+      gemSpec_Perf: NCPeH.UC_3, Operation "Cross_Gateway_Retrieve::RetrieveDocument (PS-A)"
     (NCPeH.UC_VAU1 ist kein eigentlicher UseCase und wird nur hilfsweise so in gemSpec_Perf bezeichnet)
   Involvierte Anforderungen:
     [gemSpec_Perf#Bearbeitungszeiten NCPeH-Fachdienst] -> Plausibilitätsprüfung (keine exakte Gleichheit)
       A_23016-* Performance - NCPeH-Fachdienst - Last- und Bearbeitungszeiten
     [gemSpec_Perf#Rohdaten-Performance-Reporting Spezifika NCPeH-Fachdienst]
-      A_22482-* Performance - Rohdaten - Erfassung von Rohdaten (Rohdatenerfassung v.02)
-      A_23012-* Performance - Rohdaten - Spezifika NCPeH-Fachdienst - Duration (Rohdatenerfassung v.02)
-      A_23118-* Performance - Rohdaten - Spezifika NCPeH-Fachdienst - Message (Rohdatenerfassung v.02)
-    [gemSpec_Perf#Rohdaten-Performance-Reporting (Rohdatenerfassung v.02)] -> implizite Prüfung
-      A_22002-* Performance - Rohdaten - Übermittlung (Rohdatenerfassung v.02)
-      A_22429-* Performance - Rohdaten - Inhalt der Selbstauskunft (Rohdatenerfassung v.02)
-      A_22004-* Performance - Rohdaten - Korrektheit (Rohdatenerfassung v.02)
-      A_21975-* Performance - Rohdaten - Default-Werte für Lieferintervalle (Rohdatenerfassung v.02)
-      A_21980-* Performance - Rohdaten - Leerlieferung (Rohdatenerfassung v.02)
-      A_22001-* Performance - Rohdaten - Name der Berichte (Rohdatenerfassung v.02)
-      A_21981-* Performance - Rohdaten - Format des Rohdaten-Performance-Berichtes (Rohdatenerfassung v.02)
-      A_22500-* Performance - Rohdaten - Status-Block (Rohdatenerfassung v.02)
-      A_21982-* Performance - Rohdaten - Message-Block (Rohdatenerfassung v.02)
-      A_22513-* Performance - Rohdaten - Message-Block im Fehlerfall (Rohdatenerfassung v.02)
+      A_23011-* Performance - Betriebsdatenlieferung v2 - Spezifika NCPeH-Fachdienst - Operation
+      A_23012-* Performance - Betriebsdatenlieferung v2 - Spezifika NCPeH-Fachdienst - Duration
+      A_23118-* Performance - Betriebsdatenlieferung v2 - Spezifika NCPeH-Fachdienst - Message
+    [gemSpec_Perf#Betriebsdatenlieferung Version 2] -> implizite Prüfung
+      A_22002-* Performance - Betriebsdatenlieferung v2 - Übermittlung
+      A_22429-* Performance - Selbstauskunft v1 - Inhalt
+      A_22004-* Performance - Betriebsdatenlieferung v2 - Korrektheit
+      A_21975-* Performance - Betriebsdatenlieferung v2 - Default-Wert des Lieferintervalls
+      A_21980-* Performance - Betriebsdatenlieferung v2 - Leerlieferung
+      A_22001-* Performance - Betriebsdatenlieferung v2 - Dateiname der Lieferung
+      A_21981-* Performance - Betriebsdatenlieferung v2 - Format
+      A_22500-* Performance - Betriebsdatenlieferung v2 - Status-Block
+      A_21982-* Performance - Betriebsdatenlieferung v2 - Message-Block
+      A_22513-* Performance - Betriebsdatenlieferung v2 - Message-Block im Fehlerfall
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_PerfRep_010
-  @STATUS:Spezifiziert @MODUS:Halbautomatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Zurückgestellt @MODUS:Automatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
   @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
   @AFO-ID:A_21980-01
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
-  @IOP
   @LongRunning
   Szenario: NCPeH - PSA PerfRep Nachrichtenstruktur für einen Leer-Report
     Der NCPeH sendet alle 5 Minuten einen Report an den BDEv2 Dienst der gematik. Es wird nur die
@@ -83,13 +81,11 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_PerfRep_011
-  @STATUS:Spezifiziert @MODUS:Halbautomatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
-  @AFO-ID:A_22482 @AFO-ID:A_22002 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
+  @STATUS:Zurückgestellt @MODUS:Automatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
+  @AFO-ID:A_22482-02 @AFO-ID:A_22002 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
   @AFO-ID:A_22429
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
-  @IOP
   Szenario: NCPeH - PSA PerfRep Selbstauskunft
     Der NCPeH sendet alle 60 Minuten eine Selbstauskunft an den BDEv2 Dienst der gematik. Es wird geprüft,
     dass die gelieferten Daten importiert werden können (indirekte Strukturprüfung), und die gelieferten Daten
@@ -108,25 +104,23 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_PerfRep_020
-  @STATUS:Spezifiziert @MODUS:Halbautomatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
   @AF-ID:AF_10107-01 @AF-ID:AF_10121-01 @AF-ID:AF_10122-01
-  @AFO-ID:A_22482 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
+  @AFO-ID:A_22482-02 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
   @AFO-ID:A_23012 @AFO-ID:A_23118-03
-  @AFO-ID:A_23016-02
+  @AFO-ID:A_23016-03
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
-  @IOP
   @CI
   Szenario: NCPeH - PSA PerfRep Messung bei einem Behandlungsvorgang mit CDA L3
     Es wird geprüft, dass bei einem vollständigen, erfolgreichen Behandlungsvorgang mit Ausführung der drei
     Performance Use Cases NCPeH.UC_1, NCPeH.UC_2 und NCPeH.UC_3 die Anzahl der UseCases jeweils 1 ist,
     die Startzeiten konsistent und die gemessenen Bearbeitungszeiten > 0 und < der Antwortzeit des NCPeH Simulators sind.
     Es wird geprüft, dass kein Fehlerstatus der Performance Use Cases enthalten ist.
-    Es wird die Struktur und die Einträge des Reports mit seinen Messwerten geprüft.
+    Es werden die Struktur und die Einträge des Reports mit seinen Messwerten anhand der Informationen aus dem
+    Operations-Datawarehouse geprüft.
     Der Testfall NCP1_E2E_PSA_UC3_001 "NCPeH - PSA UC3 Patient Summary als strukturiertes Dokument abrufen"
     wird hierbei zu Hilfe genommen.
-    Die gemessenen Werte wurden in das Auswertungssystem übernommen und können in Grafana angezeigt werden.
 
     Angenommen der Testfall NCP1_E2E_PSA_UC3_001 wurde zu einem bekannten Zeitpunkt ausgeführt
     Und die Daten der Performance Use Cases aus dem Testfall sind bekannt
@@ -141,25 +135,23 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_PerfRep_021
-  @STATUS:Spezifiziert @MODUS:Halbautomatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Spezifiziert @MODUS:Automatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
   @AF-ID:AF_10107-01 @AF-ID:AF_10121-01 @AF-ID:AF_10123-01
-  @AFO-ID:A_22482 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
+  @AFO-ID:A_22482-02 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
   @AFO-ID:A_21981-02 @AFO-ID:A_22500-01 @AFO-ID:A_21982-01
   @AFO-ID:A_23012 @AFO-ID:A_23118-03
-  @AFO-ID:A_23016-02
+  @AFO-ID:A_23016-03
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
-  @IOP
   Szenario: NCPeH - PSA PerfRep Messung bei einem Behandlungsvorgang mit CDA L1
     Es wird geprüft, dass bei einem vollständigen, erfolgreichen Behandlungsvorgang mit Ausführung der drei
     Performance Use Cases NCPeH.UC_1, NCPeH.UC_2 und NCPeH.UC_4 die Anzahl der UseCases jeweils 1 ist,
     die Startzeiten konsistent und die gemessenen Bearbeitungszeiten > 0 und < der Antwortzeit des NCPeH Simulators sind .
     Es wird geprüft, dass kein Fehlerstatus der Performance Use Cases enthalten ist.
-    Es wird die Struktur und die Einträge des Reports mit seinen Messwerten geprüft.
+    Es werden die Struktur und die Einträge des Reports mit seinen Messwerten anhand der Informationen aus dem
+    Operations-Datawarehouse geprüft.
     Der Testfall NCP1_E2E_PSA_UC4_001 "NCPeH - PSA UC4 Patient Summary als PDF-Dokument (CDA1) abrufen"
     wird hierbei zu Hilfe genommen.
-    Die gemessenen Werte wurden in das Auswertungssystem übernommen und können in Grafana angezeigt werden.
 
     Angenommen der Testfall NCP1_E2E_PSA_UC4_001 wurde zu einem bekannten Zeitpunkt ausgeführt
     Und die Daten der Performance Use Cases aus dem Testfall sind bekannt
@@ -175,31 +167,28 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
   # nur Testentwurf
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_PerfRep_022
-  @STATUS:Spezifiziert @MODUS:Halbautomatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Zurückgestellt @MODUS:Automatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
   @AF-ID:AF_10107-01 @AF-ID:AF_10121-01 @AF-ID:AF_10123-01
-  @AFO-ID:A_22482 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
+  @AFO-ID:A_22482-02 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
   @AFO-ID:A_21981-02 @AFO-ID:A_22500-01 @AFO-ID:A_21982-01
   @AFO-ID:A_23012 @AFO-ID:A_23118-03
-  @AFO-ID:A_23016-02
+  @AFO-ID:A_23016-03
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
-  @IOP
-  @LongRunning
   Szenario: NCPeH - PSA PerfRep Messung für Aufbau VAU-Kanal
-    Es wird geprüft, dass bei einem Aufbau eines VAU-Kanals ein Report für NCPeH.UC_VAU1 geliefert wird
-    die Startzeiten konsistent und die gemessenen Bearbeitungszeiten > 0 und < der Antwortzeit des NCPeH Simulators sind .
+    Es wird geprüft, dass bei einem Aufbau eines VAU-Kanals zum ePA-AS ein Report für NCPeH.UC_VAU1 geliefert wird,
+    die Startzeiten konsistent und die gemessenen Bearbeitungszeiten > 0 und < der Antwortzeit des NCPeH Simulators sind.
     Es wird geprüft, dass kein Fehlerstatus der Performance Use Cases enthalten ist.
-    Es wird die Struktur und die Einträge des Reports mit seinen Messwerten geprüft.
+    Es werden die Struktur und die Einträge des Reports mit seinen Messwerten anhand der Informationen aus dem
+    Operations-Datawarehouse geprüft.
     Der Testfall NCP1_IOP_PSA_EPA_060 "NCPeH - PSA ePA-IOP UC2 Neuaufbau eines VAU-Kanals nach 19 Minuten idle timeout"
     wird hierbei zu Hilfe genommen. Dabei muss zusätzlich zum Report für NCPeH.UC_2 auch ein Report zu NCPeH.UC_VAU1
     geliefert werden
-    Die gemessenen Werte wurden in das Auswertungssystem übernommen und können in Grafana angezeigt werden.
 
     Angenommen der Testfall NCP1_IOP_PSA_EPA_040 wurde zu einem bekannten Zeitpunkt ausgeführt
     Und die Daten der Performance Use Cases aus dem Testfall sind bekannt
       | country     | PerformanceUsecases                            |
-      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2 |
+      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_VAU1,NCPeH.UC_2 |
     Wenn zu dem Zeitintervall zeitlich passende Performance Reports an den BDEv2 Dienst geliefert wurden
     Dann enthält der Performance Report je einen Eintrag für jeden erwarteten Performance Use Case
     Und das Statusfeld enthält je erwartetem Eintrag einen Statuscode der Form 2xx
@@ -214,7 +203,6 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
   @AF-ID:AF_10107-01
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
   Szenariogrundriss: NCPeH - PSA PerfRep Datengenerierung zu mehreren Behandlungsvorgängen
     Es wird geprüft, dass der NCPeH für verschiedene EU Mitgliedsstaaten mit jedem Aktensystem und entsprechend vorhandener
     Berechtigungen das vollständige Anwendungsszenario Patient Summary Land A durchführen kann.
@@ -257,44 +245,46 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
 
   # PET/Polarion Tags
   @TCID:NCP1_E2E_PSA_PerfRep_031
-  @STATUS:Zurückgestellt @MODUS:Halbautomatisch @PRIO:3 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Zurückgestellt @MODUS:Automatisch @PRIO:3 @TESTFALL:Positiv @TESTSTUFE:3
   @AF-ID:AF_10107-01 @AF-ID:AF_10121-01 @AF-ID:AF_10122-01 @AF-ID:AF_10123-01
-  @AFO-ID:A_22482 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
+  @AFO-ID:A_22482-02 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
   @AFO-ID:A_21981-02 @AFO-ID:A_22500-01 @AFO-ID:A_21982-01
   @AFO-ID:A_23012 @AFO-ID:A_23118-03
-  @AFO-ID:A_23016-02
+  @AFO-ID:A_23016-03
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
   Szenario: NCPeH - PSA PerfRep Messung bei mehreren Behandlungsvorgängen
     Es wird geprüft, dass bei 20 vollständigen und erfolgreichen Behandlungsvorgängen innerhalb von 10 Minuten
     die Anzahl der UseCases jeweils 20 ist und die gemessenen Zeiten > 0 und < der Antwortzeit
     des NCPeH Simulators sind. Es wird geprüft, dass die korrekten Status übertragen wurden.
     Die gemessenen Werte wurden in das Auswertungssystem übernommen und können in Grafana angezeigt werden.
 
+    # Hinweis: in NCPeH v2.0.x wurden im Reporting zu PS-A die UC_3 (XML-Abruf) und UC_4 (PDF-Abruf) zusammengezogen
+    # siehe https://gemspec.gematik.de/docs/gemSpec/gemSpec_Perf/latest/#3.7
+
     Angenommen der Testfall NCP1_E2E_PSA_PerfRep_030 wurde zu einem bekannten Zeitpunkt ausgeführt
     Und die Daten der Performance Use Cases aus dem Testfall sind bekannt
       | country     | PerformanceUsecases              |
       | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
-      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_4 |
       | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
-      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_4 |
       | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
-      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_4 |
       | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
-      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_4 |
       | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
-      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_4 |
       | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
-      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_4 |
       | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
-      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_4 |
       | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
-      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_4 |
       | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
-      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_4 |
       | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
-      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_4 |
+      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
+      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
+      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
+      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
+      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
+      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
+      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
+      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
+      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
+      | NETHERLANDS | NCPeH.UC_1,NCPeH.UC_2,NCPeH.UC_3 |
     Wenn zu dem Zeitintervall zeitlich passende Performance Reports an den BDEv2 Dienst geliefert wurden
     Dann enthält der Performance Report je einen Eintrag für jeden erwarteten Performance Use Case
     Und das Statusfeld enthält je erwartetem Eintrag einen Statuscode der Form 2xx
@@ -305,16 +295,14 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_PerfRep_040
-  @STATUS:Spezifiziert @MODUS:Halbautomatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:2 @TESTFALL:Positiv @TESTSTUFE:3
   @AF-ID:AF_10107-01
-  @AFO-ID:A_22482 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
+  @AFO-ID:A_22482-02 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
   @AFO-ID:A_21981-02 @AFO-ID:A_22500-01 @AFO-ID:A_21982-01
   @AFO-ID:A_23012 @AFO-ID:A_23118-03
   @AFO-ID:A_22513-02
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
-  @IOP
   @CI
   Szenario: NCPeH - PSA PerfRep Messung für PSA_RespondingGateway (NCPeH.UC_1) mit Fehler NCPeH.UC_1
     Für das Reporting des NCPeH.UC_1 wird der Testfall NCP1_E2E_PSA_UC1_010
@@ -337,16 +325,14 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_PerfRep_041
-  @STATUS:Spezifiziert @MODUS:Halbautomatisch @PRIO:3 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:3 @TESTFALL:Positiv @TESTSTUFE:3
   @AF-ID:AF_10107-01
-  @AFO-ID:A_22482 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
+  @AFO-ID:A_22482-02 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
   @AFO-ID:A_21981-02 @AFO-ID:A_22500-01 @AFO-ID:A_21982-01
   @AFO-ID:A_23012 @AFO-ID:A_23118-03
   @AFO-ID:A_22513-02
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
-  @IOP
   @CI
   Szenario: NCPeH - PSA PerfRep Messung für PSA_RespondingGateway (NCPeH.UC_1) mit Fehler ERROR_PI_NO_MATCH
     Für das Reporting des NCPeH.UC_1 wird der Testfall NCP1_E2E_PSA_UC1_010
@@ -368,16 +354,14 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_PerfRep_042
-  @STATUS:Spezifiziert @MODUS:Halbautomatisch @PRIO:3 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:3 @TESTFALL:Positiv @TESTSTUFE:3
   @AF-ID:AF_10107-01 @AF-ID:AF_10121-01
-  @AFO-ID:A_22482 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
+  @AFO-ID:A_22482-02 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
   @AFO-ID:A_21981-02 @AFO-ID:A_22500-01 @AFO-ID:A_21982-01
   @AFO-ID:A_23012 @AFO-ID:A_23118-03
   @AFO-ID:A_22513-02
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
-  @IOP
   @CI
   Szenario: NCPeH - PSA PerfRep Messung bei FindDocuments (NCPeH.UC_2) mit Fehler ERROR_GENERIC_DOCUMENT_MISSING
     Für das Reporting des NCPeH.UC_2 wird der Testfall NCP1_IOP_PSA_UC2_010
@@ -399,16 +383,14 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_PerfRep_043
-  @STATUS:Spezifiziert @MODUS:Halbautomatisch @PRIO:3 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:3 @TESTFALL:Positiv @TESTSTUFE:3
   @AF-ID:AF_10107-01 @AF-ID:AF_10121-01
-  @AFO-ID:A_22482 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
+  @AFO-ID:A_22482-02 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
   @AFO-ID:A_21981-02 @AFO-ID:A_22500-01 @AFO-ID:A_21982-01
   @AFO-ID:A_23012 @AFO-ID:A_23118-03
   @AFO-ID:A_22513-02
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
-  @IOP
   @CI
   Szenario: NCPeH - PSA PerfRep Messung bei FindDocuments (NCPeH.UC_2) mit Fehler ERROR_NO_CONSENT
     Für das Reporting des NCPeH.UC_2 wird der Testfall NCP1_IOP_PSA_EPA_031
@@ -430,16 +412,14 @@ Funktionalität: NCPeH PSA Rohdaten Performance Reporting
 
   # PET/Polarion Tags
   @TCID:NCP1_IOP_PSA_PerfRep_044
-  @STATUS:Spezifiziert @MODUS:Halbautomatisch @PRIO:3 @TESTFALL:Positiv @TESTSTUFE:3
+  @STATUS:Implementiert @MODUS:Automatisch @PRIO:3 @TESTFALL:Positiv @TESTSTUFE:3
   @AF-ID:AF_10107-01 @AF-ID:AF_10121-01 @AF-ID:AF_10122-01
-  @AFO-ID:A_22482 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
+  @AFO-ID:A_22482-02 @AFO-ID:A_22002 @AFO-ID:A_22004 @AFO-ID:A_21975-01 @AFO-ID:A_22001-02
   @AFO-ID:A_21981-02 @AFO-ID:A_22500-01 @AFO-ID:A_21982-01
   @AFO-ID:A_23012 @AFO-ID:A_23118-03
-  @AFO-ID:A_23016-02
+  @AFO-ID:A_23016-03
   @DESCRIPTION
   # Weitere Tags, team-intern
-  @PerfRep
-  @IOP
   @CI
   Szenario: NCPeH - PSA PerfRep Messung bei RetrieveDocuments (NCPeH.UC_3) mit Fehler ERROR_GENERIC_DOCUMENT_MISSING
     Für das Reporting des NCPeH.UC_3 wird der Testfall NCP1_IOP_PSA_UC3_020

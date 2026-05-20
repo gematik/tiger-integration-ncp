@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 gematik GmbH
+ * Copyright (Change Date see Readme), gematik GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,32 @@
  *
  * ******
  *
- * For additional notes and disclaimer from gematik and in case of changes by gematik find details in the "Readme" file.
+ * For additional notes and disclaimer from gematik and in case of changes
+ * by gematik, find details in the "Readme" file.
  */
 
 package de.gematik.test.ncp.screenplay.abilities;
 
 import de.gematik.test.ncp.data.PatientAccessData;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import net.serenitybdd.screenplay.Ability;
 
-/** Ability to provide patient access data used to call NCPeH services */
+/**
+ * Ability to provide a patient's KVNR and access code to use them in requests to the NCPeH service
+ */
 @Data
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProvidePatientAccessData implements PatientAccessData, Ability {
 
   private String kvnr;
   private String accessCode;
+
+  public static ProvidePatientAccessData with(final String kvnr, final String accessCode) {
+    return new ProvidePatientAccessData(kvnr, accessCode);
+  }
 }
